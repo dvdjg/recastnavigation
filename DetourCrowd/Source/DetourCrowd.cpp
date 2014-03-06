@@ -18,7 +18,7 @@
 
 #define _USE_MATH_DEFINES
 #include <string.h>
-#include <double.h>
+#include <float.h>
 #include <stdlib.h>
 #include <new>
 #include "DetourCrowd.h"

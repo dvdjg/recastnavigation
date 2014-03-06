@@ -214,7 +214,7 @@ bool InputGeom::load(rcContext* ctx, const char* filePath)
 				double* v = &m_offMeshConVerts[m_offMeshConCount*3*2];
 				int bidir, area = 0, flags = 0;
 				double rad;
-				sscanf(row+1, "%f %f %f  %f %f %f %f %d %d %d",
+                sscanf(row+1, "%lf %lf %lf  %lf %lf %lf %lf %d %d %d",
 					   &v[0], &v[1], &v[2], &v[3], &v[4], &v[5], &rad, &bidir, &area, &flags);
 				m_offMeshConRads[m_offMeshConCount] = rad;
 				m_offMeshConDirs[m_offMeshConCount] = (unsigned char)bidir;
@@ -229,12 +229,12 @@ bool InputGeom::load(rcContext* ctx, const char* filePath)
 			if (m_volumeCount < MAX_VOLUMES)
 			{
 				ConvexVolume* vol = &m_volumes[m_volumeCount++];
-				sscanf(row+1, "%d %d %f %f", &vol->nverts, &vol->area, &vol->hmin, &vol->hmax);
+                sscanf(row+1, "%d %d %lf %lf", &vol->nverts, &vol->area, &vol->hmin, &vol->hmax);
 				for (int i = 0; i < vol->nverts; ++i)
 				{
 					row[0] = '\0';
 					src = parseRow(src, srcEnd, row, sizeof(row)/sizeof(char));
-					sscanf(row, "%f %f %f", &vol->verts[i*3+0], &vol->verts[i*3+1], &vol->verts[i*3+2]);
+                    sscanf(row, "%lf %lf %lf", &vol->verts[i*3+0], &vol->verts[i*3+1], &vol->verts[i*3+2]);
 				}
 			}
 		}
@@ -263,7 +263,7 @@ bool InputGeom::save(const char* filepath)
 		const int bidir = m_offMeshConDirs[i];
 		const int area = m_offMeshConAreas[i];
 		const int flags = m_offMeshConFlags[i];
-		fprintf(fp, "c %f %f %f  %f %f %f  %f %d %d %d\n",
+        fprintf(fp, "c %lf %lf %lf  %lf %lf %lf  %lf %d %d %d\n",
 				v[0], v[1], v[2], v[3], v[4], v[5], rad, bidir, area, flags);
 	}
 
@@ -271,9 +271,9 @@ bool InputGeom::save(const char* filepath)
 	for (int i = 0; i < m_volumeCount; ++i)
 	{
 		ConvexVolume* vol = &m_volumes[i];
-		fprintf(fp, "v %d %d %f %f\n", vol->nverts, vol->area, vol->hmin, vol->hmax);
+        fprintf(fp, "v %d %d %lf %lf\n", vol->nverts, vol->area, vol->hmin, vol->hmax);
 		for (int j = 0; j < vol->nverts; ++j)
-			fprintf(fp, "%f %f %f\n", vol->verts[j*3+0], vol->verts[j*3+1], vol->verts[j*3+2]);
+            fprintf(fp, "%lf %lf %lf\n", vol->verts[j*3+0], vol->verts[j*3+1], vol->verts[j*3+2]);
 	}
 	
 	fclose(fp);

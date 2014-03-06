@@ -20,7 +20,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <double.h>
+#include <float.h>
 #include "SDL.h"
 #include "SDL_opengl.h"
 #include "imgui.h"

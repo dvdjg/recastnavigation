@@ -22,7 +22,7 @@
 #include "DetourAlloc.h"
 #include "DetourAssert.h"
 #include <string.h>
-#include <double.h>
+#include <float.h>
 #include <new>
 
 static const double DT_PI = 3.14159265;

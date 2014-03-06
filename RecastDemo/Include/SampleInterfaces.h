@@ -41,7 +41,7 @@ class BuildContext : public rcContext
 	
 public:
 	BuildContext();
-	virtual ~BuildContext();
+    virtual ~BuildContext() {}
 	
 	/// Dumps the log to stdout.
 	void dumpLog(const char* format, ...);

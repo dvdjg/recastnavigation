@@ -16,7 +16,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-#include <double.h>
+#include <float.h>
 #include <string.h>
 #include "DetourLocalBoundary.h"
 #include "DetourNavMeshQuery.h"

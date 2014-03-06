@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <double.h>
+#include <float.h>
 #include "DetourNavMesh.h"
 #include "DetourCommon.h"
 #include "DetourMath.h"

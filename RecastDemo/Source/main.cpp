@@ -168,7 +168,7 @@ int main(int /*argc*/, char** /*argv*/)
 	
 	glEnable(GL_CULL_FACE);
 	
-	double fogCol[4] = { 0.32, 0.31, 0.30, 1.0 };
+    float fogCol[4] = { 0.32, 0.31, 0.30, 1.0 };
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE, GL_LINEAR);
 	glFogf(GL_FOG_START, camr*0.1);
