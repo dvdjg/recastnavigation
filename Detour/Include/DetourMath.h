@@ -11,11 +11,11 @@ Members in this module are wrappers around the standard math library
 #include <math.h>
 
 #define dtMathFabs(x) fabs(x)
-#define dtMathSqrtf(x) sqrtf(x)
-#define dtMathFloorf(x) floorf(x)
-#define dtMathCeilf(x) ceilf(x)
-#define dtMathCosf(x) cosf(x)
-#define dtMathSinf(x) sinf(x)
-#define dtMathAtan2f(y, x) atan2f(y, x)
+#define dtMathSqrtf(x) sqrt(x)
+#define dtMathFloorf(x) floor(x)
+#define dtMathCeilf(x) ceil(x)
+#define dtMathCosf(x) cos(x)
+#define dtMathSinf(x) sin(x)
+#define dtMathAtan2f(y, x) atan2(y, x)
 
 #endif

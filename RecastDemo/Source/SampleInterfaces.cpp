@@ -207,7 +207,7 @@ void DebugDrawGL::texture(bool state)
 	}
 }
 
-void DebugDrawGL::begin(duDebugDrawPrimitives prim, float size)
+void DebugDrawGL::begin(duDebugDrawPrimitives prim, double size)
 {
 	switch (prim)
 	{
@@ -228,37 +228,37 @@ void DebugDrawGL::begin(duDebugDrawPrimitives prim, float size)
 	};
 }
 
-void DebugDrawGL::vertex(const float* pos, unsigned int color)
+void DebugDrawGL::vertex(const double* pos, unsigned int color)
 {
 	glColor4ubv((GLubyte*)&color);
-	glVertex3fv(pos);
+	glVertex3dv(pos);
 }
 
-void DebugDrawGL::vertex(const float x, const float y, const float z, unsigned int color)
+void DebugDrawGL::vertex(const double x, const double y, const double z, unsigned int color)
 {
 	glColor4ubv((GLubyte*)&color);
-	glVertex3f(x,y,z);
+	glVertex3d(x,y,z);
 }
 
-void DebugDrawGL::vertex(const float* pos, unsigned int color, const float* uv)
+void DebugDrawGL::vertex(const double* pos, unsigned int color, const double* uv)
 {
 	glColor4ubv((GLubyte*)&color);
-	glTexCoord2fv(uv);
-	glVertex3fv(pos);
+	glTexCoord2dv(uv);
+	glVertex3dv(pos);
 }
 
-void DebugDrawGL::vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v)
+void DebugDrawGL::vertex(const double x, const double y, const double z, unsigned int color, const double u, const double v)
 {
 	glColor4ubv((GLubyte*)&color);
-	glTexCoord2f(u,v);
-	glVertex3f(x,y,z);
+	glTexCoord2d(u,v);
+	glVertex3d(x,y,z);
 }
 
 void DebugDrawGL::end()
 {
 	glEnd();
-	glLineWidth(1.0f);
-	glPointSize(1.0f);
+	glLineWidth(1.0);
+	glPointSize(1.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

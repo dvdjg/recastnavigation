@@ -28,7 +28,7 @@ SlideShow::SlideShow() :
 	m_height(0),
 	m_texId(0),
 	m_showCurSlide(true),
-	m_slideAlpha(1.0f),
+	m_slideAlpha(1.0),
 	m_curSlide(-1),
 	m_nextSlide(0)
 {
@@ -104,9 +104,9 @@ void SlideShow::setSlide(int n)
 	if (m_nextSlide > maxIdx) m_nextSlide = maxIdx; 
 }
 
-void SlideShow::updateAndDraw(float dt, const float w, const float h)
+void SlideShow::updateAndDraw(double dt, const double w, const double h)
 {
-	float slideAlphaTarget = (m_showCurSlide && m_texId) ? 1.0f : 0.0f;
+	double slideAlphaTarget = (m_showCurSlide && m_texId) ? 1.0 : 0.0;
 	if (m_curSlide != m_nextSlide)
 		slideAlphaTarget = 0;
 	
@@ -117,7 +117,7 @@ void SlideShow::updateAndDraw(float dt, const float w, const float h)
 	if (m_slideAlpha < 0) m_slideAlpha = 0;
 	if (m_slideAlpha > 1) m_slideAlpha = 1; 
 	
-	if (m_curSlide != m_nextSlide && m_slideAlpha < 0.01f)
+	if (m_curSlide != m_nextSlide && m_slideAlpha < 0.01)
 	{
 		m_curSlide = m_nextSlide;
 		if (m_curSlide >= 0 && m_curSlide < m_files.size)
@@ -129,28 +129,28 @@ void SlideShow::updateAndDraw(float dt, const float w, const float h)
 		}
 	}
 	
-	if (m_slideAlpha > 0.01f && m_texId)
+	if (m_slideAlpha > 0.01 && m_texId)
 	{
-		unsigned char alpha = (unsigned char)(m_slideAlpha*255.0f);
+		unsigned char alpha = (unsigned char)(m_slideAlpha*255.0);
 		
 		glEnable(GL_TEXTURE_RECTANGLE_ARB);
 		glBindTexture(GL_TEXTURE_RECTANGLE_ARB, m_texId);
 		
-		const float tw = (float)m_width;
-		const float th = (float)m_height;
-		const float hw = w*0.5f;
-		const float hh = h*0.5f;
+		const double tw = (double)m_width;
+		const double th = (double)m_height;
+		const double hw = w*0.5;
+		const double hh = h*0.5;
 		
 		glColor4ub(255,255,255,alpha);
 		glBegin(GL_QUADS);
-		glTexCoord2f(0,th);
-		glVertex2f(hw-tw/2,hh-th/2);
-		glTexCoord2f(tw,th);
-		glVertex2f(hw+tw/2,hh-th/2);
-		glTexCoord2f(tw,0);
-		glVertex2f(hw+tw/2,hh+th/2);
-		glTexCoord2f(0,0);
-		glVertex2f(hw-tw/2,hh+th/2);
+		glTexCoord2d(0,th);
+		glVertex2d(hw-tw/2,hh-th/2);
+		glTexCoord2d(tw,th);
+		glVertex2d(hw+tw/2,hh-th/2);
+		glTexCoord2d(tw,0);
+		glVertex2d(hw+tw/2,hh+th/2);
+		glTexCoord2d(0,0);
+		glVertex2d(hw-tw/2,hh+th/2);
 		glEnd();
 		
 		glDisable(GL_TEXTURE_RECTANGLE_ARB);

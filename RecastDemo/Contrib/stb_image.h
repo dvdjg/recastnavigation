@@ -34,9 +34,9 @@
       1.07   attempt to fix C++ warning/errors again
       1.06   attempt to fix C++ warning/errors again
       1.05   fix TGA loading to return correct *comp and use good luminance calc
-      1.04   default float alpha is 1, not 255; use 'void *' for stbi_image_free
+      1.04   default double alpha is 1, not 255; use 'void *' for stbi_image_free
       1.03   bugfixes to STBI_NO_STDIO, STBI_NO_HDR
-      1.02   support for (subset of) HDR files, float interface for preferred access to them
+      1.02   support for (subset of) HDR files, double interface for preferred access to them
       1.01   fix bug: possible bug in handling right-side up bmps... not sure
              fix bug: the stbi_bmp_load() and stbi_tga_load() functions didn't work at all
       1.00   interface to zlib that skips zlib header
@@ -132,8 +132,8 @@
 // LDR, assuming gamma 2.2 and an arbitrary scale factor defaulting to 1;
 // both of these constants can be reconfigured through this interface:
 //
-//     stbi_hdr_to_ldr_gamma(2.2f);
-//     stbi_hdr_to_ldr_scale(1.0f);
+//     stbi_hdr_to_ldr_gamma(2.2);
+//     stbi_hdr_to_ldr_scale(1.0);
 //
 // (note, do not use _inverse_ constants; stbi_image will invert them
 // appropriately).
@@ -141,14 +141,14 @@
 // Additionally, there is a new, parallel interface for loading files as
 // (linear) floats to preserve the full dynamic range:
 //
-//    float *data = stbi_loadf(filename, &x, &y, &n, 0);
+//    double *data = stbi_loadf(filename, &x, &y, &n, 0);
 // 
 // If you load LDR images through this interface, those images will
 // be promoted to floating point values, run through the inverse of
 // constants corresponding to the above:
 //
-//     stbi_ldr_to_hdr_scale(1.0f);
-//     stbi_ldr_to_hdr_gamma(2.2f);
+//     stbi_ldr_to_hdr_scale(1.0);
+//     stbi_ldr_to_hdr_gamma(2.2);
 //
 // Finally, given a filename (or an open file or memory block--see header
 // file for details) containing image data, you can query for the "most
@@ -202,16 +202,16 @@ extern stbi_uc *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, in
 
 #ifndef STBI_NO_HDR
 #ifndef STBI_NO_STDIO
-extern float *stbi_loadf            (char const *filename,     int *x, int *y, int *comp, int req_comp);
-extern float *stbi_loadf_from_file  (FILE *f,                  int *x, int *y, int *comp, int req_comp);
+extern double *stbi_loadf            (char const *filename,     int *x, int *y, int *comp, int req_comp);
+extern double *stbi_loadf_from_file  (FILE *f,                  int *x, int *y, int *comp, int req_comp);
 #endif
-extern float *stbi_loadf_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
+extern double *stbi_loadf_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
 
-extern void   stbi_hdr_to_ldr_gamma(float gamma);
-extern void   stbi_hdr_to_ldr_scale(float scale);
+extern void   stbi_hdr_to_ldr_gamma(double gamma);
+extern void   stbi_hdr_to_ldr_scale(double scale);
 
-extern void   stbi_ldr_to_hdr_gamma(float gamma);
-extern void   stbi_ldr_to_hdr_scale(float scale);
+extern void   stbi_ldr_to_hdr_gamma(double gamma);
+extern void   stbi_ldr_to_hdr_scale(double scale);
 
 #endif // STBI_NO_HDR
 
@@ -302,11 +302,11 @@ extern stbi_uc *stbi_psd_load_from_file   (FILE *f,                  int *x, int
 // is it an hdr?
 extern int      stbi_hdr_test_memory      (stbi_uc const *buffer, int len);
 
-extern float *  stbi_hdr_load             (char const *filename,     int *x, int *y, int *comp, int req_comp);
-extern float *  stbi_hdr_load_from_memory (stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
+extern double *  stbi_hdr_load             (char const *filename,     int *x, int *y, int *comp, int req_comp);
+extern double *  stbi_hdr_load_from_memory (stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
 #ifndef STBI_NO_STDIO
 extern int      stbi_hdr_test_file        (FILE *f);
-extern float *  stbi_hdr_load_from_file   (FILE *f,                  int *x, int *y, int *comp, int req_comp);
+extern double *  stbi_hdr_load_from_file   (FILE *f,                  int *x, int *y, int *comp, int req_comp);
 #endif
 
 // define new loaders
@@ -419,7 +419,7 @@ static int e(const char *str)
    #define e(x,y)  e(x)
 #endif
 
-#define epf(x,y)   ((float *) (e(x,y)?NULL:NULL))
+#define epf(x,y)   ((double *) (e(x,y)?NULL:NULL))
 #define epuc(x,y)  ((unsigned char *) (e(x,y)?NULL:NULL))
 
 void stbi_image_free(void *retval_from_stbi_load)
@@ -450,8 +450,8 @@ int stbi_register_loader(stbi_loader *loader)
 }
 
 #ifndef STBI_NO_HDR
-static float   *ldr_to_hdr(stbi_uc *data, int x, int y, int comp);
-static stbi_uc *hdr_to_ldr(float   *data, int x, int y, int comp);
+static double   *ldr_to_hdr(stbi_uc *data, int x, int y, int comp);
+static stbi_uc *hdr_to_ldr(double   *data, int x, int y, int comp);
 #endif
 
 #ifndef STBI_NO_STDIO
@@ -478,7 +478,7 @@ unsigned char *stbi_load_from_file(FILE *f, int *x, int *y, int *comp, int req_c
       return stbi_psd_load_from_file(f,x,y,comp,req_comp);
    #ifndef STBI_NO_HDR
    if (stbi_hdr_test_file(f)) {
-      float *hdr = stbi_hdr_load_from_file(f, x,y,comp,req_comp);
+      double *hdr = stbi_hdr_load_from_file(f, x,y,comp,req_comp);
       return hdr_to_ldr(hdr, *x, *y, req_comp ? req_comp : *comp);
    }
    #endif
@@ -505,7 +505,7 @@ unsigned char *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, int
       return stbi_psd_load_from_memory(buffer,len,x,y,comp,req_comp);
    #ifndef STBI_NO_HDR
    if (stbi_hdr_test_memory(buffer, len)) {
-      float *hdr = stbi_hdr_load_from_memory(buffer, len,x,y,comp,req_comp);
+      double *hdr = stbi_hdr_load_from_memory(buffer, len,x,y,comp,req_comp);
       return hdr_to_ldr(hdr, *x, *y, req_comp ? req_comp : *comp);
    }
    #endif
@@ -521,17 +521,17 @@ unsigned char *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, int
 #ifndef STBI_NO_HDR
 
 #ifndef STBI_NO_STDIO
-float *stbi_loadf(char const *filename, int *x, int *y, int *comp, int req_comp)
+double *stbi_loadf(char const *filename, int *x, int *y, int *comp, int req_comp)
 {
    FILE *f = fopen(filename, "rb");
-   float *result;
+   double *result;
    if (!f) return epf("can't fopen", "Unable to open file");
    result = stbi_loadf_from_file(f,x,y,comp,req_comp);
    fclose(f);
    return result;
 }
 
-float *stbi_loadf_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
+double *stbi_loadf_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
 {
    unsigned char *data;
    #ifndef STBI_NO_HDR
@@ -545,7 +545,7 @@ float *stbi_loadf_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
 }
 #endif
 
-float *stbi_loadf_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
+double *stbi_loadf_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
 {
    stbi_uc *data;
    #ifndef STBI_NO_HDR
@@ -603,14 +603,14 @@ extern int      stbi_info_from_file  (FILE *f,                  int *x, int *y, 
 extern int      stbi_info_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp);
 
 #ifndef STBI_NO_HDR
-static float h2l_gamma_i=1.0f/2.2f, h2l_scale_i=1.0f;
-static float l2h_gamma=2.2f, l2h_scale=1.0f;
+static double h2l_gamma_i=1.0/2.2, h2l_scale_i=1.0;
+static double l2h_gamma=2.2, l2h_scale=1.0;
 
-void   stbi_hdr_to_ldr_gamma(float gamma) { h2l_gamma_i = 1/gamma; }
-void   stbi_hdr_to_ldr_scale(float scale) { h2l_scale_i = 1/scale; }
+void   stbi_hdr_to_ldr_gamma(double gamma) { h2l_gamma_i = 1/gamma; }
+void   stbi_hdr_to_ldr_scale(double scale) { h2l_scale_i = 1/scale; }
 
-void   stbi_ldr_to_hdr_gamma(float gamma) { l2h_gamma = gamma; }
-void   stbi_ldr_to_hdr_scale(float scale) { l2h_scale = scale; }
+void   stbi_ldr_to_hdr_gamma(double gamma) { l2h_gamma = gamma; }
+void   stbi_ldr_to_hdr_scale(double scale) { l2h_scale = scale; }
 #endif
 
 
@@ -789,25 +789,25 @@ static unsigned char *convert_format(unsigned char *data, int img_n, int req_com
 }
 
 #ifndef STBI_NO_HDR
-static float   *ldr_to_hdr(stbi_uc *data, int x, int y, int comp)
+static double   *ldr_to_hdr(stbi_uc *data, int x, int y, int comp)
 {
    int i,k,n;
-   float *output = (float *) malloc(x * y * comp * sizeof(float));
+   double *output = (double *) malloc(x * y * comp * sizeof(double));
    if (output == NULL) { free(data); return epf("outofmem", "Out of memory"); }
    // compute number of non-alpha components
    if (comp & 1) n = comp; else n = comp-1;
    for (i=0; i < x*y; ++i) {
       for (k=0; k < n; ++k) {
-         output[i*comp + k] = (float) pow(data[i*comp+k]/255.0f, l2h_gamma) * l2h_scale;
+         output[i*comp + k] = (double) pow(data[i*comp+k]/255.0, l2h_gamma) * l2h_scale;
       }
-      if (k < comp) output[i*comp + k] = data[i*comp+k]/255.0f;
+      if (k < comp) output[i*comp + k] = data[i*comp+k]/255.0;
    }
    free(data);
    return output;
 }
 
 #define float2int(x)   ((int) (x))
-static stbi_uc *hdr_to_ldr(float   *data, int x, int y, int comp)
+static stbi_uc *hdr_to_ldr(double   *data, int x, int y, int comp)
 {
    int i,k,n;
    stbi_uc *output = (stbi_uc *) malloc(x * y * comp);
@@ -816,13 +816,13 @@ static stbi_uc *hdr_to_ldr(float   *data, int x, int y, int comp)
    if (comp & 1) n = comp; else n = comp-1;
    for (i=0; i < x*y; ++i) {
       for (k=0; k < n; ++k) {
-         float z = (float) pow(data[i*comp+k]*h2l_scale_i, h2l_gamma_i) * 255 + 0.5f;
+         double z = (double) pow(data[i*comp+k]*h2l_scale_i, h2l_gamma_i) * 255 + 0.5;
          if (z < 0) z = 0;
          if (z > 255) z = 255;
          output[i*comp + k] = (stbi_uc)float2int(z);
       }
       if (k < comp) {
-         float z = data[i*comp+k] * 255 + 0.5f;
+         double z = data[i*comp+k] * 255 + 0.5;
          if (z < 0) z = 0;
          if (z > 255) z = 255;
          output[i*comp + k] = (stbi_uc)float2int(z);
@@ -1114,9 +1114,9 @@ __forceinline static uint8 clamp(int x)
    int t0,t1,t2,t3,p1,p2,p3,p4,p5,x0,x1,x2,x3; \
    p2 = s2;                                    \
    p3 = s6;                                    \
-   p1 = (p2+p3) * f2f(0.5411961f);             \
-   t2 = p1 + p3*f2f(-1.847759065f);            \
-   t3 = p1 + p2*f2f( 0.765366865f);            \
+   p1 = (p2+p3) * f2f(0.5411961);             \
+   t2 = p1 + p3*f2f(-1.847759065);            \
+   t3 = p1 + p2*f2f( 0.765366865);            \
    p2 = s0;                                    \
    p3 = s4;                                    \
    t0 = fsh(p2+p3);                            \
@@ -1133,15 +1133,15 @@ __forceinline static uint8 clamp(int x)
    p4 = t1+t3;                                 \
    p1 = t0+t3;                                 \
    p2 = t1+t2;                                 \
-   p5 = (p3+p4)*f2f( 1.175875602f);            \
-   t0 = t0*f2f( 0.298631336f);                 \
-   t1 = t1*f2f( 2.053119869f);                 \
-   t2 = t2*f2f( 3.072711026f);                 \
-   t3 = t3*f2f( 1.501321110f);                 \
-   p1 = p5 + p1*f2f(-0.899976223f);            \
-   p2 = p5 + p2*f2f(-2.562915447f);            \
-   p3 = p3*f2f(-1.961570560f);                 \
-   p4 = p4*f2f(-0.390180644f);                 \
+   p5 = (p3+p4)*f2f( 1.175875602);            \
+   t0 = t0*f2f( 0.298631336);                 \
+   t1 = t1*f2f( 2.053119869);                 \
+   t2 = t2*f2f( 3.072711026);                 \
+   t3 = t3*f2f( 1.501321110);                 \
+   p1 = p5 + p1*f2f(-0.899976223);            \
+   p2 = p5 + p2*f2f(-2.562915447);            \
+   p3 = p3*f2f(-1.961570560);                 \
+   p4 = p4*f2f(-0.390180644);                 \
    t3 += p1+p4;                                \
    t2 += p2+p3;                                \
    t1 += p2+p4;                                \
@@ -1667,9 +1667,9 @@ static void YCbCr_to_RGB_row(uint8 *out, const uint8 *y, const uint8 *pcb, const
       int r,g,b;
       int cr = pcr[i] - 128;
       int cb = pcb[i] - 128;
-      r = y_fixed + cr*float2fixed(1.40200f);
-      g = y_fixed - cr*float2fixed(0.71414f) - cb*float2fixed(0.34414f);
-      b = y_fixed                            + cb*float2fixed(1.77200f);
+      r = y_fixed + cr*float2fixed(1.40200);
+      g = y_fixed - cr*float2fixed(0.71414) - cb*float2fixed(0.34414);
+      b = y_fixed                            + cb*float2fixed(1.77200);
       r >>= 16;
       g >>= 16;
       b >>= 16;
@@ -3630,12 +3630,12 @@ static char *hdr_gettoken(stbi *z, char *buffer)
 	return buffer;
 }
 
-static void hdr_convert(float *output, stbi_uc *input, int req_comp)
+static void hdr_convert(double *output, stbi_uc *input, int req_comp)
 {
 	if( input[3] != 0 ) {
-      float f1;
+      double f1;
 		// Exponent
-		f1 = (float) ldexp(1.0f, input[3] - (int)(128 + 8));
+		f1 = (double) ldexp(1.0, input[3] - (int)(128 + 8));
       if (req_comp <= 2)
          output[0] = (input[0] + input[1] + input[2]) * f1 / 3;
       else {
@@ -3658,14 +3658,14 @@ static void hdr_convert(float *output, stbi_uc *input, int req_comp)
 }
 
 
-static float *hdr_load(stbi *s, int *x, int *y, int *comp, int req_comp)
+static double *hdr_load(stbi *s, int *x, int *y, int *comp, int req_comp)
 {
    char buffer[HDR_BUFLEN];
 	char *token;
 	int valid = 0;
 	int width, height;
    stbi_uc *scanline;
-	float *hdr_data;
+	double *hdr_data;
 	int len;
 	unsigned char count, value;
 	int i, j, k, c1,c2, z;
@@ -3702,7 +3702,7 @@ static float *hdr_load(stbi *s, int *x, int *y, int *comp, int req_comp)
 	if (req_comp == 0) req_comp = 3;
 
 	// Read data
-	hdr_data = (float *) malloc(height * width * req_comp * sizeof(float));
+	hdr_data = (double *) malloc(height * width * req_comp * sizeof(double));
 
 	// Load image data
    // image data is stored as some number of sca
@@ -3766,7 +3766,7 @@ static float *hdr_load(stbi *s, int *x, int *y, int *comp, int req_comp)
 }
 
 #ifndef STBI_NO_STDIO
-float *stbi_hdr_load_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
+double *stbi_hdr_load_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
 {
    stbi s;
    start_file(&s,f);
@@ -3774,7 +3774,7 @@ float *stbi_hdr_load_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
 }
 #endif
 
-float *stbi_hdr_load_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
+double *stbi_hdr_load_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
 {
    stbi s;
    start_mem(&s,buffer, len);

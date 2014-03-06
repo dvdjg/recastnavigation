@@ -38,7 +38,7 @@ enum ObstacleState
 static const int DT_MAX_TOUCHED_TILES = 8;
 struct dtTileCacheObstacle
 {
-	float pos[3], radius, height;
+	double pos[3], radius, height;
 	dtCompressedTileRef touched[DT_MAX_TOUCHED_TILES];
 	dtCompressedTileRef pending[DT_MAX_TOUCHED_TILES];
 	unsigned short salt;
@@ -50,13 +50,13 @@ struct dtTileCacheObstacle
 
 struct dtTileCacheParams
 {
-	float orig[3];
-	float cs, ch;
+	double orig[3];
+	double cs, ch;
 	int width, height;
-	float walkableHeight;
-	float walkableRadius;
-	float walkableClimb;
-	float maxSimplificationError;
+	double walkableHeight;
+	double walkableRadius;
+	double walkableClimb;
+	double maxSimplificationError;
 	int maxTiles;
 	int maxObstacles;
 };
@@ -103,21 +103,21 @@ public:
 	
 	dtStatus removeTile(dtCompressedTileRef ref, unsigned char** data, int* dataSize);
 	
-	dtStatus addObstacle(const float* pos, const float radius, const float height, dtObstacleRef* result);
+	dtStatus addObstacle(const double* pos, const double radius, const double height, dtObstacleRef* result);
 	dtStatus removeObstacle(const dtObstacleRef ref);
 	
-	dtStatus queryTiles(const float* bmin, const float* bmax,
+	dtStatus queryTiles(const double* bmin, const double* bmax,
 						dtCompressedTileRef* results, int* resultCount, const int maxResults) const;
 	
-	dtStatus update(const float /*dt*/, class dtNavMesh* navmesh);
+	dtStatus update(const double /*dt*/, class dtNavMesh* navmesh);
 	
 	dtStatus buildNavMeshTilesAt(const int tx, const int ty, class dtNavMesh* navmesh);
 	
 	dtStatus buildNavMeshTile(const dtCompressedTileRef ref, class dtNavMesh* navmesh);
 	
-	void calcTightTileBounds(const struct dtTileCacheLayerHeader* header, float* bmin, float* bmax) const;
+	void calcTightTileBounds(const struct dtTileCacheLayerHeader* header, double* bmin, double* bmax) const;
 	
-	void getObstacleBounds(const struct dtTileCacheObstacle* ob, float* bmin, float* bmax) const;
+	void getObstacleBounds(const struct dtTileCacheObstacle* ob, double* bmin, double* bmax) const;
 	
 
 	/// Encodes a tile id.

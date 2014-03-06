@@ -32,9 +32,9 @@ static const dtNodeIndex DT_NULL_IDX = (dtNodeIndex)~0;
 
 struct dtNode
 {
-	float pos[3];				///< Position of the node.
-	float cost;					///< Cost from previous node to current node.
-	float total;				///< Cost up to the node.
+	double pos[3];				///< Position of the node.
+	double cost;					///< Cost from previous node to current node.
+	double total;				///< Cost up to the node.
 	unsigned int pidx : 30;		///< Index to parent node.
 	unsigned int flags : 2;		///< Node flags 0/open/closed.
 	dtPolyRef id;				///< Polygon ref the node corresponds to.

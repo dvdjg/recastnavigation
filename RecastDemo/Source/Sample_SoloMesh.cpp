@@ -220,7 +220,7 @@ void Sample_SoloMesh::handleRender()
 	glEnable(GL_FOG);
 	glDepthMask(GL_TRUE);
 
-	const float texScale = 1.0f / (m_cellSize * 10.0f);
+	const double texScale = 1.0 / (m_cellSize * 10.0);
 	
 	if (m_drawMode != DRAWMODE_NAVMESH_TRANS)
 	{
@@ -235,10 +235,10 @@ void Sample_SoloMesh::handleRender()
 	glDepthMask(GL_FALSE);
 
 	// Draw bounds
-	const float* bmin = m_geom->getMeshBoundsMin();
-	const float* bmax = m_geom->getMeshBoundsMax();
-	duDebugDrawBoxWire(&dd, bmin[0],bmin[1],bmin[2], bmax[0],bmax[1],bmax[2], duRGBA(255,255,255,128), 1.0f);
-	dd.begin(DU_DRAW_POINTS, 5.0f);
+	const double* bmin = m_geom->getMeshBoundsMin();
+	const double* bmax = m_geom->getMeshBoundsMax();
+	duDebugDrawBoxWire(&dd, bmin[0],bmin[1],bmin[2], bmax[0],bmax[1],bmax[2], duRGBA(255,255,255,128), 1.0);
+	dd.begin(DU_DRAW_POINTS, 5.0);
 	dd.vertex(bmin[0],bmin[1],bmin[2],duRGBA(255,255,255,128));
 	dd.end();
 	
@@ -288,7 +288,7 @@ void Sample_SoloMesh::handleRender()
 	if (m_cset && m_drawMode == DRAWMODE_BOTH_CONTOURS)
 	{
 		glDepthMask(GL_FALSE);
-		duDebugDrawRawContours(&dd, *m_cset, 0.5f);
+		duDebugDrawRawContours(&dd, *m_cset, 0.5);
 		duDebugDrawContours(&dd, *m_cset);
 		glDepthMask(GL_TRUE);
 	}
@@ -362,9 +362,9 @@ bool Sample_SoloMesh::handleBuild()
 	
 	cleanup();
 	
-	const float* bmin = m_geom->getMeshBoundsMin();
-	const float* bmax = m_geom->getMeshBoundsMax();
-	const float* verts = m_geom->getMesh()->getVerts();
+	const double* bmin = m_geom->getMeshBoundsMin();
+	const double* bmax = m_geom->getMeshBoundsMax();
+	const double* verts = m_geom->getMesh()->getVerts();
 	const int nverts = m_geom->getMesh()->getVertCount();
 	const int* tris = m_geom->getMesh()->getTris();
 	const int ntris = m_geom->getMesh()->getTriCount();
@@ -386,7 +386,7 @@ bool Sample_SoloMesh::handleBuild()
 	m_cfg.minRegionArea = (int)rcSqr(m_regionMinSize);		// Note: area = size*size
 	m_cfg.mergeRegionArea = (int)rcSqr(m_regionMergeSize);	// Note: area = size*size
 	m_cfg.maxVertsPerPoly = (int)m_vertsPerPoly;
-	m_cfg.detailSampleDist = m_detailSampleDist < 0.9f ? 0 : m_cellSize * m_detailSampleDist;
+	m_cfg.detailSampleDist = m_detailSampleDist < 0.9 ? 0 : m_cellSize * m_detailSampleDist;
 	m_cfg.detailSampleMaxError = m_cellHeight * m_detailSampleMaxError;
 	
 	// Set the area where the navigation will be build.
@@ -404,7 +404,7 @@ bool Sample_SoloMesh::handleBuild()
 	
 	m_ctx->log(RC_LOG_PROGRESS, "Building navigation:");
 	m_ctx->log(RC_LOG_PROGRESS, " - %d x %d cells", m_cfg.width, m_cfg.height);
-	m_ctx->log(RC_LOG_PROGRESS, " - %.1fK verts, %.1fK tris", nverts/1000.0f, ntris/1000.0f);
+	m_ctx->log(RC_LOG_PROGRESS, " - %.1fK verts, %.1fK tris", nverts/1000.0, ntris/1000.0);
 	
 	//
 	// Step 2. Rasterize input polygon soup.
@@ -686,7 +686,7 @@ bool Sample_SoloMesh::handleBuild()
 	duLogBuildTimes(*m_ctx, m_ctx->getAccumulatedTime(RC_TIMER_TOTAL));
 	m_ctx->log(RC_LOG_PROGRESS, ">> Polymesh: %d vertices  %d polygons", m_pmesh->nverts, m_pmesh->npolys);
 	
-	m_totalBuildTimeMs = m_ctx->getAccumulatedTime(RC_TIMER_TOTAL)/1000.0f;
+	m_totalBuildTimeMs = m_ctx->getAccumulatedTime(RC_TIMER_TOTAL)/1000.0;
 	
 	if (m_tool)
 		m_tool->init(this);

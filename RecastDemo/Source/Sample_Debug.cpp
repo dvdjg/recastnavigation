@@ -94,9 +94,9 @@ Sample_Debug::Sample_Debug() :
 	}*/
 	
 
-/*	const float orig[3] = {0,0,0};
+/*	const double orig[3] = {0,0,0};
 	m_navMesh = new dtNavMesh;
-	m_navMesh->init(orig, 133.333f,133.333f, 2048, 4096, 4096);
+	m_navMesh->init(orig, 133.333,133.333, 2048, 4096, 4096);
 
 	unsigned char* data = 0;
 	int dataSize = 0;
@@ -124,8 +124,8 @@ Sample_Debug::Sample_Debug() :
 		m_navMesh->addTileAt(-14,-14, data, dataSize, true);
 	}
 	
-	const float ext[3] = {40,100,40};
-	const float center[3] = { -1667.9491f, 135.52649f, -1680.6149f };
+	const double ext[3] = {40,100,40};
+	const double center[3] = { -1667.9491, 135.52649, -1680.6149 };
 	dtQueryFilter filter;
 	m_ref = m_navMesh->findNearestPoly(center, ext, &filter, 0);
 
@@ -205,15 +205,15 @@ void Sample_Debug::handleRender()
 	if (m_ref && m_navMesh)
 		duDebugDrawNavMeshPoly(&dd, *m_navMesh, m_ref, duRGBA(255,0,0,128));
 
-/*	float bmin[3], bmax[3];
+/*	double bmin[3], bmax[3];
 	rcVsub(bmin, m_center, m_ext);
 	rcVadd(bmax, m_center, m_ext);
-	duDebugDrawBoxWire(&dd, bmin[0],bmin[1],bmin[2], bmax[0],bmax[1],bmax[2], duRGBA(255,255,255,128), 1.0f);
-	duDebugDrawCross(&dd, m_center[0], m_center[1], m_center[2], 1.0f, duRGBA(255,255,255,128), 2.0f);*/
+	duDebugDrawBoxWire(&dd, bmin[0],bmin[1],bmin[2], bmax[0],bmax[1],bmax[2], duRGBA(255,255,255,128), 1.0);
+	duDebugDrawCross(&dd, m_center[0], m_center[1], m_center[2], 1.0, duRGBA(255,255,255,128), 2.0);*/
 
 	if (m_cset)
 	{
-		duDebugDrawRawContours(&dd, *m_cset, 0.25f);
+		duDebugDrawRawContours(&dd, *m_cset, 0.25);
 		duDebugDrawContours(&dd, *m_cset);
 	}
 	
@@ -225,9 +225,9 @@ void Sample_Debug::handleRender()
 	/*
 	dd.depthMask(false);
 	{
-		const float bmin[3] = {-32.000004f,-11.488281f,-115.343544f};
-		const float cs = 0.300000f;
-		const float ch = 0.200000f;
+		const double bmin[3] = {-32.000004,-11.488281,-115.343544};
+		const double cs = 0.300000;
+		const double ch = 0.200000;
 		const int verts[] = {
 			158,46,336,0,
 			157,47,331,0,
@@ -274,22 +274,22 @@ void Sample_Debug::handleRender()
 		const int nverts = sizeof(verts)/(sizeof(int)*4);
 
 		const unsigned int colln = duRGBA(255,255,255,128);
-		dd.begin(DU_DRAW_LINES, 1.0f);
+		dd.begin(DU_DRAW_LINES, 1.0);
 		for (int i = 0, j = nverts-1; i < nverts; j=i++)
 		{
 			const int* va = &verts[j*4];
 			const int* vb = &verts[i*4];
-			dd.vertex(bmin[0]+va[0]*cs, bmin[1]+va[1]*ch+j*0.01f, bmin[2]+va[2]*cs, colln);
-			dd.vertex(bmin[0]+vb[0]*cs, bmin[1]+vb[1]*ch+i*0.01f, bmin[2]+vb[2]*cs, colln);
+			dd.vertex(bmin[0]+va[0]*cs, bmin[1]+va[1]*ch+j*0.01, bmin[2]+va[2]*cs, colln);
+			dd.vertex(bmin[0]+vb[0]*cs, bmin[1]+vb[1]*ch+i*0.01, bmin[2]+vb[2]*cs, colln);
 		}
 		dd.end();
 
 		const unsigned int colpt = duRGBA(255,255,255,255);
-		dd.begin(DU_DRAW_POINTS, 3.0f);
+		dd.begin(DU_DRAW_POINTS, 3.0);
 		for (int i = 0, j = nverts-1; i < nverts; j=i++)
 		{
 			const int* va = &verts[j*4];
-			dd.vertex(bmin[0]+va[0]*cs, bmin[1]+va[1]*ch+j*0.01f, bmin[2]+va[2]*cs, colpt);
+			dd.vertex(bmin[0]+va[0]*cs, bmin[1]+va[1]*ch+j*0.01, bmin[2]+va[2]*cs, colpt);
 		}
 		dd.end();
 
@@ -329,7 +329,7 @@ void Sample_Debug::handleMeshChanged(InputGeom* geom)
 	m_geom = geom;
 }
 
-const float* Sample_Debug::getBoundsMin()
+const double* Sample_Debug::getBoundsMin()
 {
 	if (m_cset)
 		return m_cset->bmin;
@@ -340,7 +340,7 @@ const float* Sample_Debug::getBoundsMin()
 	return 0;
 }
 
-const float* Sample_Debug::getBoundsMax()
+const double* Sample_Debug::getBoundsMax()
 {
 	if (m_cset)
 		return m_cset->bmax;
@@ -351,7 +351,7 @@ const float* Sample_Debug::getBoundsMax()
 	return 0;
 }
 
-void Sample_Debug::handleClick(const float* s, const float* p, bool shift)
+void Sample_Debug::handleClick(const double* s, const double* p, bool shift)
 {
 	if (m_tool)
 		m_tool->handleClick(s, p, shift);
@@ -378,7 +378,7 @@ bool Sample_Debug::handleBuild()
 			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'cset'.");
 			return false;
 		}
-		if (!rcBuildContours(m_ctx, *m_chf, /*m_cfg.maxSimplificationError*/1.3f, /*m_cfg.maxEdgeLen*/12, *m_cset))
+		if (!rcBuildContours(m_ctx, *m_chf, /*m_cfg.maxSimplificationError*/1.3, /*m_cfg.maxEdgeLen*/12, *m_cset))
 		{
 			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create contours.");
 			return false;

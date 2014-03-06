@@ -35,7 +35,7 @@ class SlideShow
 
 	bool m_showSlides;
 	bool m_showCurSlide;
-	float m_slideAlpha;
+	double m_slideAlpha;
 	int m_curSlide;
 	int m_nextSlide;
 	
@@ -47,7 +47,7 @@ public:
 	void nextSlide();
 	void prevSlide();
 	void setSlide(int n);
-	void updateAndDraw(float dt, const float w, const float h);
+	void updateAndDraw(double dt, const double w, const double h);
 };
 
 #endif // SLIDESHOW_H

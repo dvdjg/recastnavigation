@@ -183,18 +183,18 @@ static void walkContour(int x, int y, int i,
 	}
 }
 
-static float distancePtSeg(const int x, const int z,
+static double distancePtSeg(const int x, const int z,
 						   const int px, const int pz,
 						   const int qx, const int qz)
 {
-/*	float pqx = (float)(qx - px);
-	float pqy = (float)(qy - py);
-	float pqz = (float)(qz - pz);
-	float dx = (float)(x - px);
-	float dy = (float)(y - py);
-	float dz = (float)(z - pz);
-	float d = pqx*pqx + pqy*pqy + pqz*pqz;
-	float t = pqx*dx + pqy*dy + pqz*dz;
+/*	double pqx = (double)(qx - px);
+	double pqy = (double)(qy - py);
+	double pqz = (double)(qz - pz);
+	double dx = (double)(x - px);
+	double dy = (double)(y - py);
+	double dz = (double)(z - pz);
+	double d = pqx*pqx + pqy*pqy + pqz*pqz;
+	double t = pqx*dx + pqy*dy + pqz*dz;
 	if (d > 0)
 		t /= d;
 	if (t < 0)
@@ -208,12 +208,12 @@ static float distancePtSeg(const int x, const int z,
 	
 	return dx*dx + dy*dy + dz*dz;*/
 
-	float pqx = (float)(qx - px);
-	float pqz = (float)(qz - pz);
-	float dx = (float)(x - px);
-	float dz = (float)(z - pz);
-	float d = pqx*pqx + pqz*pqz;
-	float t = pqx*dx + pqz*dz;
+	double pqx = (double)(qx - px);
+	double pqz = (double)(qz - pz);
+	double dx = (double)(x - px);
+	double dz = (double)(z - pz);
+	double d = pqx*pqx + pqz*pqz;
+	double t = pqx*dx + pqz*dz;
 	if (d > 0)
 		t /= d;
 	if (t < 0)
@@ -228,7 +228,7 @@ static float distancePtSeg(const int x, const int z,
 }
 
 static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
-							const float maxError, const int maxEdgeLen, const int buildFlags)
+							const double maxError, const int maxEdgeLen, const int buildFlags)
 {
 	// Add initial points.
 	bool hasConnections = false;
@@ -320,7 +320,7 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 		const int bi = simplified[ii*4+3];
 
 		// Find maximum deviation from the segment.
-		float maxd = 0;
+		double maxd = 0;
 		int maxi = -1;
 		int ci, cinc, endi;
 		
@@ -346,7 +346,7 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 		{
 			while (ci != endi)
 			{
-				float d = distancePtSeg(points[ci*4+0], points[ci*4+2], ax, az, bx, bz);
+				double d = distancePtSeg(points[ci*4+0], points[ci*4+2], ax, az, bx, bz);
 				if (d > maxd)
 				{
 					maxd = d;
@@ -604,7 +604,7 @@ static bool mergeContours(rcContour& ca, rcContour& cb, int ia, int ib)
 /// 
 /// @see rcAllocContourSet, rcCompactHeightfield, rcContourSet, rcConfig
 bool rcBuildContours(rcContext* ctx, rcCompactHeightfield& chf,
-					 const float maxError, const int maxEdgeLen,
+					 const double maxError, const int maxEdgeLen,
 					 rcContourSet& cset, const int buildFlags)
 {
 	rcAssert(ctx);
@@ -620,7 +620,7 @@ bool rcBuildContours(rcContext* ctx, rcCompactHeightfield& chf,
 	if (borderSize > 0)
 	{
 		// If the heightfield was build with bordersize, remove the offset.
-		const float pad = borderSize*chf.cs;
+		const double pad = borderSize*chf.cs;
 		cset.bmin[0] += pad;
 		cset.bmin[2] += pad;
 		cset.bmax[0] -= pad;

@@ -16,7 +16,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-#include <float.h>
+#include <double.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <string.h>
@@ -458,7 +458,7 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, rcCompactHeightfield& chf,
 	const int lh = h - borderSize*2;
 
 	// Build contracted bbox for layers.
-	float bmin[3], bmax[3];
+	double bmin[3], bmax[3];
 	rcVcopy(bmin, chf.bmin);
 	rcVcopy(bmax, chf.bmax);
 	bmin[0] += borderSize*chf.cs;

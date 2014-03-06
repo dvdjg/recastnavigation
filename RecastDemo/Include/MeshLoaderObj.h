@@ -27,8 +27,8 @@ public:
 	
 	bool load(const char* fileName);
 
-	inline const float* getVerts() const { return m_verts; }
-	inline const float* getNormals() const { return m_normals; }
+	inline const double* getVerts() const { return m_verts; }
+	inline const double* getNormals() const { return m_normals; }
 	inline const int* getTris() const { return m_tris; }
 	inline int getVertCount() const { return m_vertCount; }
 	inline int getTriCount() const { return m_triCount; }
@@ -36,14 +36,14 @@ public:
 
 private:
 	
-	void addVertex(float x, float y, float z, int& cap);
+	void addVertex(double x, double y, double z, int& cap);
 	void addTriangle(int a, int b, int c, int& cap);
 	
 	char m_filename[260];
-	float m_scale;	
-	float* m_verts;
+	double m_scale;	
+	double* m_verts;
 	int* m_tris;
-	float* m_normals;
+	double* m_normals;
 	int m_vertCount;
 	int m_triCount;
 };
