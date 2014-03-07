@@ -22,7 +22,7 @@ endif
 ifeq ($(config),debug)
   OBJDIR     = obj/Debug/RecastDemo
 #  TARGETDIR  = lib/Debug
-  TARGETDIR  = ../Bin
+  TARGETDIR  = ../RecastDemo/Bin
   TARGET     = $(TARGETDIR)/RecastDemo.exe
 #  TARGET     = $(TARGETDIR)/RecastDemo.a
   DEFINES   += -DDEBUG
@@ -47,7 +47,7 @@ endif
 
 ifeq ($(config),release)
   OBJDIR     = obj/Release/RecastDemo
-  TARGETDIR  = ../Bin
+  TARGETDIR  = ../RecastDemo/Bin
 #  TARGETDIR  = lib/Release
 #  TARGET     = $(TARGETDIR)/RecastDemo.a
   TARGET     = $(TARGETDIR)/RecastDemo.exe
@@ -73,7 +73,7 @@ endif
 
 ifeq ($(config),debug32)
   OBJDIR     = obj/x32/Debug/RecastDemo
-  TARGETDIR  = ../Bin
+  TARGETDIR  = ../RecastDemo/Bin
   TARGET     = $(TARGETDIR)/RecastDemo
   DEFINES   += -DDEBUG
   INCLUDES  += -I../RecastDemo/Include -I../RecastDemo/Contrib -I../RecastDemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include
@@ -96,7 +96,7 @@ endif
 
 ifeq ($(config),release32)
   OBJDIR     = obj/x32/Release/RecastDemo
-  TARGETDIR  = ../Bin
+  TARGETDIR  = ../RecastDemo/Bin
   TARGET     = $(TARGETDIR)/RecastDemo
   DEFINES   += -DNDEBUG
   INCLUDES  += -I../RecastDemo/Include -I../RecastDemo/Contrib -I../RecastDemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include
