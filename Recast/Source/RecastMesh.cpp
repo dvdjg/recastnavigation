@@ -1030,9 +1030,9 @@ bool rcBuildPolyMesh(rcContext* ctx, rcContourSet& cset, const int nvp, rcPolyMe
 		if (ntris <= 0)
 		{
 			// Bad triangulation, should not happen.
-/*			printf("\tconst double bmin[3] = {%ff,%ff,%ff};\n", cset.bmin[0], cset.bmin[1], cset.bmin[2]);
-			printf("\tconst double cs = %ff;\n", cset.cs);
-			printf("\tconst double ch = %ff;\n", cset.ch);
+/*			printf("\tconst double bmin[3] = {%lff,%lff,%lff};\n", cset.bmin[0], cset.bmin[1], cset.bmin[2]);
+			printf("\tconst double cs = %lff;\n", cset.cs);
+			printf("\tconst double ch = %lff;\n", cset.ch);
 			printf("\tconst int verts[] = {\n");
 			for (int k = 0; k < cont.nverts; ++k)
 			{

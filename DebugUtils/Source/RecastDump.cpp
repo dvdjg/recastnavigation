@@ -71,7 +71,7 @@ bool duDumpPolyMeshToObj(rcPolyMesh& pmesh, duFileIO* io)
 		const double x = orig[0] + v[0]*cs;
 		const double y = orig[1] + (v[1]+1)*ch + 0.1;
 		const double z = orig[2] + v[2]*cs;
-		ioprintf(io, "v %f %f %f\n", x,y,z);
+		ioprintf(io, "v %lf %lf %lf\n", x,y,z);
 	}
 
 	ioprintf(io, "\n");
@@ -110,7 +110,7 @@ bool duDumpPolyMeshDetailToObj(rcPolyMeshDetail& dmesh, duFileIO* io)
 	for (int i = 0; i < dmesh.nverts; ++i)
 	{
 		const double* v = &dmesh.verts[i*3];
-		ioprintf(io, "v %f %f %f\n", v[0],v[1],v[2]);
+		ioprintf(io, "v %lf %lf %lf\n", v[0],v[1],v[2]);
 	}
 	
 	ioprintf(io, "\n");

@@ -175,7 +175,7 @@ bool rcMeshLoaderObj::load(const char* filename)
 		if (row[0] == 'v' && row[1] != 'n' && row[1] != 't')
 		{
 			// Vertex pos
-			sscanf(row+1, "%f %f %f", &x, &y, &z);
+			sscanf(row+1, "%lf %lf %lf", &x, &y, &z);
 			addVertex(x, y, z, vcap);
 		}
 		if (row[0] == 'f')

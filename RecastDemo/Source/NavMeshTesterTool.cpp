@@ -698,7 +698,7 @@ void NavMeshTesterTool::recalc()
 		if (m_sposSet && m_eposSet && m_startRef && m_endRef)
 		{
 #ifdef DUMP_REQS
-			printf("pi  %f %f %f  %f %f %f  0x%x 0x%x\n",
+			printf("pi  %lf %lf %lf  %lf %lf %lf  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], m_epos[0],m_epos[1],m_epos[2],
 				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags()); 
 #endif
@@ -843,7 +843,7 @@ void NavMeshTesterTool::recalc()
 		if (m_sposSet && m_eposSet && m_startRef && m_endRef)
 		{
 #ifdef DUMP_REQS
-			printf("ps  %f %f %f  %f %f %f  0x%x 0x%x\n",
+			printf("ps  %lf %lf %lf  %lf %lf %lf  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], m_epos[0],m_epos[1],m_epos[2],
 				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags()); 
 #endif
@@ -873,7 +873,7 @@ void NavMeshTesterTool::recalc()
 		if (m_sposSet && m_eposSet && m_startRef && m_endRef)
 		{
 #ifdef DUMP_REQS
-			printf("ps  %f %f %f  %f %f %f  0x%x 0x%x\n",
+			printf("ps  %lf %lf %lf  %lf %lf %lf  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], m_epos[0],m_epos[1],m_epos[2],
 				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags()); 
 #endif
@@ -894,7 +894,7 @@ void NavMeshTesterTool::recalc()
 		if (m_sposSet && m_eposSet && m_startRef)
 		{
 #ifdef DUMP_REQS
-			printf("rc  %f %f %f  %f %f %f  0x%x 0x%x\n",
+			printf("rc  %lf %lf %lf  %lf %lf %lf  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], m_epos[0],m_epos[1],m_epos[2],
 				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags()); 
 #endif
@@ -933,7 +933,7 @@ void NavMeshTesterTool::recalc()
 		if (m_sposSet && m_startRef)
 		{
 #ifdef DUMP_REQS
-			printf("dw  %f %f %f  %f  0x%x 0x%x\n",
+			printf("dw  %lf %lf %lf  %lf  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], 100.0,
 				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags()); 
 #endif
@@ -949,7 +949,7 @@ void NavMeshTesterTool::recalc()
 			const double dz = m_epos[2] - m_spos[2];
 			double dist = sqrtf(dx*dx + dz*dz);
 #ifdef DUMP_REQS
-			printf("fpc  %f %f %f  %f  0x%x 0x%x\n",
+			printf("fpc  %lf %lf %lf  %lf  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], dist,
 				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags());
 #endif
@@ -983,7 +983,7 @@ void NavMeshTesterTool::recalc()
 			m_queryPoly[11] = m_epos[2] + nz;
 			
 #ifdef DUMP_REQS
-			printf("fpp  %f %f %f  %f %f %f  %f %f %f  %f %f %f  0x%x 0x%x\n",
+			printf("fpp  %lf %lf %lf  %lf %lf %lf  %lf %lf %lf  %lf %lf %lf  0x%x 0x%x\n",
 				   m_queryPoly[0],m_queryPoly[1],m_queryPoly[2],
 				   m_queryPoly[3],m_queryPoly[4],m_queryPoly[5],
 				   m_queryPoly[6],m_queryPoly[7],m_queryPoly[8],
@@ -999,7 +999,7 @@ void NavMeshTesterTool::recalc()
 		if (m_sposSet && m_startRef)
 		{
 #ifdef DUMP_REQS
-			printf("fln  %f %f %f  %f  0x%x 0x%x\n",
+			printf("fln  %lf %lf %lf  %lf  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], m_neighbourhoodRadius,
 				   m_filter.getIncludeFlags(), m_filter.getExcludeFlags());
 #endif
