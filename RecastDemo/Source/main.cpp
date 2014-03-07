@@ -64,9 +64,9 @@ static const int g_nsamples = sizeof(g_samples)/sizeof(SampleItem);
 int main(int /*argc*/, char** /*argv*/)
 {
 	// Init SDL
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+    if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) // SDL_INIT_EVERYTHING
 	{
-		printf("Could not initialise SDL\n");
+        printf("Could not initialise SDL:\n%s", SDL_GetError());
 		return -1;
 	}
 	
@@ -76,14 +76,14 @@ int main(int /*argc*/, char** /*argv*/)
 
 	// Init OpenGL
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+    //SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 //#ifndef WIN32
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+    //SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    //SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 //#endif
 
 	const SDL_VideoInfo* vi = SDL_GetVideoInfo();
@@ -103,12 +103,14 @@ int main(int /*argc*/, char** /*argv*/)
 	{	
 		width = vi->current_w - 20;
 		height = vi->current_h - 80;
-		screen = SDL_SetVideoMode(width, height, 0, SDL_OPENGL);
+        width = 800;
+        height = 600;
+        screen = SDL_SetVideoMode(width, height, 0, SDL_OPENGL);
 	}
 	
 	if (!screen)
 	{
-		printf("Could not initialise SDL opengl\n");
+        printf("Could not initialise SDL opengl:\n%s", SDL_GetError());
 		return -1;
 	}
 
