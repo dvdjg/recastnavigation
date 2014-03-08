@@ -21,10 +21,10 @@ endif
 
 ifeq ($(config),debug)
   OBJDIR     = obj/Debug/RecastDemo
-#  TARGETDIR  = lib/Debug
-  TARGETDIR  = ../RecastDemo/Bin
-  TARGET     = $(TARGETDIR)/RecastDemo.exe
-#  TARGET     = $(TARGETDIR)/RecastDemo.a
+  TARGETDIR  = lib/Debug
+#  TARGETDIR  = ../RecastDemo/Bin
+#  TARGET     = $(TARGETDIR)/RecastDemo.exe
+  TARGET     = $(TARGETDIR)/libRecastDemo.a
   DEFINES   += -DDEBUG
   INCLUDES  += -I../RecastDemo/Include -I../RecastDemo/Contrib -I../RecastDemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include -I/cygdrive/c/Crossbridge/sdk/usr/include/SDL
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
@@ -34,9 +34,9 @@ ifeq ($(config),debug)
   LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lRecast -lGL -lSDL -lSDLmain -lvgl
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += lib/Debug/libDebugUtils.a lib/Debug/libDetour.a lib/Debug/libDetourCrowd.a lib/Debug/libDetourTileCache.a lib/Debug/libRecast.a
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
-  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=22
- # LINKCMD    = $(AR) -rcs $(TARGET) $(OBJECTS)
+#  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=17
+  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=17
+  LINKCMD    = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -47,10 +47,10 @@ endif
 
 ifeq ($(config),release)
   OBJDIR     = obj/Release/RecastDemo
-  TARGETDIR  = ../RecastDemo/Bin
-#  TARGETDIR  = lib/Release
-#  TARGET     = $(TARGETDIR)/RecastDemo.a
-  TARGET     = $(TARGETDIR)/RecastDemo.exe
+#  TARGETDIR  = ../RecastDemo/Bin
+  TARGETDIR  = lib/Release
+  TARGET     = $(TARGETDIR)/libRecastDemo.a
+#  TARGET     = $(TARGETDIR)/RecastDemo.exe
   DEFINES   += -DNDEBUG
   INCLUDES  += -I../RecastDemo/Include -I../RecastDemo/Contrib -I../RecastDemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include -I/cygdrive/c/Crossbridge/sdk/usr/include/SDL
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
@@ -60,9 +60,9 @@ ifeq ($(config),release)
   LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lGL -lSDL -lSDLmain -lvgl
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += lib/Release/libDebugUtils.a lib/Release/libDetour.a lib/Release/libDetourCrowd.a lib/Release/libDetourTileCache.a lib/Release/libRecast.a
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
-  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=22
-#  LINKCMD    = $(AR) -rcs $(TARGET) $(OBJECTS)
+#  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=17
+  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=17
+  LINKCMD    = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -74,7 +74,7 @@ endif
 ifeq ($(config),debug32)
   OBJDIR     = obj/x32/Debug/RecastDemo
   TARGETDIR  = ../RecastDemo/Bin
-  TARGET     = $(TARGETDIR)/RecastDemo
+  TARGET     = $(TARGETDIR)/libRecastDemo.a
   DEFINES   += -DDEBUG
   INCLUDES  += -I../RecastDemo/Include -I../RecastDemo/Contrib -I../RecastDemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
@@ -84,8 +84,8 @@ ifeq ($(config),debug32)
   LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lGL -lSDL -lSDLmain -lvgl
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += lib/Debug/libDebugUtils.a lib/Debug/libDetour.a lib/Debug/libDetourCrowd.a lib/Debug/libDetourTileCache.a lib/Debug/libRecast.a
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
-  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf  -swf-version=22
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=17
+  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf  -swf-version=17
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -107,8 +107,8 @@ ifeq ($(config),release32)
   LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lGL -lSDL -lSDLmain -lvgl
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += lib/Release/libDebugUtils.a lib/Release/libDetour.a lib/Release/libDetourCrowd.a lib/Release/libDetourTileCache.a lib/Release/libRecast.a
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
-  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=22
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=17
+  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=17
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -128,7 +128,6 @@ OBJECTS := \
 	$(OBJDIR)/Sample_TempObstacles.o \
 	$(OBJDIR)/ValueHistory.o \
 	$(OBJDIR)/fastlz.o \
-	$(OBJDIR)/main.o \
 	$(OBJDIR)/imgui.o \
 	$(OBJDIR)/imguiRenderGL.o \
 	$(OBJDIR)/ConvexVolumeTool.o \
@@ -142,6 +141,8 @@ OBJECTS := \
 	$(OBJDIR)/SlideShow.o \
 	$(OBJDIR)/TestCase.o \
 	$(OBJDIR)/gluProject.o \
+
+#	$(OBJDIR)/main.o \
 
 RESOURCES := \
 
@@ -160,8 +161,8 @@ all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
 
 $(TARGET): $(GCH) $(OBJECTS) $(LDDEPS) $(RESOURCES)
 	@echo Linking RecastDemo
-	$(SILENT) $(LINKFLS)
-	$(SILENT) $(LINKCMD)
+#	$(SILENT) $(LINKFLS)
+	$(LINKCMD)
 	$(POSTBUILDCMDS)
 
 $(TARGETDIR):

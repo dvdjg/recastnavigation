@@ -6,12 +6,73 @@ ifndef config
 endif
 export config
 
+ifeq ($(config),debug)
+  OBJDIR     = obj/Release/RecastDemo
+  TARGETDIR  = ../RecastDemo/Bin
+#  TARGETDIR  = lib/Release
+  TARGET     = $(TARGETDIR)/RecastDemod
+  CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -O2 -g
+  CXXFLAGS  += $(CFLAGS) 
+  ALL_ARCHIVES = -Llib/Debug -lRecastDemo -lDebugUtils -lDetourCrowd -lDetourTileCache -lDetour -lRecast
+endif
+
+ifeq ($(config),release)
+  OBJDIR     = obj/Release/RecastDemo
+  TARGETDIR  = ../RecastDemo/Bin
+#  TARGETDIR  = lib/Release
+  TARGET     = $(TARGETDIR)/RecastDemo
+  CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -O4
+  CXXFLAGS  += $(CFLAGS) -fno-exceptions -fno-rtti
+  ALL_ARCHIVES = -Llib/Release -lRecastDemo -lDebugUtils -lDetourCrowd -lDetourTileCache -lDetour -lRecast
+endif
+  
+RECAST_INC=-I../Recast/Include
+DETOUR_INC=-I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include
+DEBUG_INC=-I../DebugUtils/Include
+DEMO_INC=-I../RecastDemo/Include
+#DEMO_INC=-I./demo
+ALL_INCS=${RECAST_INC} ${DETOUR_INC} ${DEBUG_INC} ${DEMO_INC} -I.
+
 PROJECTS := DebugUtils Detour DetourCrowd DetourTileCache Recast RecastDemo
 
-.PHONY: all clean help $(PROJECTS)
+.PHONY: all clean help 
+#$(PROJECTS)
 
-all: $(PROJECTS)
+all: build/Recast.swc
 
+build/Recast_wrap.o: recast.i $(PROJECTS)
+	
+	#swig from recast.i file
+	# Generate the SWIG wrappers
+	swig -as3 -package org.recastnavigation -c++ $(ALL_INCS) -module Recast recast.i
+#	&> build/swig.log
+	mv Recast_wrap.cxx build
+	mv Recast.as build
+	
+	# Compile the SWIG AS3 wrappers
+	java -jar "C:\Crossbridge\sdk\usr\lib\asc2.jar" -import "C:\Crossbridge\sdk\usr\lib\builtin.abc" -import "C:\Crossbridge\sdk\usr\lib\playerglobal.abc" build/Recast.as
+
+	# Compile the SWIG C++ wrappers
+	g++ $(BASE_CFLAGS) $(CFLAGS) $(ALL_INCS) build/Recast_wrap.cxx -c &> build/swig_wrapper.log
+	mv Recast_wrap.o build
+
+	# protect the required symbols in the LTO exports file
+	#cp -f exports.txt build/
+	#chmod u+rw build/exports.txt
+	#nm build/Recast_wrap.o | grep " T " | awk '{print $$3}' | sed 's/__/_/' >> build/exports.txt
+
+build/Recast.swc: build/Recast_wrap.o $(PROJECTS)
+
+	# Link the final library
+	g++ -jvmopt=-Xmx1G $(BASE_CFLAGS) $(ALL_INCS) swigmain.cpp \
+	./build/Recast_wrap.o ./build/Recast.abc \
+	-Wl,--start-group \
+	-Wl,--end-group \
+	-emit-swc=org.recastnavigation $(CFLAGS) $(EXTRA_OPTS) $(ALL_ARCHIVES) -lGL -swf-version=17 -o build/Recast.swc # &> build/swc.log
+	#-emit-swc=org.recastnavigation $(CFLAGS) -flto-api=build/exports.txt $(EXTRA_OPTS) -o build/Recast.swc &> build/swc.log #with -flto option
+	
 DebugUtils: 
 	@echo "==== Building DebugUtils ($(config)) ===="
 	@${MAKE} --no-print-directory -C . -f DebugUtils.make

@@ -63,6 +63,8 @@ static const int g_nsamples = sizeof(g_samples)/sizeof(SampleItem);
 
 int main(int /*argc*/, char** /*argv*/)
 {
+    printf("Initializing...");
+
 	// Init SDL
     if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) // SDL_INIT_EVERYTHING
 	{
@@ -124,6 +126,8 @@ int main(int /*argc*/, char** /*argv*/)
 		SDL_Quit();
 		return -1;
 	}
+
+    printf("Initialized renderer");
 	
 	double t = 0.0;
 	double timeAcc = 0.0;
