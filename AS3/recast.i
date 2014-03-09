@@ -44,7 +44,7 @@
 #include "Sample.h"
 #include "Sample_TempObstacles.h"
 
-#define bugswig_as3(X, Y) inline_as3(X Y)
+//inline_as3("import flash.utils.ByteArray;\n");
 
 //utility method for getting the navigation mesh triangles for debug rendering
 void getTiles() __attribute__((used,
@@ -175,6 +175,8 @@ void getTiles() {
 %}
 
 // djg
+%as3import("flash.utils.ByteArray");
+
 %apply int{size_t};
 //%apply int{const int};
 // (\bdouble\s*\*\s*\w+\s*,\s*)const +(int +\w+)
@@ -222,7 +224,7 @@ void getTiles() {
 
 // Free the memory that we CModule.malloc'd in the equivalent typemap(in)
 %typemap(freearg) (const double* p, int n) {
-	inline_as3("CModule.free(%0);": : "r"($1));
+	inline_as3("CModule.free(%0);\n": : "r"($1));
 };
 // const int* tris, const double* normals, int ntris
 %apply (const double* p, int n) {
@@ -271,7 +273,7 @@ void getTiles() {
 
 // Free the memory that we CModule.malloc'd in the equivalent typemap(in)
 %typemap(freearg) (const int* tris, int nt) {
-    inline_as3("CModule.free(%0);": : "r"($1));
+    inline_as3("CModule.free(%0);\n": : "r"($1));
 };
 
 %apply (const int* tris, int nt) {
@@ -321,7 +323,7 @@ void getTiles() {
 
 // Free the memory that we CModule.malloc'd in the equivalent typemap(in)
 %typemap(freearg) (const unsigned short* idx, int nidx) {
-    inline_as3("CModule.free(%0);": : "r"($1));
+    inline_as3("CModule.free(%0);\n": : "r"($1));
 };
 
 %apply (const unsigned short* idx, int nidx) {
@@ -366,7 +368,7 @@ void getTiles() {
 
 // Free the memory that we CModule.malloc'd in the equivalent typemap(in)
 %typemap(freearg) (const unsigned char* p, int n) {
-    inline_as3("CModule.free(%0);": : "r"($1));
+    inline_as3("CModule.free(%0);\n": : "r"($1));
 };
 
 %apply (const unsigned char* p, int n) {
@@ -446,10 +448,6 @@ void getTiles() {
     inline_as3(_BUG_$1".y = CModule.readDouble(ptr$1 + 8*1);\n");
     inline_as3(_BUG_$1".z = CModule.readDouble(ptr$1 + 8*2);\n");
 };
-// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
-//%typemap(freearg) double* v {
-//    inline_as3("CModule.free(%0);": : "r"($1)); // Freearg to $input, $result, $symname, $0, $1
-//};
 
 // [out]
 %apply (double* out) {
@@ -479,6 +477,50 @@ void getTiles() {
 	(double* mx)
 };
 
+
+%typemap(astype) int& "Object";
+
+%typemap(in) int& (int vector[1]) {
+    // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+
+	inline_as3("var ptr$1:int = %0;\n": : "r"(vector));
+	// Finally assign the parameters that C is expecting to our new values
+    $1 = vector;
+//	inline_as3("var ptr$1:Object = %0; // Alias of the input\n": : "r"($input));
+} 
+
+
+// Bug? $input doesn't work here
+%typemap(argout) int& {
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3(_BUG_$1"['value'] = CModule.read32(ptr$1);\n");
+};
+
+
+%typemap(astype) double& "Object";
+
+%typemap(in) double& (double vector[1]) {
+    // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+
+	inline_as3("var ptr$1:int = %0;\n": : "r"(vector));
+	// Finally assign the parameters that C is expecting to our new values
+    $1 = vector;
+} 
+
+
+// Bug? $input doesn't work here
+%typemap(argout) double& {
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3(_BUG_$1"['value'] = CModule.readDouble(ptr$1);\n");
+};
 
 %rename (vertexXYZ) duDebugDraw::vertex(const double x, const double y, const double z, unsigned int color);
 %rename (vertexUV) duDebugDraw::vertex(const double* pos, unsigned int color, const double* uv);
@@ -530,12 +572,12 @@ void getTiles() {
 %include "DetourCommon.h"
 %include "DetourNavMesh.h"
 %include "DetourNavMeshBuilder.h"
-/*%ignore passFilter(const dtPolyRef ref, const dtMeshTile* tile, const dtPoly* poly) const;
+// djg: This two functions generates link problems:
+%ignore passFilter(const dtPolyRef ref, const dtMeshTile* tile, const dtPoly* poly) const;
 %ignore getCost(const double* pa, const double* pb,
           const dtPolyRef prevRef, const dtMeshTile* prevTile, const dtPoly* prevPoly,
           const dtPolyRef curRef, const dtMeshTile* curTile, const dtPoly* curPoly,
           const dtPolyRef nextRef, const dtMeshTile* nextTile, const dtPoly* nextPoly) const;
-		  */
 %include "DetourNavMeshQuery.h"
 %ignore dtNodePool::getNodeAtIdx(unsigned int) const;
 %rename (equals) dtNodeQueue::operator=;

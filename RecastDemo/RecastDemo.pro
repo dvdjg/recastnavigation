@@ -62,7 +62,6 @@ HEADERS += \
     Include/Sample_TempObstacles.h \
     Include/Sample_TileMesh.h \
     Include/SampleInterfaces.h \
-    Include/SDLMain.h \
     Include/SlideShow.h \
     Include/TestCase.h \
     Include/ValueHistory.h \
