@@ -375,15 +375,15 @@ void getTiles() {
 	(const unsigned char* data, int maxDataSize)
 };
 
-%typemap(astype) (unsigned char* areas) "ByteArray";
+%typemap(astype) (unsigned char* surfaces) "ByteArray";
 
-%typemap(in) unsigned char* areas {
+%typemap(in) unsigned char* surfaces {
     // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
 	%#ifdef _BUG_$1
 	%#undef _BUG_$1
 	%#endif 
 	%#define _BUG_$1 "$input"
-	char * newBuffer;
+	unsigned char * newBuffer;
 	inline_as3("var ptr$1:int = CModule.malloc($input.length);\n"); 
     // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
     inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
@@ -399,7 +399,7 @@ void getTiles() {
 } 
 
 // Bug? $input doesn't work here
-%typemap(argout) unsigned char* areas {
+%typemap(argout) unsigned char* surfaces {
     // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
     inline_as3(_BUG_$1".position = 0;\nCModule.readBytes(ptr$1, "_BUG_$1".length,ba$1); // _BUG_$1 is the same object as ba$1\n");
 }
@@ -479,35 +479,6 @@ void getTiles() {
 	(double* mx)
 };
 
-/*%typemap(astype) (const double*) "Object";
-
-
-%typemap(in) const double* {
-    // setup some new C variables that we're going to modify from within our inline ActionScript
-    double* newBuffer;
-
-    // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
-    // that will convert the Vector into something C can use.  Notice that we are using $input
-    // inside this inline_as3() call.
-    inline_as3("var ptr:int = CModule.malloc(8*3);\n"); // 3 vertyex, 8 bytes per double
-
-    // Similarly we'll pass the value of the ptr variable in ActionScript to the C newBuffer variable
-    inline_as3("%0 = ptr;\n": "=r"(newBuffer));
-
-    // Now push that Vector into flascc memory
-    inline_as3("CModule.writeDouble(ptr + 8*0, $input.x);\n");
-    inline_as3("CModule.writeDouble(ptr + 8*1, $input.y);\n");
-    inline_as3("CModule.writeDouble(ptr + 8*2, $input.z);\n");
-
-    // Finally assign the parameters that C is expecting to our new values
-    $1 = newBuffer;
-}
-
-// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
-%typemap(freearg) const double* {
-    // Now pull that Vector into flascc memory
-    inline_as3("CModule.free(%0);": : "r"($1));
-};*/
 
 %rename (vertexXYZ) duDebugDraw::vertex(const double x, const double y, const double z, unsigned int color);
 %rename (vertexUV) duDebugDraw::vertex(const double* pos, unsigned int color, const double* uv);
@@ -538,7 +509,7 @@ void getTiles() {
 %include "RecastDebugDraw.h"
 
 %ignore duLogBuildTimes(rcContext& ctx, const int totalTileUsec);
-//%include "RecastDump.h"  //commenting out for now. swig doesnt know what to do with duLogBuildTimes, even with it ignored
+%include "RecastDump.h"  //commenting out for now. swig doesnt know what to do with duLogBuildTimes, even with it ignored
 
 
 //Detour
@@ -559,11 +530,12 @@ void getTiles() {
 %include "DetourCommon.h"
 %include "DetourNavMesh.h"
 %include "DetourNavMeshBuilder.h"
-%ignore passFilter(const dtPolyRef ref, const dtMeshTile* tile, const dtPoly* poly) const;
+/*%ignore passFilter(const dtPolyRef ref, const dtMeshTile* tile, const dtPoly* poly) const;
 %ignore getCost(const double* pa, const double* pb,
           const dtPolyRef prevRef, const dtMeshTile* prevTile, const dtPoly* prevPoly,
           const dtPolyRef curRef, const dtMeshTile* curTile, const dtPoly* curPoly,
           const dtPolyRef nextRef, const dtMeshTile* nextTile, const dtPoly* nextPoly) const;
+		  */
 %include "DetourNavMeshQuery.h"
 %ignore dtNodePool::getNodeAtIdx(unsigned int) const;
 %rename (equals) dtNodeQueue::operator=;
@@ -573,8 +545,8 @@ void getTiles() {
 //DetourCrowd
 %include "DetourCrowd.h"
 %include "DetourLocalBoundary.h"
-%ignore dtObstacleAvoidanceQuery::sampleVelocityGrid(double const *,double const,double const,double const *,double const *,double *,dtObstacleAvoidanceParams const *);
-%ignore dtObstacleAvoidanceQuery::sampleVelocityAdaptive(double const *,double const,double const,double const *,double const *,double *,dtObstacleAvoidanceParams const *);
+//%ignore dtObstacleAvoidanceQuery::sampleVelocityGrid(double const *,double const,double const,double const *,double const *,double *,dtObstacleAvoidanceParams const *);
+//%ignore dtObstacleAvoidanceQuery::sampleVelocityAdaptive(double const *,double const,double const,double const *,double const *,double *,dtObstacleAvoidanceParams const *);
 %include "DetourObstacleAvoidance.h"
 %include "DetourPathCorridor.h"
 %include "DetourPathQueue.h"
@@ -582,6 +554,7 @@ void getTiles() {
 //DetourTileCache
 %include "DetourTileCache.h"
 %include "DetourTileCacheBuilder.h"
+
 //Recast
 %ignore rcContext::rcContext();
 %ignore rcRasterizeTriangle(rcContext *,double const *,double const *,double const *,unsigned char const,rcHeightfield &);
@@ -590,7 +563,7 @@ void getTiles() {
 %ignore rcRasterizeTriangles(rcContext *,double const *,int const,unsigned short const *,unsigned char const *,int const,rcHeightfield &);
 %ignore rcRasterizeTriangles(rcContext *,double const *,unsigned char const *,int const,rcHeightfield &,int const);
 %ignore rcRasterizeTriangles(rcContext *,double const *,unsigned char const *,int const,rcHeightfield &);
-%ignore rcBuildContours(rcContext *,rcCompactHeightfield &,double const,int const,rcContourSet &);
+//%ignore rcBuildContours(rcContext *,rcCompactHeightfield &,double const,int const,rcContourSet &);
 
 %include "Recast.h"
 
@@ -607,5 +580,5 @@ void getTiles() {
 %include "MeshLoaderObj.h"
 %include "InputGeom.h"
 %include "Sample.h"
-%ignore addTempObstacle(const double* pos);
+//%ignore addTempObstacle(const double* pos);
 %include "Sample_TempObstacles.h"

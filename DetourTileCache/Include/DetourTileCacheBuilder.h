@@ -106,7 +106,7 @@ struct dtTileCacheCompressor
 dtStatus dtBuildTileCacheLayer(dtTileCacheCompressor* comp,
 							   dtTileCacheLayerHeader* header,
 							   const unsigned char* heights,
-							   const unsigned char* areas,
+							   const unsigned char* /*areas*/surfaces,
 							   const unsigned char* cons,
 							   unsigned char** outData, int* outDataSize);
 
