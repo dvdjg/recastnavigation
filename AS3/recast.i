@@ -478,6 +478,80 @@ void getTiles() {
 };
 
 
+%typemap(astype) (double* proj) "Vector.<Number>";
+
+// Used for:
+//  [in] const double*
+//  [in,out] double*
+%typemap(in) double* proj (double dVectorOut[16]) {
+    // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+	inline_as3("var ptr$1:int = %0;\n": : "r"(dVectorOut));
+	inline_as3("$input.length = 16;\n");
+
+    // Now push that Vector into flascc memory
+	inline_as3("for (var i:int = 0; i < 16; i++){\n");
+    inline_as3("	CModule.writeDouble(ptr$1 + 8*i, $input[i]);\n");
+    inline_as3("}\n");
+
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = dVectorOut;
+}
+
+// Bug? $input doesn't work here
+%typemap(argout) double* proj {
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+	inline_as3("for (var i:int = 0; i < 16; i++){\n");
+    inline_as3("	"_BUG_$1"[i] = CModule.readDouble(ptr$1 + 8*i);\n");
+    inline_as3("}\n");	
+};
+
+// [out]
+%apply (double* proj) {
+	(double* model)
+};
+
+
+%typemap(astype) (int* view) "Vector.<int>";
+
+// Used for:
+//  [in] const int*
+//  [in,out] int*
+%typemap(in) int* view (int dVectorOut[16]) {
+    // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+	inline_as3("var ptr$1:int = %0;\n": : "r"(dVectorOut));
+	inline_as3("$input.length = 16;\n");
+
+    // Now push that Vector into flascc memory
+	inline_as3("for (var i:int = 0; i < 16; i++){\n");
+    inline_as3("	CModule.write32(ptr$1 + 4*i, $input[i]);\n");
+    inline_as3("}\n");
+
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = dVectorOut;
+}
+
+// Bug? $input doesn't work here
+%typemap(argout) int* view {
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+	inline_as3("for (var i:int = 0; i < 16; i++){\n");
+    inline_as3("	"_BUG_$1"[i] = CModule.read32(ptr$1 + 4*i);\n");
+    inline_as3("}\n");	
+};
+
+// [out]
+%apply (int* view) {
+	(int* vista)
+};
+
+
 %typemap(astype) int& "Object";
 
 %typemap(in) int& (int vector[1]) {
