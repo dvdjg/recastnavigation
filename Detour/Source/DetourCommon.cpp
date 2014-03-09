@@ -241,7 +241,7 @@ bool dtClosestHeightPointTriangle(const double* p, const double* a, const double
 /// @par
 ///
 /// All points are projected onto the xz-plane, so the y-values are ignored.
-bool dtPointInPolygon(const double* pt, const double* verts, const int nverts)
+bool dtPointInPolygon(const double* pt, const double* verts, int nverts)
 {
 	// TODO: Replace pnpoly with triArea2D tests?
 	int i, j;
@@ -257,7 +257,7 @@ bool dtPointInPolygon(const double* pt, const double* verts, const int nverts)
 	return c;
 }
 
-bool dtDistancePtPolyEdgesSqr(const double* pt, const double* verts, const int nverts,
+bool dtDistancePtPolyEdgesSqr(const double* pt, const double* verts, int nverts,
 							  double* ed, double* et)
 {
 	// TODO: Replace pnpoly with triArea2D tests?
@@ -275,7 +275,7 @@ bool dtDistancePtPolyEdgesSqr(const double* pt, const double* verts, const int n
 	return c;
 }
 
-static void projectPoly(const double* axis, const double* poly, const int npoly,
+static void projectPoly(const double* axis, const double* poly, int npoly,
 						double& rmin, double& rmax)
 {
 	rmin = rmax = dtVdot2D(axis, &poly[0]);
@@ -297,8 +297,8 @@ inline bool overlapRange(const double amin, const double amax,
 /// @par
 ///
 /// All vertices are projected onto the xz-plane, so the y-values are ignored.
-bool dtOverlapPolyPoly2D(const double* polya, const int npolya,
-						 const double* polyb, const int npolyb)
+bool dtOverlapPolyPoly2D(const double* polya, int npolya,
+						 const double* polyb, int npolyb)
 {
 	const double eps = 1e-4f;
 	
@@ -335,7 +335,7 @@ bool dtOverlapPolyPoly2D(const double* polya, const int npolya,
 
 // Returns a random point in a convex polygon.
 // Adapted from Graphics Gems article.
-void dtRandomPointInConvexPoly(const double* pts, const int npts, double* areas,
+void dtRandomPointInConvexPoly(const double* pts, int npts, double* areas,
 							   const double s, const double t, double* out)
 {
 	// Calc triangle araes

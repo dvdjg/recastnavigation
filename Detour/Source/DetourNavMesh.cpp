@@ -64,7 +64,7 @@ inline bool overlapSlabs(const double* amin, const double* amax,
 	return false;
 }
 
-static double getSlabCoord(const double* va, const int side)
+static double getSlabCoord(const double* va, int side)
 {
 	if (side == 0 || side == 4)
 		return va[0];
@@ -73,7 +73,7 @@ static double getSlabCoord(const double* va, const int side)
 	return 0;
 }
 
-static void calcSlabEndPoints(const double* va, const double* vb, double* bmin, double* bmax, const int side)
+static void calcSlabEndPoints(const double* va, const double* vb, double* bmin, double* bmax, int side)
 {
 	if (side == 0 || side == 4)
 	{
@@ -264,7 +264,7 @@ dtStatus dtNavMesh::init(const dtNavMeshParams* params)
 	return DT_SUCCESS;
 }
 
-dtStatus dtNavMesh::init(unsigned char* data, const int dataSize, const int flags)
+dtStatus dtNavMesh::init(unsigned char* data, int dataSize, const int flags)
 {
 	// Make sure the data is in right format.
 	dtMeshHeader* header = (dtMeshHeader*)data;
@@ -1312,7 +1312,7 @@ int dtNavMesh::getTileStateSize(const dtMeshTile* tile) const
 /// Tile state includes non-structural data such as polygon flags, area ids, etc.
 /// @note The state data is only valid until the tile reference changes.
 /// @see #getTileStateSize, #restoreTileState
-dtStatus dtNavMesh::storeTileState(const dtMeshTile* tile, unsigned char* data, const int maxDataSize) const
+dtStatus dtNavMesh::storeTileState(const dtMeshTile* tile, unsigned char* data, int maxDataSize) const
 {
 	// Make sure there is enough space to store the state.
 	const int sizeReq = getTileStateSize(tile);
@@ -1344,7 +1344,7 @@ dtStatus dtNavMesh::storeTileState(const dtMeshTile* tile, unsigned char* data, 
 /// Tile state includes non-structural data such as polygon flags, area ids, etc.
 /// @note This function does not impact the tile's #dtTileRef and #dtPolyRef's.
 /// @see #storeTileState
-dtStatus dtNavMesh::restoreTileState(dtMeshTile* tile, const unsigned char* data, const int maxDataSize)
+dtStatus dtNavMesh::restoreTileState(dtMeshTile* tile, const unsigned char* data, int maxDataSize)
 {
 	// Make sure there is enough space to store the state.
 	const int sizeReq = getTileStateSize(tile);

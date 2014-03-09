@@ -346,7 +346,7 @@ void rcRasterizeTriangle(rcContext* ctx, const double* v0, const double* v1, con
 ///
 /// @see rcHeightfield
 void rcRasterizeTriangles(rcContext* ctx, const double* verts, const int /*nv*/,
-						  const int* tris, const unsigned char* areas, const int nt,
+						  const int* tris, const unsigned char* areas, int nt,
 						  rcHeightfield& solid, const int flagMergeThr)
 {
 	rcAssert(ctx);
@@ -374,7 +374,7 @@ void rcRasterizeTriangles(rcContext* ctx, const double* verts, const int /*nv*/,
 ///
 /// @see rcHeightfield
 void rcRasterizeTriangles(rcContext* ctx, const double* verts, const int /*nv*/,
-						  const unsigned short* tris, const unsigned char* areas, const int nt,
+						  const unsigned short* tris, const unsigned char* areas, int nt,
 						  rcHeightfield& solid, const int flagMergeThr)
 {
 	rcAssert(ctx);
@@ -401,7 +401,7 @@ void rcRasterizeTriangles(rcContext* ctx, const double* verts, const int /*nv*/,
 /// Spans will only be added for triangles that overlap the heightfield grid.
 ///
 /// @see rcHeightfield
-void rcRasterizeTriangles(rcContext* ctx, const double* verts, const unsigned char* areas, const int nt,
+void rcRasterizeTriangles(rcContext* ctx, const double* verts, const unsigned char* areas, int nt,
 						  rcHeightfield& solid, const int flagMergeThr)
 {
 	rcAssert(ctx);

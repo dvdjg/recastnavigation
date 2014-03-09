@@ -54,7 +54,7 @@ public:
 	
 	int queryItems(const double minx, const double miny,
 				   const double maxx, const double maxy,
-				   unsigned short* ids, const int maxIds) const;
+				   unsigned short* ids, int maxIds) const;
 	
 	int getItemCountAt(const int x, const int y) const;
 	

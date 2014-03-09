@@ -34,7 +34,7 @@ void BuildContext::doResetLog()
 	m_textPoolSize = 0;
 }
 
-void BuildContext::doLog(const rcLogCategory category, const char* msg, const int len)
+void BuildContext::doLog(const rcLogCategory category, const char* msg, int len)
 {
 	if (!len) return;
 	if (m_messageCount >= MAX_MESSAGES)

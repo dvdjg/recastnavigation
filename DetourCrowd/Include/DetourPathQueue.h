@@ -66,7 +66,7 @@ public:
 	
 	dtStatus getRequestStatus(dtPathQueueRef ref) const;
 	
-	dtStatus getPathResult(dtPathQueueRef ref, dtPolyRef* path, int* pathSize, const int maxPath);
+	dtStatus getPathResult(dtPathQueueRef ref, dtPolyRef* path, int* pathSize, int maxPath);
 	
 	inline const dtNavMeshQuery* getNavQuery() const { return m_navquery; }
 

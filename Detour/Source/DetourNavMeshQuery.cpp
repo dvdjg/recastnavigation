@@ -869,7 +869,7 @@ int dtNavMeshQuery::queryPolygonsInTile(const dtMeshTile* tile, const double* qm
 ///
 dtStatus dtNavMeshQuery::queryPolygons(const double* center, const double* extents,
 									   const dtQueryFilter* filter,
-									   dtPolyRef* polys, int* polyCount, const int maxPolys) const
+									   dtPolyRef* polys, int* polyCount, int maxPolys) const
 {
 	dtAssert(m_nav);
 	
@@ -921,7 +921,7 @@ dtStatus dtNavMeshQuery::queryPolygons(const double* center, const double* exten
 dtStatus dtNavMeshQuery::findPath(dtPolyRef startRef, dtPolyRef endRef,
 								  const double* startPos, const double* endPos,
 								  const dtQueryFilter* filter,
-								  dtPolyRef* path, int* pathCount, const int maxPath) const
+								  dtPolyRef* path, int* pathCount, int maxPath) const
 {
 	dtAssert(m_nav);
 	dtAssert(m_nodePool);
@@ -1363,7 +1363,7 @@ dtStatus dtNavMeshQuery::updateSlicedFindPath(const int maxIter, int* doneIters)
 	return m_query.status;
 }
 
-dtStatus dtNavMeshQuery::finalizeSlicedFindPath(dtPolyRef* path, int* pathCount, const int maxPath)
+dtStatus dtNavMeshQuery::finalizeSlicedFindPath(dtPolyRef* path, int* pathCount, int maxPath)
 {
 	*pathCount = 0;
 	
@@ -1426,7 +1426,7 @@ dtStatus dtNavMeshQuery::finalizeSlicedFindPath(dtPolyRef* path, int* pathCount,
 }
 
 dtStatus dtNavMeshQuery::finalizeSlicedFindPathPartial(const dtPolyRef* existing, const int existingSize,
-													   dtPolyRef* path, int* pathCount, const int maxPath)
+													   dtPolyRef* path, int* pathCount, int maxPath)
 {
 	*pathCount = 0;
 	
@@ -1506,7 +1506,7 @@ dtStatus dtNavMeshQuery::finalizeSlicedFindPathPartial(const dtPolyRef* existing
 
 dtStatus dtNavMeshQuery::appendVertex(const double* pos, const unsigned char flags, const dtPolyRef ref,
 									  double* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
-									  int* straightPathCount, const int maxStraightPath) const
+									  int* straightPathCount, int maxStraightPath) const
 {
 	if ((*straightPathCount) > 0 && dtVequal(&straightPath[((*straightPathCount)-1)*3], pos))
 	{
@@ -1536,7 +1536,7 @@ dtStatus dtNavMeshQuery::appendVertex(const double* pos, const unsigned char fla
 
 dtStatus dtNavMeshQuery::appendPortals(const int startIdx, const int endIdx, const double* endPos, const dtPolyRef* path,
 									  double* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
-									  int* straightPathCount, const int maxStraightPath, const int options) const
+									  int* straightPathCount, int maxStraightPath, const int options) const
 {
 	const double* startPos = &straightPath[(*straightPathCount-1)*3];
 	// Append or update last vertex
@@ -1604,7 +1604,7 @@ dtStatus dtNavMeshQuery::appendPortals(const int startIdx, const int endIdx, con
 dtStatus dtNavMeshQuery::findStraightPath(const double* startPos, const double* endPos,
 										  const dtPolyRef* path, const int pathSize,
 										  double* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
-										  int* straightPathCount, const int maxStraightPath, const int options) const
+										  int* straightPathCount, int maxStraightPath, const int options) const
 {
 	dtAssert(m_nav);
 	
@@ -1844,7 +1844,7 @@ dtStatus dtNavMeshQuery::findStraightPath(const double* startPos, const double* 
 ///
 dtStatus dtNavMeshQuery::moveAlongSurface(dtPolyRef startRef, const double* startPos, const double* endPos,
 										  const dtQueryFilter* filter,
-										  double* resultPos, dtPolyRef* visited, int* visitedCount, const int maxVisitedSize) const
+										  double* resultPos, dtPolyRef* visited, int* visitedCount, int maxVisitedSize) const
 {
 	dtAssert(m_nav);
 	dtAssert(m_tinyNodePool);
@@ -2200,7 +2200,7 @@ dtStatus dtNavMeshQuery::getEdgeMidPoint(dtPolyRef from, const dtPoly* fromPoly,
 ///
 dtStatus dtNavMeshQuery::raycast(dtPolyRef startRef, const double* startPos, const double* endPos,
 								 const dtQueryFilter* filter,
-								 double* t, double* hitNormal, dtPolyRef* path, int* pathCount, const int maxPath) const
+								 double* t, double* hitNormal, dtPolyRef* path, int* pathCount, int maxPath) const
 {
 	dtAssert(m_nav);
 	
@@ -2411,7 +2411,7 @@ dtStatus dtNavMeshQuery::raycast(dtPolyRef startRef, const double* startPos, con
 dtStatus dtNavMeshQuery::findPolysAroundCircle(dtPolyRef startRef, const double* centerPos, const double radius,
 											   const dtQueryFilter* filter,
 											   dtPolyRef* resultRef, dtPolyRef* resultParent, double* resultCost,
-											   int* resultCount, const int maxResult) const
+											   int* resultCount, int maxResult) const
 {
 	dtAssert(m_nav);
 	dtAssert(m_nodePool);
@@ -2583,10 +2583,10 @@ dtStatus dtNavMeshQuery::findPolysAroundCircle(dtPolyRef startRef, const double*
 /// If the result arrays are is too small to hold the entire result set, they will 
 /// be filled to capacity.
 ///
-dtStatus dtNavMeshQuery::findPolysAroundShape(dtPolyRef startRef, const double* verts, const int nverts,
+dtStatus dtNavMeshQuery::findPolysAroundShape(dtPolyRef startRef, const double* verts, int nverts,
 											  const dtQueryFilter* filter,
 											  dtPolyRef* resultRef, dtPolyRef* resultParent, double* resultCost,
-											  int* resultCount, const int maxResult) const
+											  int* resultCount, int maxResult) const
 {
 	dtAssert(m_nav);
 	dtAssert(m_nodePool);
@@ -2766,7 +2766,7 @@ dtStatus dtNavMeshQuery::findPolysAroundShape(dtPolyRef startRef, const double* 
 dtStatus dtNavMeshQuery::findLocalNeighbourhood(dtPolyRef startRef, const double* centerPos, const double radius,
 												const dtQueryFilter* filter,
 												dtPolyRef* resultRef, dtPolyRef* resultParent,
-												int* resultCount, const int maxResult) const
+												int* resultCount, int maxResult) const
 {
 	dtAssert(m_nav);
 	dtAssert(m_tinyNodePool);
@@ -2980,7 +2980,7 @@ static void insertInterval(dtSegInterval* ints, int& nints, const int maxInts,
 /// 
 dtStatus dtNavMeshQuery::getPolyWallSegments(dtPolyRef ref, const dtQueryFilter* filter,
 											 double* segmentVerts, dtPolyRef* segmentRefs, int* segmentCount,
-											 const int maxSegments) const
+											 int maxSegments) const
 {
 	dtAssert(m_nav);
 	

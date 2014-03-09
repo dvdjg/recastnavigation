@@ -220,7 +220,7 @@ bool rcErodeWalkableArea(rcContext* ctx, int radius, rcCompactHeightfield& chf)
 	return true;
 }
 
-static void insertSort(unsigned char* a, const int n)
+static void insertSort(unsigned char* a, int n)
 {
 	int i, j;
 	for (i = 1; i < n; i++)
@@ -385,7 +385,7 @@ static int pointInPoly(int nvert, const double* verts, const double* p)
 /// projected onto the xz-plane at @p hmin, then extruded to @p hmax.
 /// 
 /// @see rcCompactHeightfield, rcMedianFilterWalkableArea
-void rcMarkConvexPolyArea(rcContext* ctx, const double* verts, const int nverts,
+void rcMarkConvexPolyArea(rcContext* ctx, const double* verts, int nverts,
 						  const double hmin, const double hmax, unsigned char areaId,
 						  rcCompactHeightfield& chf)
 {
@@ -452,8 +452,8 @@ void rcMarkConvexPolyArea(rcContext* ctx, const double* verts, const int nverts,
 	ctx->stopTimer(RC_TIMER_MARK_CONVEXPOLY_AREA);
 }
 
-int rcOffsetPoly(const double* verts, const int nverts, const double offset,
-				 double* outVerts, const int maxOutVerts)
+int rcOffsetPoly(const double* verts, int nverts, const double offset,
+				 double* outVerts, int maxOutVerts)
 {
 	const double	MITER_LIMIT = 1.20;
 

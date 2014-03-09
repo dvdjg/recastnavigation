@@ -91,7 +91,7 @@ public:
 	///@{
 	int getConvexVolumeCount() const { return m_volumeCount; }
 	const ConvexVolume* getConvexVolumes() const { return m_volumes; }
-	void addConvexVolume(const double* verts, const int nverts,
+	void addConvexVolume(const double* verts, int nverts,
 						 const double minh, const double maxh, unsigned char area);
 	void deleteConvexVolume(int i);
 	void drawConvexVolumes(struct duDebugDraw* dd, bool hilight = false);

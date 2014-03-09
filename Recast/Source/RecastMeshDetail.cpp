@@ -160,7 +160,7 @@ static double distancePtSeg2d(const double* pt, const double* p, const double* q
 	return dx*dx + dz*dz;
 }
 
-static double distToTriMesh(const double* p, const double* verts, const int /*nverts*/, const int* tris, const int ntris)
+static double distToTriMesh(const double* p, const double* verts, const int /*nverts*/, const int* tris, int ntris)
 {
 	double dmin = FLT_MAX;
 	for (int i = 0; i < ntris; ++i)
@@ -414,7 +414,7 @@ static void completeFacet(rcContext* ctx, const double* pts, int npts, int* edge
 }
 
 static void delaunayHull(rcContext* ctx, const int npts, const double* pts,
-						 const int nhull, const int* hull,
+						 int nhull, const int* hull,
 						 rcIntArray& tris, rcIntArray& edges)
 {
 	int nfaces = 0;
@@ -500,7 +500,7 @@ inline double getJitterY(const int i)
 	return (((i * 0xd8163841) & 0xffff) / 65535.0 * 2.0) - 1.0;
 }
 
-static bool buildPolyDetail(rcContext* ctx, const double* in, const int nin,
+static bool buildPolyDetail(rcContext* ctx, const double* in, int nin,
 							const double sampleDist, const double sampleMaxError,
 							const rcCompactHeightfield& chf, const rcHeightPatch& hp,
 							double* verts, int& nverts, rcIntArray& tris,
@@ -743,8 +743,8 @@ static bool buildPolyDetail(rcContext* ctx, const double* in, const int nin,
 
 
 static void getHeightDataSeedsFromVertices(const rcCompactHeightfield& chf,
-						  const unsigned short* poly, const int npoly,
-						  const unsigned short* verts, const int bs,
+						  const unsigned short* poly, int npoly,
+						  const unsigned short* verts, int bs,
 						  rcHeightPatch& hp, rcIntArray& stack)
 {
 	// Floodfill the heightfield to get 2D height data,
@@ -881,8 +881,8 @@ static void getHeightDataSeedsFromVertices(const rcCompactHeightfield& chf,
 
 
 static void getHeightData(const rcCompactHeightfield& chf,
-						  const unsigned short* poly, const int npoly,
-						  const unsigned short* verts, const int bs,
+						  const unsigned short* poly, int npoly,
+						  const unsigned short* verts, int bs,
 						  rcHeightPatch& hp, rcIntArray& stack,
 						  int region)
 {
@@ -993,7 +993,7 @@ static void getHeightData(const rcCompactHeightfield& chf,
 }
 
 static unsigned char getEdgeFlags(const double* va, const double* vb,
-								  const double* vpoly, const int npoly)
+								  const double* vpoly, int npoly)
 {
 	// Return true if edge (va,vb) is part of the polygon.
 	static const double thrSqr = rcSqr(0.001);
@@ -1007,7 +1007,7 @@ static unsigned char getEdgeFlags(const double* va, const double* vb,
 }
 
 static unsigned char getTriFlags(const double* va, const double* vb, const double* vc,
-								 const double* vpoly, const int npoly)
+								 const double* vpoly, int npoly)
 {
 	unsigned char flags = 0;
 	flags |= getEdgeFlags(va,vb,vpoly,npoly) << 0;

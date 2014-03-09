@@ -170,7 +170,7 @@ static void subdivide(BVItem* items, int nitems, int imin, int imax, int& curNod
 }
 
 static int createBVTree(const unsigned short* verts, const int /*nverts*/,
-						const unsigned short* polys, const int npolys, const int nvp,
+						const unsigned short* polys, int npolys, const int nvp,
 						const double cs, const double ch,
 						const int /*nnodes*/, dtBVNode* nodes)
 {

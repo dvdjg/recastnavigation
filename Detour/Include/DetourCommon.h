@@ -390,9 +390,9 @@ bool dtIntersectSegSeg2D(const double* ap, const double* aq,
 ///  @param[in]		verts	The polygon vertices. [(x, y, z) * @p nverts]
 ///  @param[in]		nverts	The number of vertices. [Limit: >= 3]
 /// @return True if the point is inside the polygon.
-bool dtPointInPolygon(const double* pt, const double* verts, const int nverts);
+bool dtPointInPolygon(const double* pt, const double* verts, int nverts);
 
-bool dtDistancePtPolyEdgesSqr(const double* pt, const double* verts, const int nverts,
+bool dtDistancePtPolyEdgesSqr(const double* pt, const double* verts, int nverts,
 							double* ed, double* et);
 
 double dtDistancePtSegSqr2D(const double* pt, const double* p, const double* q, double& t);
@@ -410,8 +410,8 @@ void dtCalcPolyCenter(double* tc, const unsigned short* idx, int nidx, const dou
 ///  @param[in]		polyb		Polygon B vertices.	[(x, y, z) * @p npolyb]
 ///  @param[in]		npolyb		The number of vertices in polygon B.
 /// @return True if the two polygons overlap.
-bool dtOverlapPolyPoly2D(const double* polya, const int npolya,
-						 const double* polyb, const int npolyb);
+bool dtOverlapPolyPoly2D(const double* polya, int npolya,
+						 const double* polyb, int npolyb);
 
 /// @}
 /// @name Miscellanious functions.
@@ -482,7 +482,7 @@ inline void dtSwapEndian(double* v)
 	dtSwapByte(x+0, x+3); dtSwapByte(x+1, x+2);
 }
 
-void dtRandomPointInConvexPoly(const double* pts, const int npts, double* areas,
+void dtRandomPointInConvexPoly(const double* pts, int npts, double* areas,
 							   const double s, const double t, double* out);
 
 /// @}

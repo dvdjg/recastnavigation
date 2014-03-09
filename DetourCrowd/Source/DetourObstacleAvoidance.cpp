@@ -165,7 +165,7 @@ void dtObstacleAvoidanceDebugData::addSample(const double* vel, const double ssi
 	m_nsamples++;
 }
 
-static void normalizeArray(double* arr, const int n)
+static void normalizeArray(double* arr, int n)
 {
 	// Normalize penaly range.
 	double minPen = FLT_MAX;

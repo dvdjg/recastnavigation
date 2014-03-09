@@ -146,7 +146,7 @@ public:
 	dtStatus findPath(dtPolyRef startRef, dtPolyRef endRef,
 					  const double* startPos, const double* endPos,
 					  const dtQueryFilter* filter,
-					  dtPolyRef* path, int* pathCount, const int maxPath) const;
+					  dtPolyRef* path, int* pathCount, int maxPath) const;
 	
 	/// Finds the straight path from the start to the end position within the polygon corridor.
 	///  @param[in]		startPos			Path start position. [(x, y, z)]
@@ -163,7 +163,7 @@ public:
 	dtStatus findStraightPath(const double* startPos, const double* endPos,
 							  const dtPolyRef* path, const int pathSize,
 							  double* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
-							  int* straightPathCount, const int maxStraightPath, const int options = 0) const;
+							  int* straightPathCount, int maxStraightPath, const int options = 0) const;
 
 	///@}
 	/// @name Sliced Pathfinding Functions
@@ -196,7 +196,7 @@ public:
 	///  @param[out]	pathCount	The number of polygons returned in the @p path array.
 	///  @param[in]		maxPath		The max number of polygons the path array can hold. [Limit: >= 1]
 	/// @returns The status flags for the query.
-	dtStatus finalizeSlicedFindPath(dtPolyRef* path, int* pathCount, const int maxPath);
+	dtStatus finalizeSlicedFindPath(dtPolyRef* path, int* pathCount, int maxPath);
 	
 	/// Finalizes and returns the results of an incomplete sliced path query, returning the path to the furthest
 	/// polygon on the existing path that was visited during the search.
@@ -208,7 +208,7 @@ public:
 	///  @param[in]		maxPath			The max number of polygons the @p path array can hold. [Limit: >= 1]
 	/// @returns The status flags for the query.
 	dtStatus finalizeSlicedFindPathPartial(const dtPolyRef* existing, const int existingSize,
-										   dtPolyRef* path, int* pathCount, const int maxPath);
+										   dtPolyRef* path, int* pathCount, int maxPath);
 
 	///@}
 	/// @name Dijkstra Search Functions
@@ -229,7 +229,7 @@ public:
 	dtStatus findPolysAroundCircle(dtPolyRef startRef, const double* centerPos, const double radius,
 								   const dtQueryFilter* filter,
 								   dtPolyRef* resultRef, dtPolyRef* resultParent, double* resultCost,
-								   int* resultCount, const int maxResult) const;
+								   int* resultCount, int maxResult) const;
 	
 	/// Finds the polygons along the naviation graph that touch the specified convex polygon.
 	///  @param[in]		startRef		The reference id of the polygon where the search starts.
@@ -244,10 +244,10 @@ public:
 	///  @param[out]	resultCount		The number of polygons found.
 	///  @param[in]		maxResult		The maximum number of polygons the result arrays can hold.
 	/// @returns The status flags for the query.
-	dtStatus findPolysAroundShape(dtPolyRef startRef, const double* verts, const int nverts,
+	dtStatus findPolysAroundShape(dtPolyRef startRef, const double* verts, int nverts,
 								  const dtQueryFilter* filter,
 								  dtPolyRef* resultRef, dtPolyRef* resultParent, double* resultCost,
-								  int* resultCount, const int maxResult) const;
+								  int* resultCount, int maxResult) const;
 	
 	/// @}
 	/// @name Local Query Functions
@@ -274,7 +274,7 @@ public:
 	/// @returns The status flags for the query.
 	dtStatus queryPolygons(const double* center, const double* extents,
 						   const dtQueryFilter* filter,
-						   dtPolyRef* polys, int* polyCount, const int maxPolys) const;
+						   dtPolyRef* polys, int* polyCount, int maxPolys) const;
 
 	/// Finds the non-overlapping navigation polygons in the local neighbourhood around the center position.
 	///  @param[in]		startRef		The reference id of the polygon where the search starts.
@@ -290,7 +290,7 @@ public:
 	dtStatus findLocalNeighbourhood(dtPolyRef startRef, const double* centerPos, const double radius,
 									const dtQueryFilter* filter,
 									dtPolyRef* resultRef, dtPolyRef* resultParent,
-									int* resultCount, const int maxResult) const;
+									int* resultCount, int maxResult) const;
 
 	/// Moves from the start to the end position constrained to the navigation mesh.
 	///  @param[in]		startRef		The reference id of the start polygon.
@@ -304,7 +304,7 @@ public:
 	/// @returns The status flags for the query.
 	dtStatus moveAlongSurface(dtPolyRef startRef, const double* startPos, const double* endPos,
 							  const dtQueryFilter* filter,
-							  double* resultPos, dtPolyRef* visited, int* visitedCount, const int maxVisitedSize) const;
+							  double* resultPos, dtPolyRef* visited, int* visitedCount, int maxVisitedSize) const;
 	
 	/// Casts a 'walkability' ray along the surface of the navigation mesh from 
 	/// the start position toward the end position.
@@ -321,7 +321,7 @@ public:
 	/// @returns The status flags for the query.
 	dtStatus raycast(dtPolyRef startRef, const double* startPos, const double* endPos,
 					 const dtQueryFilter* filter,
-					 double* t, double* hitNormal, dtPolyRef* path, int* pathCount, const int maxPath) const;
+					 double* t, double* hitNormal, dtPolyRef* path, int* pathCount, int maxPath) const;
 	
 	/// Finds the distance from the specified position to the nearest polygon wall.
 	///  @param[in]		startRef		The reference id of the polygon containing @p centerPos.
@@ -348,7 +348,7 @@ public:
 	/// @returns The status flags for the query.
 	dtStatus getPolyWallSegments(dtPolyRef ref, const dtQueryFilter* filter,
 								 double* segmentVerts, dtPolyRef* segmentRefs, int* segmentCount,
-								 const int maxSegments) const;
+								 int maxSegments) const;
 
 	/// Returns random location on navmesh.
 	/// Polygons are chosen weighted by area. The search runs in linear related to number of polygon.
@@ -446,12 +446,12 @@ private:
 	// Appends vertex to a straight path
 	dtStatus appendVertex(const double* pos, const unsigned char flags, const dtPolyRef ref,
 						  double* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
-						  int* straightPathCount, const int maxStraightPath) const;
+						  int* straightPathCount, int maxStraightPath) const;
 
 	// Appends intermediate portal points to a straight path.
 	dtStatus appendPortals(const int startIdx, const int endIdx, const double* endPos, const dtPolyRef* path,
 						   double* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
-						   int* straightPathCount, const int maxStraightPath, const int options) const;
+						   int* straightPathCount, int maxStraightPath, const int options) const;
 	
 	const dtNavMesh* m_nav;				///< Pointer to navmesh data.
 

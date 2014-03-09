@@ -424,7 +424,7 @@ void InputGeom::drawOffMeshConnections(duDebugDraw* dd, bool hilight)
 	dd->depthMask(true);
 }
 
-void InputGeom::addConvexVolume(const double* verts, const int nverts,
+void InputGeom::addConvexVolume(const double* verts, int nverts,
 								const double minh, const double maxh, unsigned char area)
 {
 	if (m_volumeCount >= MAX_VOLUMES) return;

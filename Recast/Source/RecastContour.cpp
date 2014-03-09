@@ -495,7 +495,7 @@ static void removeDegenerateSegments(rcIntArray& simplified)
 	}
 }
 
-static int calcAreaOfPolygon2D(const int* verts, const int nverts)
+static int calcAreaOfPolygon2D(const int* verts, int nverts)
 {
 	int area = 0;
 	for (int i = 0, j = nverts-1; i < nverts; j=i++)
@@ -512,8 +512,8 @@ inline bool ileft(const int* a, const int* b, const int* c)
 	return (b[0] - a[0]) * (c[2] - a[2]) - (c[0] - a[0]) * (b[2] - a[2]) <= 0;
 }
 
-static void getClosestIndices(const int* vertsa, const int nvertsa,
-							  const int* vertsb, const int nvertsb,
+static void getClosestIndices(const int* vertsa, int nvertsa,
+							  const int* vertsb, int nvertsb,
 							  int& ia, int& ib)
 {
 	int closestDist = 0xfffffff;

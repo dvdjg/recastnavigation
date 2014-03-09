@@ -819,8 +819,8 @@ void rcRasterizeTriangle(rcContext* ctx, const double* v0, const double* v1, con
 ///  @param[in,out]	solid			An initialized heightfield.
 ///  @param[in]		flagMergeThr	The distance where the walkable flag is favored over the non-walkable flag. 
 ///  								[Limit: >= 0] [Units: vx]
-void rcRasterizeTriangles(rcContext* ctx, const double* verts, const int nv,
-						  const int* tris, const unsigned char* areas, const int nt,
+void rcRasterizeTriangles(rcContext* ctx, const double* verts, int nv,
+						  const int* tris, const unsigned char* areas, int nt,
 						  rcHeightfield& solid, const int flagMergeThr = 1);
 
 /// Rasterizes an indexed triangle mesh into the specified heightfield.
@@ -834,8 +834,8 @@ void rcRasterizeTriangles(rcContext* ctx, const double* verts, const int nv,
 ///  @param[in,out]	solid		An initialized heightfield.
 ///  @param[in]		flagMergeThr	The distance where the walkable flag is favored over the non-walkable flag. 
 ///  							[Limit: >= 0] [Units: vx]
-void rcRasterizeTriangles(rcContext* ctx, const double* verts, const int nv,
-						  const unsigned short* tris, const unsigned char* areas, const int nt,
+void rcRasterizeTriangles(rcContext* ctx, const double* verts, int nv,
+						  const unsigned short* tris, const unsigned char* areas, int nt,
 						  rcHeightfield& solid, const int flagMergeThr = 1);
 
 /// Rasterizes triangles into the specified heightfield.
@@ -847,7 +847,7 @@ void rcRasterizeTriangles(rcContext* ctx, const double* verts, const int nv,
 ///  @param[in,out]	solid			An initialized heightfield.
 ///  @param[in]		flagMergeThr	The distance where the walkable flag is favored over the non-walkable flag. 
 ///  								[Limit: >= 0] [Units: vx]
-void rcRasterizeTriangles(rcContext* ctx, const double* verts, const unsigned char* areas, const int nt,
+void rcRasterizeTriangles(rcContext* ctx, const double* verts, const unsigned char* areas, int nt,
 						  rcHeightfield& solid, const int flagMergeThr = 1);
 
 /// Marks non-walkable spans as walkable if their maximum is within @p walkableClimp of a walkable neihbor. 
@@ -936,7 +936,7 @@ void rcMarkBoxArea(rcContext* ctx, const double* bmin, const double* bmax, unsig
 ///  @param[in]		hmax	The height of the top of the polygon.
 ///  @param[in]		areaId	The area id to apply. [Limit: <= #RC_WALKABLE_AREA]
 ///  @param[in,out]	chf		A populated compact heightfield.
-void rcMarkConvexPolyArea(rcContext* ctx, const double* verts, const int nverts,
+void rcMarkConvexPolyArea(rcContext* ctx, const double* verts, int nverts,
 						  const double hmin, const double hmax, unsigned char areaId,
 						  rcCompactHeightfield& chf);
 
@@ -947,8 +947,8 @@ void rcMarkConvexPolyArea(rcContext* ctx, const double* verts, const int nverts,
 ///  @param[out]	outVerts	The offset vertices (should hold up to 2 * @p nverts) [Form: (x, y, z) * return value]
 ///  @param[in]		maxOutVerts	The max number of vertices that can be stored to @p outVerts.
 ///  @returns Number of vertices in the offset polygon or 0 if too few vertices in @p outVerts.
-int rcOffsetPoly(const double* verts, const int nverts, const double offset,
-				 double* outVerts, const int maxOutVerts);
+int rcOffsetPoly(const double* verts, int nverts, const double offset,
+				 double* outVerts, int maxOutVerts);
 
 /// Applies the area id to all spans within the specified cylinder.
 ///  @ingroup recast

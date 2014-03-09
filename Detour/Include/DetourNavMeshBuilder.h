@@ -115,12 +115,12 @@ bool dtCreateNavMeshData(dtNavMeshCreateParams* params, unsigned char** outData,
 /// Swaps the endianess of the tile data's header (#dtMeshHeader).
 ///  @param[in,out]	data		The tile data array.
 ///  @param[in]		dataSize	The size of the data array.
-bool dtNavMeshHeaderSwapEndian(unsigned char* data, const int dataSize);
+bool dtNavMeshHeaderSwapEndian(unsigned char* data, int dataSize);
 
 /// Swaps endianess of the tile data.
 ///  @param[in,out]	data		The tile data array.
 ///  @param[in]		dataSize	The size of the data array.
-bool dtNavMeshDataSwapEndian(unsigned char* data, const int dataSize);
+bool dtNavMeshDataSwapEndian(unsigned char* data, int dataSize);
 
 #endif // DETOURNAVMESHBUILDER_H
 

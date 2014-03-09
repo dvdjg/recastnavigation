@@ -8,7 +8,7 @@ class AS3_rcContext : public rcContext
 
 protected:
 	//override base log
-	virtual void doLog(const rcLogCategory category, const char* msg, const int len) 
+	virtual void doLog(const rcLogCategory category, const char* msg, int len) 
 	{
 		AS3_DeclareVar(message, String);
 		AS3_CopyCStringToVar(message, msg, len);

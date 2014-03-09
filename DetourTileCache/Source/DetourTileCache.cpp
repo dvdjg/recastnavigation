@@ -238,7 +238,7 @@ const dtTileCacheObstacle* dtTileCache::getObstacleByRef(dtObstacleRef ref)
 	return ob;
 }
 
-dtStatus dtTileCache::addTile(unsigned char* data, const int dataSize, unsigned char flags, dtCompressedTileRef* result)
+dtStatus dtTileCache::addTile(unsigned char* data, int dataSize, unsigned char flags, dtCompressedTileRef* result)
 {
 	// Make sure the data is in right format.
 	dtTileCacheLayerHeader* header = (dtTileCacheLayerHeader*)data;
@@ -400,7 +400,7 @@ dtObstacleRef dtTileCache::removeObstacle(const dtObstacleRef ref)
 }
 
 dtStatus dtTileCache::queryTiles(const double* bmin, const double* bmax,
-								 dtCompressedTileRef* results, int* resultCount, const int maxResults) const 
+								 dtCompressedTileRef* results, int* resultCount, int maxResults) const 
 {
 	const int MAX_TILES = 32;
 	dtCompressedTileRef tiles[MAX_TILES];

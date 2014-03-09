@@ -99,7 +99,7 @@ public:
 	dtCompressedTileRef getTileRef(const dtCompressedTile* tile) const;
 	const dtCompressedTile* getTileByRef(dtCompressedTileRef ref) const;
 	
-	dtStatus addTile(unsigned char* data, const int dataSize, unsigned char flags, dtCompressedTileRef* result);
+	dtStatus addTile(unsigned char* data, int dataSize, unsigned char flags, dtCompressedTileRef* result);
 	
 	dtStatus removeTile(dtCompressedTileRef ref, unsigned char** data, int* dataSize);
 	
@@ -107,7 +107,7 @@ public:
 	dtStatus removeObstacle(const dtObstacleRef ref);
 	
 	dtStatus queryTiles(const double* bmin, const double* bmax,
-						dtCompressedTileRef* results, int* resultCount, const int maxResults) const;
+						dtCompressedTileRef* results, int* resultCount, int maxResults) const;
 	
 	dtStatus update(const double /*dt*/, class dtNavMesh* navmesh);
 	

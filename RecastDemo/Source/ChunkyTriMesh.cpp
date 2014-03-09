@@ -212,7 +212,7 @@ inline bool checkOverlapRect(const double amin[2], const double amax[2],
 
 int rcGetChunksOverlappingRect(const rcChunkyTriMesh* cm,
                                double bmin[2], double bmax[2],
-							   int* ids, const int maxIds)
+							   int* ids, int maxIds)
 {
 	// Traverse tree
 	int i = 0;
@@ -282,7 +282,7 @@ static bool checkOverlapSegment(const double p[2], const double q[2],
 
 int rcGetChunksOverlappingSegment(const rcChunkyTriMesh* cm,
                                   double p[2], double q[2],
-								  int* ids, const int maxIds)
+								  int* ids, int maxIds)
 {
 	// Traverse tree
 	int i = 0;

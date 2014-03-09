@@ -31,7 +31,7 @@ struct rcEdge
 	unsigned short poly[2];
 };
 
-static bool buildMeshAdjacency(unsigned short* polys, const int npolys,
+static bool buildMeshAdjacency(unsigned short* polys, int npolys,
 							   const int nverts, const int vertsPerPoly)
 {
 	// Based on code by Eric Lengyel from:
@@ -375,7 +375,7 @@ static int triangulate(int n, const int* verts, int* indices, int* tris)
 	return ntris;
 }
 
-static int countPolyVerts(const unsigned short* p, const int nvp)
+static int countPolyVerts(const unsigned short* p, int nvp)
 {
 	for (int i = 0; i < nvp; ++i)
 		if (p[i] == RC_MESH_NULL_IDX)
@@ -454,7 +454,7 @@ static int getPolyMergeValue(unsigned short* pa, unsigned short* pb,
 }
 
 static void mergePolys(unsigned short* pa, unsigned short* pb, int ea, int eb,
-					   unsigned short* tmp, const int nvp)
+					   unsigned short* tmp, int nvp)
 {
 	const int na = countPolyVerts(pa, nvp);
 	const int nb = countPolyVerts(pb, nvp);

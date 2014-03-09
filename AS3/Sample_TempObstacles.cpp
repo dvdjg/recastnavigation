@@ -109,15 +109,15 @@ struct FastLZCompressor : public dtTileCacheCompressor
 		return (int)(bufferSize* 1.05f);
 	}
 	
-	virtual dtStatus compress(const unsigned char* buffer, const int bufferSize,
+	virtual dtStatus compress(const unsigned char* buffer, int bufferSize,
 							  unsigned char* compressed, const int /*maxCompressedSize*/, int* compressedSize)
 	{
 		*compressedSize = fastlz_compress((const void *const)buffer, bufferSize, compressed);
 		return DT_SUCCESS;
 	}
 	
-	virtual dtStatus decompress(const unsigned char* compressed, const int compressedSize,
-								unsigned char* buffer, const int maxBufferSize, int* bufferSize)
+	virtual dtStatus decompress(const unsigned char* compressed, int compressedSize,
+								unsigned char* buffer, int maxBufferSize, int* bufferSize)
 	{
 		*bufferSize = fastlz_decompress(compressed, compressedSize, buffer, maxBufferSize);
 		return *bufferSize < 0 ? DT_FAILURE : DT_SUCCESS;

@@ -44,6 +44,7 @@
 #include "Sample.h"
 #include "Sample_TempObstacles.h"
 
+#define bugswig_as3(X, Y) inline_as3(X Y)
 
 //utility method for getting the navigation mesh triangles for debug rendering
 void getTiles() __attribute__((used,
@@ -175,20 +176,10 @@ void getTiles() {
 
 // djg
 %apply int{size_t};
-%apply int{const int};
-// %apply double*{const double*};
-%typemap(astype) (const double* verts, int nv) "Vector.<Number>";
+//%apply int{const int};
+// (\bdouble\s*\*\s*\w+\s*,\s*)const +(int +\w+)
+%typemap(astype) (const double* p, int n) "Vector.<Number>";
 
-
-// C functions that have the int* buffer, int bufferSize parameters will be exposed as
-// a Vector.<int> in ActionScript
-//%typemap(astype) RVO::RVOSim * "RVOSim";
-//%typemap(in) RVO::RVOSim *  {
-//    RVO::RVOSim * pSim;
-//    inline_as3("%0 = $input.swigCPtr;\n": "=r"(pSim));
-//    $1 = pSim;
-//}
-//
 // Inside this typemap block you have a few variables that SWIG supplies:
 //
 // $1 - the first parameter that the C function is expecting
@@ -198,7 +189,7 @@ void getTiles() {
 //		    so it's only useful within an inline_as3() block.  This is the object
 //   		we need to bring into the C world by populating values for $1 and $2
 //
-%typemap(in) (const double* verts, int nv) {
+%typemap(in) (const double* p, int n) {
 	// For 10 vertices, the Vector must have 30 Numbers.
 	//  @param[in]		verts		The vertices of the polygon [Form: (x, y, z) * @p nverts]
 	//  @param[in]		nverts		The number of vertices in the polygon.
@@ -206,103 +197,44 @@ void getTiles() {
     // setup some new C variables that we're going to modify from within our inline ActionScript
     double* newBuffer;
     int newBufferSize;
-    //const int vecSize = sizeof(RVO::Vector2);
 
     // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
     // that will convert the Vector into something C can use.  Notice that we are using $input
     // inside this inline_as3() call.
-    inline_as3("var ptr:int = CModule.malloc($input.length*8);\n"); // 8 bytes per double
+    inline_as3("var ptr$1:int = CModule.malloc($input.length*8);\n"); // 8 bytes per double
 
     // This next inline call is a little more complicated.  Here we use the %0 flag to pass
     // the value of the ActionScript $input.length variable to the C variable named newBufferSize.
     inline_as3("%0 = $input.length;\n": "=r"(newBufferSize));
 
-    // Similarly we'll pass the value of the ptr variable in ActionScript to the C newBuffer variable
-    inline_as3("%0 = ptr;\n": "=r"(newBuffer));
+    // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
+    inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
 
     // Now push that Vector into flascc memory
     inline_as3("for (var i:int = 0; i < $input.length; i++){\n");
-    inline_as3("	CModule.writeDouble(ptr + 8*i, $input[i]);\n");
+    inline_as3("	CModule.writeDouble(ptr$1 + 8*i, $input[i]);\n");
     inline_as3("}\n");
 
     // Finally assign the parameters that C is expecting to our new values
     $1 = newBuffer;
     $2 = newBufferSize/3;
-
-    // FYI - Here is a simple trace statement in ActionScript that can be useful for debugging.
-    // This is an example of passing something from C to ActionScript (as opposed to going from
-    // ActionScript to C as demonstrated above).  Note the "r" instead of "=r" and the extra colon.
-    //
-    // See http://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html to learn more
-    // about how to work with inline assembly calls
-    inline_as3("trace('Double Vector length: ' + %0)": : "r"(newBufferSize/3));
 }
 
 // Free the memory that we CModule.malloc'd in the equivalent typemap(in)
-%typemap(freearg) (const double* verts, int nv) {
-    inline_as3("CModule.free(ptr)");
+%typemap(freearg) (const double* p, int n) {
+	inline_as3("CModule.free(%0);": : "r"($1));
 };
-
-%typemap(astype) (double*) "Object";
-
-%typemap(in) double* {
-	// For 10 vertices, the Vector must have 30 Numbers.
-	//  @param[in]		verts		The vertices of the polygon [Form: (x, y, z) * @p nverts]
-	//  @param[in]		nverts		The number of vertices in the polygon.
-	
-    // setup some new C variables that we're going to modify from within our inline ActionScript
-    double* newBuffer;
-    //const int vecSize = sizeof(RVO::Vector2);
-
-    // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
-    // that will convert the Vector into something C can use.  Notice that we are using $input
-    // inside this inline_as3() call.
-    inline_as3("var ptr:int = CModule.malloc(8*3);\n"); // 3 vertyex, 8 bytes per double
-
-    // Similarly we'll pass the value of the ptr variable in ActionScript to the C newBuffer variable
-    inline_as3("%0 = ptr;\n": "=r"(newBuffer));
-
-    // Now push that Vector into flascc memory
-    //inline_as3("CModule.writeDouble(ptr + 8*0, $input.x);\n");
-    //inline_as3("CModule.writeDouble(ptr + 8*1, $input.y);\n");
-    //inline_as3("CModule.writeDouble(ptr + 8*2, $input.z);\n");
-
-    // Finally assign the parameters that C is expecting to our new values
-    $1 = newBuffer;
-}
-
-// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
-%typemap(freearg) double* {
-    // Now pull that Vector into flascc memory
-    inline_as3("$input.x = CModule.readDouble(ptr + 8*0);\n");
-    inline_as3("$input.y = CModule.readDouble(ptr + 8*1);\n");
-    inline_as3("$input.z = CModule.readDouble(ptr + 8*2);\n");
-    inline_as3("CModule.free(ptr)");
+// const int* tris, const double* normals, int ntris
+%apply (const double* p, int n) {
+	(const double* verts, int nverts),
+	(const double* verts, int nv),
+	(const double* pts, int npts),
+	(const double* polya, int npolya),
+	(const double* polyb, int npolyb)
 };
-
-%typemap(astype) (const double*) "Object";
-%typemap(in) const double* {
-    // setup some new C variables that we're going to modify from within our inline ActionScript
-    static double newBuffer[4] = {0,0,0,0}; // AS3 is single thread
-    inline_as3("%0 = $input.x;\n": "=r"(newBuffer[0]));
-    inline_as3("%0 = $input.y;\n": "=r"(newBuffer[1]));
-    inline_as3("%0 = $input.z;\n": "=r"(newBuffer[2]));
-
-    // Finally assign the parameters that C is expecting to our new values
-    $1 = newBuffer;
-}
 
 %typemap(astype) (const int* tris, int nt) "Vector.<int>";
 
-// C functions that have the int* buffer, int bufferSize parameters will be exposed as
-// a Vector.<int> in ActionScript
-//%typemap(astype) RVO::RVOSim * "RVOSim";
-//%typemap(in) RVO::RVOSim *  {
-//    RVO::RVOSim * pSim;
-//    inline_as3("%0 = $input.swigCPtr;\n": "=r"(pSim));
-//    $1 = pSim;
-//}
-//
 // Inside this typemap block you have a few variables that SWIG supplies:
 //
 // $1 - the first parameter that the C function is expecting
@@ -313,50 +245,269 @@ void getTiles() {
 //   		we need to bring into the C world by populating values for $1 and $2
 //
 %typemap(in) (const int* tris, int nt) {
-	//  @param[in]		tris				The triangle vertex indices. [(vertA, vertB, vertC) * @p nt]
-	//  @param[in]		nt					The number of triangles.
-	
     // setup some new C variables that we're going to modify from within our inline ActionScript
     int* newBuffer;
     int newBufferSize;
-    //const int vecSize = sizeof(RVO::Vector2);
 
     // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
     // that will convert the Vector into something C can use.  Notice that we are using $input
     // inside this inline_as3() call.
-    inline_as3("var ptr:int = CModule.malloc($input.length*4);\n"); // 4 bytes per int
+    inline_as3("var ptr$1:int = CModule.malloc($input.length*4);\n"); // 4 bytes per int
 
     // This next inline call is a little more complicated.  Here we use the %0 flag to pass
     // the value of the ActionScript $input.length variable to the C variable named newBufferSize.
     inline_as3("%0 = $input.length;\n": "=r"(newBufferSize));
 
-    // Similarly we'll pass the value of the ptr variable in ActionScript to the C newBuffer variable
-    inline_as3("%0 = ptr;\n": "=r"(newBuffer));
+    // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
+    inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
+
+    // Now push that Vector into flascc memory
+    inline_as3("CModule.writeIntVector(ptr$1, $input);\n");
+    
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = newBuffer;
+    $2 = newBufferSize/3;
+}
+
+// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
+%typemap(freearg) (const int* tris, int nt) {
+    inline_as3("CModule.free(%0);": : "r"($1));
+};
+
+%apply (const int* tris, int nt) {
+	(const int* verts, int nverts),
+	(const int* tris, int ntris),
+	(const int* edges, int nedges)
+};
+
+
+%typemap(astype) (const unsigned short* idx, int nidx) "Vector.<uint>";
+
+// Inside this typemap block you have a few variables that SWIG supplies:
+//
+// $1 - the first parameter that the C function is expecting
+// $2 - the second parameter that the C function is expecting
+//
+// $input - the actual input from ActionScript.  It's an ActionScript object
+//		    so it's only useful within an inline_as3() block.  This is the object
+//   		we need to bring into the C world by populating values for $1 and $2
+//
+%typemap(in) (const unsigned short* idx, int nidx) {
+    // setup some new C variables that we're going to modify from within our inline ActionScript
+    unsigned short* newBuffer;
+    int newBufferSize;
+
+    // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
+    // that will convert the Vector into something C can use.  Notice that we are using $input
+    // inside this inline_as3() call.
+    inline_as3("var ptr$1:int = CModule.malloc($input.length*2);\n"); // 2 bytes per unsigned short
+
+    // This next inline call is a little more complicated.  Here we use the %0 flag to pass
+    // the value of the ActionScript $input.length variable to the C variable named newBufferSize.
+    inline_as3("%0 = $input.length;\n": "=r"(newBufferSize));
+
+    // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
+    inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
 
     // Now push that Vector into flascc memory
     inline_as3("for (var i:int = 0; i < $input.length; i++){\n");
-    inline_as3("	CModule.writeInt(ptr + 4*i, $input[i]);\n");
+    inline_as3("	CModule.write16(ptr$1 + 2*i, $input[i]);\n");
     inline_as3("}\n");
 
     // Finally assign the parameters that C is expecting to our new values
     $1 = newBuffer;
     $2 = newBufferSize/3;
-
-    // FYI - Here is a simple trace statement in ActionScript that can be useful for debugging.
-    // This is an example of passing something from C to ActionScript (as opposed to going from
-    // ActionScript to C as demonstrated above).  Note the "r" instead of "=r" and the extra colon.
-    //
-    // See http://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html to learn more
-    // about how to work with inline assembly calls
-    inline_as3("trace('Int Vector length: ' + %0)": : "r"(newBufferSize/3));
 }
 
 // Free the memory that we CModule.malloc'd in the equivalent typemap(in)
-%typemap(freearg) (const int* tris, int nt) {
-    inline_as3("CModule.free(ptr)");
+%typemap(freearg) (const unsigned short* idx, int nidx) {
+    inline_as3("CModule.free(%0);": : "r"($1));
 };
 
+%apply (const unsigned short* idx, int nidx) {
+	(const unsigned short* p, int nvp)
+};
 
+%typemap(astype) (const unsigned char* p, int n) "ByteArray";
+
+// Inside this typemap block you have a few variables that SWIG supplies:
+//
+// $1 - the first parameter that the C function is expecting
+// $2 - the second parameter that the C function is expecting
+//
+// $input - the actual input from ActionScript.  It's an ActionScript object
+//		    so it's only useful within an inline_as3() block.  This is the object
+//   		we need to bring into the C world by populating values for $1 and $2
+//
+%typemap(in) (const unsigned char* p, int n) {
+    // setup some new C variables that we're going to modify from within our inline ActionScript
+    unsigned char* newBuffer;
+    int newBufferSize;
+
+    // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
+    // that will convert the Vector into something C can use.  Notice that we are using $input
+    // inside this inline_as3() call.
+    inline_as3("$input.position=0;\nvar ptr$1:int = CModule.malloc($input.length);\n"); 
+
+    // This next inline call is a little more complicated.  Here we use the %0 flag to pass
+    // the value of the ActionScript $input.length variable to the C variable named newBufferSize.
+    inline_as3("%0 = $input.length;\n": "=r"(newBufferSize));
+
+    // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
+    inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
+
+    // Now push that Vector into flascc memory
+    inline_as3("CModule.writeBytes(ptr$1, $input.bytesAvailable, $input);\n");
+    
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = newBuffer;
+    $2 = newBufferSize;
+}
+
+// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
+%typemap(freearg) (const unsigned char* p, int n) {
+    inline_as3("CModule.free(%0);": : "r"($1));
+};
+
+%apply (const unsigned char* p, int n) {
+	(const unsigned char* buffer, int bufferSize),
+	(const unsigned char* compressed, int compressedSize),
+	(const unsigned char* data, int maxDataSize)
+};
+
+%typemap(astype) (unsigned char* areas) "ByteArray";
+
+%typemap(in) unsigned char* areas {
+    // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+	char * newBuffer;
+	inline_as3("var ptr$1:int = CModule.malloc($input.length);\n"); 
+    // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
+    inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
+
+    // This next inline call is a little more complicated.  Here we use the %0 flag to pass
+    // the value of the ActionScript $input.length variable to the C variable named newBufferSize.
+    //inline_as3("%0 = $input.length;\n": "=r"(newBufferSize));
+	
+	inline_as3("var ba$1:ByteArray = $input;\n");
+	
+	// Finally assign the parameters that C is expecting to our new values
+    $1 = newBuffer;
+} 
+
+// Bug? $input doesn't work here
+%typemap(argout) unsigned char* areas {
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3(_BUG_$1".position = 0;\nCModule.readBytes(ptr$1, "_BUG_$1".length,ba$1); // _BUG_$1 is the same object as ba$1\n");
+}
+
+
+%typemap(astype) (double*) "Object";
+
+%typemap(in) double* out (double dVector[3]) {
+    // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+
+	inline_as3("var ptr$1:int = %0;\n": : "r"(dVector));
+	// Finally assign the parameters that C is expecting to our new values
+    $1 = dVector;
+} 
+
+// Used for:
+//  [in] const double*
+//  [in,out] double*
+%typemap(in) double* (double dVectorOut[3]) {
+    // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+	inline_as3("var ptr$1:int = %0;\n": : "r"(dVectorOut));
+
+    // Now push that Vector into flascc memory
+    inline_as3("CModule.writeDouble(ptr$1 + 8*0, $input.x);\n");
+    inline_as3("CModule.writeDouble(ptr$1 + 8*1, $input.y);\n");
+    inline_as3("CModule.writeDouble(ptr$1 + 8*2, $input.z);\n");
+
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = dVectorOut;
+}
+
+// Bug? $input doesn't work here
+%typemap(argout) double* out {
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3(_BUG_$1".x = CModule.readDouble(ptr$1 + 8*0); // Return to _BUG_$1, $input, $result, $symname, $0, $1\n");
+    inline_as3(_BUG_$1".y = CModule.readDouble(ptr$1 + 8*1);\n");
+    inline_as3(_BUG_$1".z = CModule.readDouble(ptr$1 + 8*2);\n");
+};
+// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
+//%typemap(freearg) double* v {
+//    inline_as3("CModule.free(%0);": : "r"($1)); // Freearg to $input, $result, $symname, $0, $1
+//};
+
+// [out]
+%apply (double* out) {
+	(double* col),
+	(double* res),
+	(double* dest),
+	(double* center),
+	(double* closest),
+	(double* startPos),
+	(double* endPos),
+	(double* nearestPt),
+	(double* closest),
+	(double* hitPos),
+	(double* hitNormal),
+	(double* randomPt),
+	(double* cornerVerts),
+	(double* mn),
+	(double* mx),
+	(double* tc),
+	(double* v)
+};
+
+// [in,out]
+%apply (double* inout) {
+	(double* v),
+	(double* mn),
+	(double* mx)
+};
+
+/*%typemap(astype) (const double*) "Object";
+
+
+%typemap(in) const double* {
+    // setup some new C variables that we're going to modify from within our inline ActionScript
+    double* newBuffer;
+
+    // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
+    // that will convert the Vector into something C can use.  Notice that we are using $input
+    // inside this inline_as3() call.
+    inline_as3("var ptr:int = CModule.malloc(8*3);\n"); // 3 vertyex, 8 bytes per double
+
+    // Similarly we'll pass the value of the ptr variable in ActionScript to the C newBuffer variable
+    inline_as3("%0 = ptr;\n": "=r"(newBuffer));
+
+    // Now push that Vector into flascc memory
+    inline_as3("CModule.writeDouble(ptr + 8*0, $input.x);\n");
+    inline_as3("CModule.writeDouble(ptr + 8*1, $input.y);\n");
+    inline_as3("CModule.writeDouble(ptr + 8*2, $input.z);\n");
+
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = newBuffer;
+}
+
+// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
+%typemap(freearg) const double* {
+    // Now pull that Vector into flascc memory
+    inline_as3("CModule.free(%0);": : "r"($1));
+};*/
 
 %rename (vertexXYZ) duDebugDraw::vertex(const double x, const double y, const double z, unsigned int color);
 %rename (vertexUV) duDebugDraw::vertex(const double* pos, unsigned int color, const double* uv);

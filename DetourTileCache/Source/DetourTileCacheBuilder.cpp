@@ -119,8 +119,8 @@ struct dtLayerMonotoneRegion
 
 struct dtTempContour
 {
-	inline dtTempContour(unsigned char* vbuf, const int nvbuf,
-						 unsigned short* pbuf, const int npbuf) :
+	inline dtTempContour(unsigned char* vbuf, int nvbuf,
+						 unsigned short* pbuf, int npbuf) :
 		verts(vbuf), nverts(0), cverts(nvbuf),
 		poly(pbuf), npoly(0), cpoly(npbuf) 
 	{
@@ -878,8 +878,8 @@ struct rcEdge
 };
 
 static bool buildMeshAdjacency(dtTileCacheAlloc* alloc,
-							   unsigned short* polys, const int npolys,
-							   const unsigned short* verts, const int nverts,
+							   unsigned short* polys, int npolys,
+							   const unsigned short* verts, int nverts,
 							   const dtTileCacheContourSet& lcset)
 {
 	// Based on code by Eric Lengyel from:
@@ -2055,7 +2055,7 @@ void dtFreeTileCacheLayer(dtTileCacheAlloc* alloc, dtTileCacheLayer* layer)
 }
 
 dtStatus dtDecompressTileCacheLayer(dtTileCacheAlloc* alloc, dtTileCacheCompressor* comp,
-									unsigned char* compressed, const int compressedSize,
+									unsigned char* compressed, int compressedSize,
 									dtTileCacheLayer** layerOut)
 {
 	dtAssert(alloc);
@@ -2114,7 +2114,7 @@ dtStatus dtDecompressTileCacheLayer(dtTileCacheAlloc* alloc, dtTileCacheCompress
 
 
 
-bool dtTileCacheHeaderSwapEndian(unsigned char* data, const int dataSize)
+bool dtTileCacheHeaderSwapEndian(unsigned char* data, int dataSize)
 {
 	dtIgnoreUnused(dataSize);
 	dtTileCacheLayerHeader* header = (dtTileCacheLayerHeader*)data;

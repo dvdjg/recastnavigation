@@ -319,7 +319,7 @@ public:
 	///  @param[in]	flags		The tile flags. (See: #dtTileFlags)
 	/// @return The status flags for the operation.
 	///  @see dtCreateNavMeshData
-	dtStatus init(unsigned char* data, const int dataSize, const int flags);
+	dtStatus init(unsigned char* data, int dataSize, const int flags);
 	
 	/// The navigation mesh initialization params.
 	const dtNavMeshParams* getParams() const;
@@ -470,14 +470,14 @@ public:
 	///  @param[out]	data			The buffer to store the tile's state in.
 	///  @param[in]		maxDataSize		The size of the data buffer. [Limit: >= #getTileStateSize]
 	/// @return The status flags for the operation.
-	dtStatus storeTileState(const dtMeshTile* tile, unsigned char* data, const int maxDataSize) const;
+	dtStatus storeTileState(const dtMeshTile* tile, unsigned char* data, int maxDataSize) const;
 	
 	/// Restores the state of the tile.
 	///  @param[in]	tile			The tile.
 	///  @param[in]	data			The new state. (Obtained from #storeTileState.)
 	///  @param[in]	maxDataSize		The size of the state within the data buffer.
 	/// @return The status flags for the operation.
-	dtStatus restoreTileState(dtMeshTile* tile, const unsigned char* data, const int maxDataSize);
+	dtStatus restoreTileState(dtMeshTile* tile, const unsigned char* data, int maxDataSize);
 	
 	/// @}
 

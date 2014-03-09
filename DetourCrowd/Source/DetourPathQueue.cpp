@@ -178,7 +178,7 @@ dtStatus dtPathQueue::getRequestStatus(dtPathQueueRef ref) const
 	return DT_FAILURE;
 }
 
-dtStatus dtPathQueue::getPathResult(dtPathQueueRef ref, dtPolyRef* path, int* pathSize, const int maxPath)
+dtStatus dtPathQueue::getPathResult(dtPathQueueRef ref, dtPolyRef* path, int* pathSize, int maxPath)
 {
 	for (int i = 0; i < MAX_QUEUE; ++i)
 	{

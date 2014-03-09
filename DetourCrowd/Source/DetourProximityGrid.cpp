@@ -135,7 +135,7 @@ void dtProximityGrid::addItem(const unsigned short id,
 
 int dtProximityGrid::queryItems(const double minx, const double miny,
 								const double maxx, const double maxy,
-								unsigned short* ids, const int maxIds) const
+								unsigned short* ids, int maxIds) const
 {
 	const int iminx = (int)dtMathFloorf(minx * m_invCellSize);
 	const int iminy = (int)dtMathFloorf(miny * m_invCellSize);
