@@ -31,7 +31,8 @@ endif
 RECAST_INC=-I../Recast/Include
 DETOUR_INC=-I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include
 DEBUG_INC=-I../DebugUtils/Include
-DEMO_INC=-I../RecastDemo/Include
+DEMO_INC=-I../RecastDemo/Include -I../RecastDemo/Contrib/fastlz
+
 #DEMO_INC=-I./demo
 ALL_INCS=${RECAST_INC} ${DETOUR_INC} ${DEBUG_INC} ${DEMO_INC} -I.
 

@@ -41,8 +41,12 @@
 #include "ChunkyTriMesh.h"
 #include "MeshLoaderObj.h"
 #include "InputGeom.h"
+#include "Filelist.h"
 #include "Sample.h"
 #include "Sample_TempObstacles.h"
+#include "Sample_TileMesh.h"
+#include "SampleInterfaces.h"
+#include "fastlz.h"
 
 //inline_as3("import flash.utils.ByteArray;\n");
 
@@ -178,7 +182,8 @@ void getTiles() {
 %as3import("flash.utils.ByteArray");
 
 %apply int{size_t};
-//%apply int{const int};
+//const int* tris, const double* normals, int ntris
+
 // (\bdouble\s*\*\s*\w+\s*,\s*)const +(int +\w+)
 %typemap(astype) (const double* p, int n) "Vector.<Number>";
 
@@ -228,6 +233,7 @@ void getTiles() {
 };
 // const int* tris, const double* normals, int ntris
 %apply (const double* p, int n) {
+	(const double* normals, int ntris),
 	(const double* verts, int nverts),
 	(const double* verts, int nv),
 	(const double* pts, int npts),
@@ -283,6 +289,50 @@ void getTiles() {
 };
 
 
+%typemap(astype) (const int* tris) "Vector.<int>";
+
+// Inside this typemap block you have a few variables that SWIG supplies:
+//
+// $1 - the first parameter that the C function is expecting
+// $2 - the second parameter that the C function is expecting
+//
+// $input - the actual input from ActionScript.  It's an ActionScript object
+//		    so it's only useful within an inline_as3() block.  This is the object
+//   		we need to bring into the C world by populating values for $1 and $2
+//
+%typemap(in) (const int* tris) {
+    // setup some new C variables that we're going to modify from within our inline ActionScript
+    int* newBuffer;
+    //int newBufferSize;
+
+    // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
+    // that will convert the Vector into something C can use.  Notice that we are using $input
+    // inside this inline_as3() call.
+    inline_as3("var ptr$1:int = CModule.malloc($input.length*4);\n"); // 4 bytes per int
+
+    // This next inline call is a little more complicated.  Here we use the %0 flag to pass
+    // the value of the ActionScript $input.length variable to the C variable named newBufferSize.
+    //inline_as3("%0 = $input.length;\n": "=r"(newBufferSize));
+
+    // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
+    inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
+
+    // Now push that Vector into flascc memory
+    inline_as3("for (var i:int = 0; i < $input.length; i++){\n");
+    inline_as3("	CModule.write32(ptr$1 + 4*i, $input[i]); // Also: writeIntVector\n");
+    inline_as3("}\n");
+
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = newBuffer;
+    //$2 = newBufferSize/3;
+}
+
+// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
+%typemap(freearg) (const int* tris) {
+    inline_as3("CModule.free(%0);\n": : "r"($1));
+};
+
+
 %typemap(astype) (const unsigned short* idx, int nidx) "Vector.<uint>";
 
 // Inside this typemap block you have a few variables that SWIG supplies:
@@ -330,6 +380,122 @@ void getTiles() {
 	(const unsigned short* p, int nvp)
 };
 
+%typemap(astype) (unsigned short* ids, int maxIds) "Vector.<uint>";
+
+// Inside this typemap block you have a few variables that SWIG supplies:
+//
+// $1 - the first parameter that the C function is expecting
+// $2 - the second parameter that the C function is expecting
+//
+// $input - the actual input from ActionScript.  It's an ActionScript object
+//		    so it's only useful within an inline_as3() block.  This is the object
+//   		we need to bring into the C world by populating values for $1 and $2
+//
+%typemap(in) (unsigned short* ids, int maxIds) {
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+    // setup some new C variables that we're going to modify from within our inline ActionScript
+    unsigned short* newBuffer;
+    int newBufferSize;
+
+    // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
+    // that will convert the Vector into something C can use.  Notice that we are using $input
+    // inside this inline_as3() call.
+    inline_as3("var ptr$1:int = CModule.malloc($input.length*2);\n"); // 2 bytes per unsigned short
+
+    // This next inline call is a little more complicated.  Here we use the %0 flag to pass
+    // the value of the ActionScript $input.length variable to the C variable named newBufferSize.
+    inline_as3("%0 = $input.length;\n": "=r"(newBufferSize));
+
+    // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
+    inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
+
+    // Now push that Vector into flascc memory
+    //inline_as3("for (var i:int = 0; i < $input.length; i++){\n");
+    //inline_as3("	CModule.write16(ptr$1 + 2*i, $input[i]);\n");
+    //inline_as3("}\n");
+
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = newBuffer;
+    $2 = newBufferSize;
+}
+
+// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
+%typemap(freearg) (unsigned short* ids, int maxIds) {
+    inline_as3("CModule.free(%0);\n": : "r"($1));
+};
+
+// Bug? $input doesn't work here
+%typemap(argout) (unsigned short* ids, int maxIds) {
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3("for (var i:int = 0; i < "_BUG_$1".length; i++){\n");
+    inline_as3("	"_BUG_$1"[i] = CModule.read16(ptr$1 + 2*i);\n");
+    inline_as3("}\n");
+}
+
+//
+
+%typemap(astype) (int* ids, int maxIds) "Vector.<int>";
+
+// Inside this typemap block you have a few variables that SWIG supplies:
+//
+// $1 - the first parameter that the C function is expecting
+// $2 - the second parameter that the C function is expecting
+//
+// $input - the actual input from ActionScript.  It's an ActionScript object
+//		    so it's only useful within an inline_as3() block.  This is the object
+//   		we need to bring into the C world by populating values for $1 and $2
+//
+%typemap(in) (int* ids, int maxIds) {
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+    // setup some new C variables that we're going to modify from within our inline ActionScript
+    int* newBuffer;
+    int newBufferSize;
+
+    // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
+    // that will convert the Vector into something C can use.  Notice that we are using $input
+    // inside this inline_as3() call.
+    inline_as3("var ptr$1:int = CModule.malloc($input.length*4);\n"); // 4 bytes per int
+
+    // This next inline call is a little more complicated.  Here we use the %0 flag to pass
+    // the value of the ActionScript $input.length variable to the C variable named newBufferSize.
+    inline_as3("%0 = $input.length;\n": "=r"(newBufferSize));
+
+    // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
+    inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
+
+    // Now push that Vector into flascc memory
+    //inline_as3("for (var i:int = 0; i < $input.length; i++){\n");
+    //inline_as3("	CModule.write32(ptr$1 + 4*i, $input[i]);\n");
+    //inline_as3("}\n");
+
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = newBuffer;
+    $2 = newBufferSize;
+}
+
+// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
+%typemap(freearg) (int* ids, int maxIds) {
+    inline_as3("CModule.free(%0);\n": : "r"($1));
+};
+
+// Bug? $input doesn't work here
+%typemap(argout) (int* ids, int maxIds) {
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3("for (var i:int = 0; i < "_BUG_$1".length; i++){\n");
+    inline_as3("	"_BUG_$1"[i] = CModule.read32(ptr$1 + 4*i);\n");
+    inline_as3("}\n");
+}
+
+//%apply (unsigned short* idx, int nidx) {
+//	(unsigned short* p, int nvp)
+//};
+
 %typemap(astype) (const unsigned char* p, int n) "ByteArray";
 
 // Inside this typemap block you have a few variables that SWIG supplies:
@@ -372,6 +538,7 @@ void getTiles() {
 };
 
 %apply (const unsigned char* p, int n) {
+	(const void* input, int length),
 	(const unsigned char* buffer, int bufferSize),
 	(const unsigned char* compressed, int compressedSize),
 	(const unsigned char* data, int maxDataSize)
@@ -404,6 +571,18 @@ void getTiles() {
 %typemap(argout) unsigned char* surfaces {
     // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
     inline_as3(_BUG_$1".position = 0;\nCModule.readBytes(ptr$1, "_BUG_$1".length,ba$1); // _BUG_$1 is the same object as ba$1\n");
+}
+
+%apply (unsigned char* surfaces) {
+	(void* output)
+};
+
+// Bug? $input doesn't work here
+%typemap(argout) void* output {
+    AS3_DeclareVar(asres, int);
+    AS3_CopyScalarToVar(asres, result);
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3("if(asres > 0) {\n  "_BUG_$1".length=asres;\n  "_BUG_$1".position = 0;\nCModule.readBytes(ptr$1, asres, ba$1); // _BUG_$1 is the same object as ba$1\n}\n");
 }
 
 
@@ -684,7 +863,7 @@ void getTiles() {
 %include "Recast.h"
 
 %ignore rcIntArray::rcIntArray(int);
-%rename (valueAt) rcIntArray::operator[];
+//%rename (valueAt) rcIntArray::operator[];
 %ignore rcIntArray::operator [](int);
 %include "RecastAlloc.h"
 %include "RecastAssert.h"
@@ -693,8 +872,16 @@ void getTiles() {
 //demo
 %include "AS3_rcContext.h"
 %include "ChunkyTriMesh.h"
+
+%ignore rcGetChunksOverlappingRect(const rcChunkyTriMesh* cm, const double bmin[2], const double bmax[2], int* ids, int maxIds);
+%ignore rcGetChunksOverlappingSegment(const rcChunkyTriMesh* cm, const double p[2], const double q[2], int* ids, int maxIds);
+
 %include "MeshLoaderObj.h"
 %include "InputGeom.h"
+%include "Filelist.h"
 %include "Sample.h"
 //%ignore addTempObstacle(const double* pos);
 %include "Sample_TempObstacles.h"
+%include "Sample_TileMesh.h"
+%include "SampleInterfaces.h"
+%include "fastlz.h"

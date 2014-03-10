@@ -90,11 +90,13 @@ public:
 	/// @warning Does not provide overflow protection.
 	///  @param[in]		i	The index of the value.
 	inline const int& operator[](int i) const { return m_data[i]; }
+    inline int valueAt(int i) const { return m_data[i]; }
 
 	/// The value at the specified array index.
 	/// @warning Does not provide overflow protection.
 	///  @param[in]		i	The index of the value.
 	inline int& operator[](int i) { return m_data[i]; }
+    inline void setValueAt(int i, int val) { m_data[i] = val; }
 
 	/// The current size of the integer array.
 	inline int size() const { return m_size; }

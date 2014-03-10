@@ -43,10 +43,22 @@ bool rcCreateChunkyTriMesh(const double* verts, const int* tris, int ntris,
 						   int trisPerChunk, rcChunkyTriMesh* cm);
 
 /// Returns the chunk indices which overlap the input rectable.
-int rcGetChunksOverlappingRect(const rcChunkyTriMesh* cm, double bmin[2], double bmax[2], int* ids, int maxIds);
+int rcGetChunksOverlappingRect(const rcChunkyTriMesh* cm, const double bmin[2], const double bmax[2], int* ids, int maxIds);
+inline int rcGetChunksOverlappingRectIn(const rcChunkyTriMesh* cm, double bmin1, double bmin2, double bmax1, double bmax2, int* ids, int maxIds)
+{
+    double bmin[2] = {bmin1, bmin2};
+    double bmax[2] = {bmax1, bmax2};
+    return rcGetChunksOverlappingRect(cm, bmin, bmax, ids, maxIds);
+}
 
 /// Returns the chunk indices which overlap the input segment.
-int rcGetChunksOverlappingSegment(const rcChunkyTriMesh* cm, double p[2], double q[2], int* ids, int maxIds);
+int rcGetChunksOverlappingSegment(const rcChunkyTriMesh* cm, const double p[2], const double q[2], int* ids, int maxIds);
+inline int rcGetChunksOverlappingSegmentIn(const rcChunkyTriMesh* cm, double p1, double p2, double q1, double q2, int* ids, int maxIds)
+{
+    double p[2] = {p1, p2};
+    double q[2] = {q1, q2};
+    return rcGetChunksOverlappingSegment(cm, p, q, ids, maxIds);
+}
 
 
 #endif // CHUNKYTRIMESH_H
