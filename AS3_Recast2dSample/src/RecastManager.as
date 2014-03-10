@@ -103,10 +103,10 @@ package
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
 			
-			var posPtr:int = CModule.alloca(12);
-			CModule.writeFloat(posPtr, navPosition.x);
-			CModule.writeFloat(posPtr + 4, navPosition.y);
-			CModule.writeFloat(posPtr + 8, navPosition.z);
+//			var posPtr:int = CModule.alloca(12);
+//			CModule.writeFloat(posPtr, navPosition.x);
+//			CModule.writeFloat(posPtr + 4, navPosition.y);
+//			CModule.writeFloat(posPtr + 8, navPosition.z);
 			
 			var params:dtCrowdAgentParams = dtCrowdAgentParams.create();
 			params.radius  = radius / scale.x;
@@ -135,28 +135,27 @@ package
 			//params.obstacleAvoidanceType = 1.0;
 			//params.updateFlags |= "1";
 			
-			var idx:int = crowd.addAgent(posPtr, params.swigCPtr );
+			var idx:int = crowd.addAgent(navPosition, params.swigCPtr );
 			
 			var navquery:dtNavMeshQuery  = new dtNavMeshQuery();
 			navquery.swigCPtr =  sample.getNavMeshQuery();
 			//const dtQueryFilter* filter = crowd->getFilter();
 			//const float* ext = crowd->getQueryExtents();
 
-			var targetRef:int;// = CModule.alloca(4);
-			var targetPos:int;// = CModule.alloca(12);
+			var targetRef:int;
+			var targetPos:Object = {};
 			
-			var statusPtr:int = navquery.findNearestPoly(posPtr, crowd.getQueryExtents(), crowd.getFilter(), targetRef, targetPos);
+			var statusPtr:int = navquery.findNearestPoly(navPosition, crowd.getQueryExtents(), crowd.getFilter(), targetRef, targetPos); // targetRef, targetPos
 			//var status:int = findNearestPoly2(navquery, posPtr, crowd.getQueryExtents(), crowd.getFilter(), targetRef, targetPos);
 			
-			trace(CModule.readFloat(targetPos), CModule.readFloat(targetPos+4), CModule.readFloat(targetPos+8));
+			//trace(CModule.readFloat(targetPos), CModule.readFloat(targetPos+4), CModule.readFloat(targetPos+8));
+			trace(targetPos.x, targetPos.y, targetPos.z);
 			
 			//var test1:int = CModule.read32(targetRef);
 			//var test2:Number = CModule.readFloat(targetPos);
 		
 			if (targetRef > 0)
-				crowd.requestMoveTarget(idx, targetRef, targetPos);
-			
-				
+				crowd.requestMoveTarget(idx, targetRef, targetPos);	
 			
 			return idx;
 		}
@@ -166,18 +165,18 @@ package
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
 			
-			var posPtr:int = CModule.alloca(12);
-			CModule.writeFloat(posPtr, navPosition.x);
-			CModule.writeFloat(posPtr + 4, navPosition.y);
-			CModule.writeFloat(posPtr + 8, navPosition.z);
+//			var posPtr:int = CModule.alloca(12);
+//			CModule.writeFloat(posPtr, navPosition.x);
+//			CModule.writeFloat(posPtr + 4, navPosition.y);
+//			CModule.writeFloat(posPtr + 8, navPosition.z);
 			
 			var navquery:dtNavMeshQuery  = new dtNavMeshQuery();
 			navquery.swigCPtr =  sample.getNavMeshQuery();
 			
 			var targetRef:int = CModule.alloca(4);
-			var targetPos:int = CModule.alloca(12);
+			var targetPos:Object = {};
 			
-			var status:int = navquery.findNearestPoly(posPtr, crowd.getQueryExtents(), crowd.getFilter(), targetRef, targetPos);
+			var status:int = navquery.findNearestPoly(navPosition, crowd.getQueryExtents(), crowd.getFilter(), targetRef, targetPos);
 			//var status:int = findNearestPoly2(navquery,posPtr, crowd.getQueryExtents(), crowd.getFilter(), targetRef, targetPos);
 			
 			
@@ -205,7 +204,7 @@ package
 		
 		public function removeObstalce(oid:int):void
 		{
-			sample.removeTempObstacle(oid);
+			sample.removeTempObstacleById(oid);
 		}
 		
 		

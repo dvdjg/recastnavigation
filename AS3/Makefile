@@ -66,8 +66,8 @@ build/Recast_wrap.o: recast.i $(PROJECTS)
 
 build/Recast.swc: build/Recast_wrap.o $(PROJECTS)
 
-	# Link the final library
-	g++ -jvmopt=-Xmx1G $(BASE_CFLAGS) $(ALL_INCS) swigmain.cpp \
+	# Link the final library -Xmx1G
+	g++ -jvmopt= $(BASE_CFLAGS) $(ALL_INCS) swigmain.cpp \
 	./build/Recast_wrap.o ./build/Recast.abc \
 	-Wl,--start-group \
 	-Wl,--end-group \

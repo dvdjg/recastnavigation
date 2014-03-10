@@ -222,7 +222,7 @@ package
 			
 			var tris:Vector.<int> = CModule.readIntVector(triPtr, ntris * 3); 
 			
-			var vertPtr:int = meshLoader.getVerts()
+			//var vertPtr:int = meshLoader.getVerts()
 			var nVerts:int = meshLoader.getVertCount();
 			
 			var verts:Vector.<Point> = new Vector.<Point>();
@@ -230,7 +230,9 @@ package
 			
 			for ( var i:int = 0; i < nVerts * 3; i+=3 )
 			{
-				p = new Point( CModule.readFloat(vertPtr + (i * 4)),  CModule.readFloat(vertPtr + ((i + 2) * 4)) ); //* 4 since floats take up 4 bytes , where x=i, z=i+1, y=i+2                      
+				var vert:Object = meshLoader.getVert(i);
+				//p = new Point( CModule.readFloat(vertPtr + (i * 4)),  CModule.readFloat(vertPtr + ((i + 2) * 4)) ); //* 4 since floats take up 4 bytes , where x=i, z=i+1, y=i+2                      
+				p = new Point( vert.x,  vert.z ); //* 4 since floats take up 4 bytes , where x=i, z=i+1, y=i+2                      
 				verts.push(p);
 			}
 			debugDrawMesh(tris, verts); //try obj mesh

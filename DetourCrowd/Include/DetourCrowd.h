@@ -136,7 +136,13 @@ struct dtCrowdAgent
 	double nvel[3];
 	double vel[3];		///< The actual velocity of the agent. [(x, y, z)]
 
-	/// The agent's configuration parameters.
+//    const double * getnpos() const { return npos; }
+//    const double * getdisp() const { return disp; }
+//    const double * getdvel() const { return dvel; }
+//    const double * getnvel() const { return nvel; }
+//    const double * getvel()  const { return  vel; }
+
+    /// The agent's configuration parameters.
 	dtCrowdAgentParams params;
 
 	/// The local path corridor corners for the agent. (Staight path.) [(x, y, z) * #ncorners]
@@ -157,6 +163,7 @@ struct dtCrowdAgent
 	dtPathQueueRef targetPathqRef;		///< Path finder ref.
 	bool targetReplan;					///< Flag indicating that the current path is being replanned.
 	double targetReplanTime;				/// <Time since the agent's target was replanned.
+//    const double * gettargetPos()  const { return targetPos; }
 };
 
 struct dtCrowdAgentAnimation
