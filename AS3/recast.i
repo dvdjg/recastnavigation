@@ -579,7 +579,7 @@ void getTiles() {
 
 // Bug? $input doesn't work here
 %typemap(argout) void* output {
-    AS3_DeclareVar(asres, int);
+    AS3_DeclareVar(asres, int); // The final asresult variable is not set at this point
     AS3_CopyScalarToVar(asres, result);
     // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
     inline_as3("if(asres > 0) {\n  "_BUG_$1".length=asres;\n  "_BUG_$1".position = 0;\nCModule.readBytes(ptr$1, asres, ba$1); // _BUG_$1 is the same object as ba$1\n}\n");
@@ -643,6 +643,7 @@ void getTiles() {
 	(double* hitNormal),
 	(double* randomPt),
 	(double* cornerVerts),
+	(double* nvel),
 	(double* mn),
 	(double* mx),
 	(double* tc),

@@ -50,7 +50,8 @@ public:
 	
 	inline int getSampleCount() const { return m_nsamples; }
 	inline const double* getSampleVelocity(const int i) const { return &m_vel[i*3]; }
-	inline double getSampleSize(const int i) const { return m_ssize[i]; }
+    inline void getSampleVelocityOut(const int i, double* out) const { out[0] = m_vel[i*3+0]; out[1] = m_vel[i*3+1]; out[2] = m_vel[i*3+2]; }
+    inline double getSampleSize(const int i) const { return m_ssize[i]; }
 	inline double getSamplePenalty(const int i) const { return m_pen[i]; }
 	inline double getSampleDesiredVelocityPenalty(const int i) const { return m_vpen[i]; }
 	inline double getSampleCurrentVelocityPenalty(const int i) const { return m_vcpen[i]; }
