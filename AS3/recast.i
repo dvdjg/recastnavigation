@@ -290,6 +290,7 @@ void getTiles() {
 	(const double* polyb, int npolyb)
 };
 
+
 %typemap(in) double[ANY] (double temp[$1_dim0]) {
     inline_as3("var ptr$1:int = %0;\n": : "r"(temp));
 	inline_as3("var size$1:int = %0;\n": : "r"($1_dim0));
@@ -307,10 +308,10 @@ void getTiles() {
 %typemap(out) double[ANY] {
 	inline_as3("var ptrRet:int = %0;\n": : "r"(result));
     inline_as3("var sizeRet:int = %0;\n": : "r"($1_dim0));
-inline_as3("if(ptrRet) {\n");
+	inline_as3("if(ptrRet) {\n");
 	inline_as3("var ret:Vector.<Number> = new Vector.<Number>;\n");
     // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
-	inline_as3("for (var i:int = 0; i < sizeRet ; i++){\n");
+	inline_as3("for (var i:int = 0; i < sizeRet ; i++)\n");
     inline_as3("  ret[i] = CModule.readDouble(ptrRet + 8*i);\n");
 	inline_as3("$result = ret;\n");
     inline_as3("} else {\n");
