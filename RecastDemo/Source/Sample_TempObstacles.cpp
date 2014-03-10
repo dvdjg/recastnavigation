@@ -830,7 +830,8 @@ Sample_TempObstacles::Sample_TempObstacles() :
 	m_cacheBuildMemUsage(0),
 	m_drawMode(DRAWMODE_NAVMESH),
 	m_maxTiles(0),
-	m_maxPolysPerTile(0),
+    m_maxPolysPerTile(0),
+    m_maxObstacles(128),
 	m_tileSize(48)
 {
 	resetCommonSettings();
@@ -1140,14 +1141,16 @@ void Sample_TempObstacles::handleMeshChanged(class InputGeom* geom)
 	initToolStates(this);
 }
 
-void Sample_TempObstacles::addTempObstacle(const double* pos)
+dtObstacleRef Sample_TempObstacles::addTempObstacle(const double* pos, float radius, float height)
 {
 	if (!m_tileCache)
-		return;
+        return 0;
 	double p[3];
 	dtVcopy(p, pos);
 	p[1] -= 0.5;
-	m_tileCache->addObstacle(p, 1.0, 2.0, 0);
+    dtObstacleRef result;
+    m_tileCache->addObstacle(p, radius, height, &result);
+    return result;
 }
 
 void Sample_TempObstacles::removeTempObstacle(const double* sp, const double* sq)
@@ -1156,6 +1159,14 @@ void Sample_TempObstacles::removeTempObstacle(const double* sp, const double* sq
 		return;
 	dtObstacleRef ref = hitTestObstacle(m_tileCache, sp, sq);
 	m_tileCache->removeObstacle(ref);
+}
+
+void Sample_TempObstacles::removeTempObstacleById(dtObstacleRef ref)
+{
+    if (!m_tileCache)
+        return;
+
+    m_tileCache->removeObstacle(ref);
 }
 
 void Sample_TempObstacles::clearAllTempObstacles()
@@ -1227,7 +1238,7 @@ bool Sample_TempObstacles::handleBuild()
 	tcparams.walkableClimb = m_agentMaxClimb;
 	tcparams.maxSimplificationError = m_edgeMaxError;
 	tcparams.maxTiles = tw*th*EXPECTED_LAYERS_PER_TILE;
-	tcparams.maxObstacles = 128;
+    tcparams.maxObstacles = m_maxObstacles;
 
 	dtFreeTileCache(m_tileCache);
 	

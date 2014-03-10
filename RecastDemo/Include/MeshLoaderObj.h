@@ -27,10 +27,18 @@ public:
 	
 	bool load(const char* fileName);
 
-	inline const double* getVerts() const { return m_verts; }
-	inline const double* getNormals() const { return m_normals; }
-	inline const int* getTris() const { return m_tris; }
-	inline int getVertCount() const { return m_vertCount; }
+    inline void getVertsVal(const double** ppVerts, int *pVertCount) const { *ppVerts = m_verts; *pVertCount = m_vertCount; }
+    inline void getNormalsVal(const double** ppVerts, int * pVertCount) const { *ppVerts = m_normals; *pVertCount = m_vertCount; }
+    inline void getTrisVal(const int** ppTris, int * pTriCount) const { *ppTris = m_tris; *pTriCount = m_triCount; }
+
+    inline const double* getVert(int i) const { return m_verts + i * 3; }
+    inline const double* getNormal(int i) const { return m_normals + i * 3; }
+    inline const int* getTri(int i) const { return m_tris + i * 3; }
+
+    inline const double* getVerts() const { return m_verts; }
+    inline const double* getNormals() const { return m_normals; }
+    inline const int* getTris() const { return m_tris; }
+    inline int getVertCount() const { return m_vertCount; }
 	inline int getTriCount() const { return m_triCount; }
 	inline const char* getFileName() const { return m_filename; }
 

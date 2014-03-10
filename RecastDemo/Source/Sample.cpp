@@ -35,12 +35,13 @@
 #	define snprintf _snprintf
 #endif
 
+
 Sample::Sample() :
-	m_geom(0),
-	m_navMesh(0),
-	m_navQuery(0),
-	m_crowd(0),
-	m_navMeshDrawFlags(DU_DRAWNAVMESH_OFFMESHCONS|DU_DRAWNAVMESH_CLOSEDLIST),
+    m_geom(0),
+    m_navMesh(0),
+    m_navQuery(0),
+    m_crowd(0),
+    m_navMeshDrawFlags(DU_DRAWNAVMESH_OFFMESHCONS|DU_DRAWNAVMESH_CLOSEDLIST),
 	m_tool(0),
 	m_ctx(0)
 {

@@ -185,6 +185,60 @@ void getTiles() {
 //const int* tris, const double* normals, int ntris
 
 // (\bdouble\s*\*\s*\w+\s*,\s*)const +(int +\w+)
+%typemap(astype) (const double** ppVerts, int *pVertCount) "Vector.<Number>";
+
+// Inside this typemap block you have a few variables that SWIG supplies:
+//
+// $1 - the first parameter that the C function is expecting
+// $2 - the second parameter that the C function is expecting
+//
+// $input - the actual input from ActionScript.  It's an ActionScript object
+//		    so it's only useful within an inline_as3() block.  This is the object
+//   		we need to bring into the C world by populating values for $1 and $2
+//
+%typemap(in) (const double** ppVerts, int *pVertCount) {
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+}
+
+// Bug? $input doesn't work here
+%typemap(argout) (const double** ppVerts, int *pVertCount) {
+	AS3_DeclareVar(len$1, int);
+	AS3_CopyScalarToVar(len$1, *$2);
+    AS3_DeclareVar(ptr$1, int);
+	AS3_CopyScalarToVar(ptr$1, *$1);
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3(_BUG_$1".length = len$1 * 3;\n");
+    inline_as3("for (var i:int = 0; i < "_BUG_$1".length; i++){\n");
+    inline_as3("	"_BUG_$1"[i] = CModule.readDouble(ptr$1 + 8*i);\n");
+    inline_as3("}\n");
+}
+
+%typemap(astype) (const int** ppTris, int * pTriCount) "Vector.<int>";
+
+%typemap(in) (const int** ppTris, int * pTriCount) {
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+}
+
+// Bug? $input doesn't work here
+%typemap(argout) (const int** ppTris, int * pTriCount) {
+	AS3_DeclareVar(len$1, int);
+	AS3_CopyScalarToVar(len$1, *$2);
+    AS3_DeclareVar(ptr$1, int);
+	AS3_CopyScalarToVar(ptr$1, *$1);
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3(_BUG_$1".length = len$1 * 3;\n");
+    inline_as3("for (var i:int = 0; i < "_BUG_$1".length; i++){\n");
+    inline_as3("	"_BUG_$1"[i] = CModule.read32(ptr$1 + 4*i);\n");
+    inline_as3("}\n");
+}
+
+
 %typemap(astype) (const double* p, int n) "Vector.<Number>";
 
 // Inside this typemap block you have a few variables that SWIG supplies:
@@ -231,6 +285,7 @@ void getTiles() {
 %typemap(freearg) (const double* p, int n) {
 	inline_as3("CModule.free(%0);\n": : "r"($1));
 };
+
 // const int* tris, const double* normals, int ntris
 %apply (const double* p, int n) {
 	(const double* normals, int ntris),
@@ -626,6 +681,26 @@ void getTiles() {
     inline_as3(_BUG_$1".x = CModule.readDouble(ptr$1 + 8*0); // Return to _BUG_$1, $input, $result, $symname, $0, $1\n");
     inline_as3(_BUG_$1".y = CModule.readDouble(ptr$1 + 8*1);\n");
     inline_as3(_BUG_$1".z = CModule.readDouble(ptr$1 + 8*2);\n");
+};
+
+%typemap(out) const double* {
+	inline_as3("var ptrRet:int = %0;\n": : "r"(result));
+    inline_as3("var ret:Object = new Object;\n");
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3("ret.x = CModule.readDouble(ptrRet + 8*0);\n");
+    inline_as3("ret.y = CModule.readDouble(ptrRet + 8*1);\n");
+    inline_as3("ret.z = CModule.readDouble(ptrRet + 8*2);\n");
+	inline_as3("$result = ret;\n");
+};
+
+%typemap(out) const int* {
+	inline_as3("var ptrRet:int = %0;\n": : "r"(result));
+    inline_as3("var ret:Object = new Object;\n");
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3("ret.x = CModule.read32(ptrRet + 4*0);\n");
+    inline_as3("ret.y = CModule.read32(ptrRet + 4*1);\n");
+    inline_as3("ret.z = CModule.read32(ptrRet + 4*2);\n");
+	inline_as3("$result = ret;\n");
 };
 
 // [out]

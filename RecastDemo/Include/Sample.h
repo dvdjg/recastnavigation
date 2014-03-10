@@ -93,6 +93,8 @@ protected:
 
 	unsigned char m_navMeshDrawFlags;
 
+public:
+
 	double m_cellSize;
 	double m_cellHeight;
 	double m_agentHeight;
@@ -156,6 +158,7 @@ public:
 
 	void resetCommonSettings();
 	void handleCommonSettings();
+
 };
 
 

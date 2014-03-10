@@ -21,6 +21,7 @@
 
 #include "Sample.h"
 #include "DetourNavMesh.h"
+#include "DetourTileCache.h"
 #include "Recast.h"
 #include "ChunkyTriMesh.h"
 
@@ -59,9 +60,10 @@ protected:
 	
 	int m_maxTiles;
 	int m_maxPolysPerTile;
-	double m_tileSize;
-	
 public:
+    int m_maxObstacles;
+    double m_tileSize;
+	
 	Sample_TempObstacles();
 	virtual ~Sample_TempObstacles();
 	
@@ -79,8 +81,9 @@ public:
 	void renderCachedTile(const int tx, const int ty, const int type);
 	void renderCachedTileOverlay(const int tx, const int ty, double* proj, double* model, int* view);
 
-	void addTempObstacle(const double* pos);
-	void removeTempObstacle(const double* sp, const double* sq);
+    dtObstacleRef addTempObstacle(const double* pos, float radius = 1.0, float height = 2.0);
+    void removeTempObstacleById(dtObstacleRef id);
+    void removeTempObstacle(const double* sp, const double* sq);
 	void clearAllTempObstacles();
 };
 
