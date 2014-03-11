@@ -1141,7 +1141,7 @@ void Sample_TempObstacles::handleMeshChanged(class InputGeom* geom)
 	initToolStates(this);
 }
 
-dtObstacleRef Sample_TempObstacles::addTempObstacle(const double* pos, float radius, float height)
+dtObstacleRef Sample_TempObstacles::addTempObstacle(const double* pos, double radius, double height)
 {
 	if (!m_tileCache)
         return 0;
