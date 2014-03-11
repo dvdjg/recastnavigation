@@ -1,6 +1,12 @@
 
-Recast & Detour
-===============
+Recast & Detour for ActionScript
+================================
+
+##Brief
+This is a modification of the original project made to run in Flash, AIR, Android and iOS.
+The code includes QtCreator project files.
+The main difference with the original is the use of double data types instead of floats. This is to avoid continuous float-double casts the ActionScript Virtual Macnine must perform.
+SWIG files are also provided for the interface betwen C++ and AS3. It is still a work in progress.
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/memononen/recastnavigation/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
