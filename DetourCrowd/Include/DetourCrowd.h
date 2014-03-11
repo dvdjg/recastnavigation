@@ -250,6 +250,9 @@ public:
 	///	 @param[in]		idx		The agent index. [Limits: 0 <= value < #getAgentCount()]
 	/// @return The requested agent.
 	const dtCrowdAgent* getAgent(const int idx);
+    const double* getAgentPosition(const int idx) const;
+    const double* getAgentDesiredVelocity(const int idx) const;
+    const double* getAgentActualVelocity(const int idx) const;
 
 	/// The maximum number of agents that can be managed by the object.
 	/// @return The maximum number of agents.

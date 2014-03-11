@@ -484,7 +484,22 @@ int dtCrowd::getAgentCount() const
 /// Agents in the pool may not be in use.  Check #dtCrowdAgent.active before using the returned object.
 const dtCrowdAgent* dtCrowd::getAgent(const int idx)
 {
-	return &m_agents[idx];
+
+}
+
+const double* dtCrowd::getAgentPosition(const int idx) const
+{
+    return m_agents[idx].npos;
+}
+
+const double* dtCrowd::getAgentDesiredVelocity(const int idx) const
+{
+    return m_agents[idx].dvel;
+}
+
+const double* dtCrowd::getAgentActualVelocity(const int idx) const
+{
+    return m_agents[idx].vel;
 }
 
 void dtCrowd::updateAgentParameters(const int idx, const dtCrowdAgentParams* params)
