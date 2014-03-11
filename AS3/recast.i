@@ -693,9 +693,6 @@ void getTiles() {
     inline_as3("CModule.writeDouble(ptr$1 + 8*2, $input.z);\n");
     // Finally assign the parameters that C is expecting to our new values
     $1 = dVectorOut;
-    inline_as3("} else {\n");
-    // Finally assign the parameters that C is expecting to our new values
-    $1 = 0;
     inline_as3("}\n");
 }
 
@@ -718,8 +715,6 @@ void getTiles() {
     inline_as3("ret.y = CModule.readDouble(ptrRet + 8*1);\n");
     inline_as3("ret.z = CModule.readDouble(ptrRet + 8*2);\n");
 	inline_as3("$result = ret;\n");
-    inline_as3("} else {\n");
-	inline_as3("$result = null;\n");
     inline_as3("}\n");
 };
 
@@ -732,8 +727,6 @@ void getTiles() {
     inline_as3("ret.y = CModule.read32(ptrRet + 4*1);\n");
     inline_as3("ret.z = CModule.read32(ptrRet + 4*2);\n");
 	inline_as3("$result = ret;\n");
-    inline_as3("} else {\n");
-	inline_as3("$result = null;\n");
     inline_as3("}\n");
 };
 

@@ -22,8 +22,7 @@ package
 	 * Example manager class for Recast Detour Path finding
 	 */
 	public class RecastManager
-	{
-		
+	{	
 		public var scale:Vector3D = new Vector3D(1, 1, 1); //the scale of the nav mesh to the world
 		public var maxAgents:int = 60;
 		public var maxAgentRadius:Number= 4;
@@ -59,7 +58,6 @@ package
 			
 			var meshLoader:rcMeshLoaderObj = new rcMeshLoaderObj();
 			meshLoader.swigCPtr = geom.getMesh();
-			//var triPtr:int = meshLoader.getTris();
 			var tris:Vector.<int> = new Vector.<int>;
 			var ntris:int = geom.getTriCount();
 			for(var i:int = 0; i < ntris; ++i) {
@@ -67,7 +65,6 @@ package
 			}
 			var triss:Vector.<int> = new Vector.<int>; 
 			meshLoader.getTrisVal(triss);
-			//var tris:Vector.<int> = CModule.readIntVector(triPtr, ntris * 3); 
 			
 			//update mesh settings
 			sample.m_cellSize = m_cellSize;
@@ -183,7 +180,10 @@ package
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
 			var obj:Object = sample.getBoundsMax();
-			return sample.addTempObstacle(navPosition, obstacleRadius / scale.x, obstacleHeight * scale.y);
+			var obstacleRef:int;
+			obstacleRef = sample.addTempObstacleDumb(obstacleRadius / scale.x, obstacleHeight * scale.y);
+			obstacleRef = sample.addTempObstacle(navPosition, obstacleRadius / scale.x, obstacleHeight * scale.y);
+			return obstacleRef;
 		}
 		
 		public function removeObstalce(oid:int):void
