@@ -194,12 +194,12 @@ package
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
 			
-			var posPtr:int = CModule.alloca(12);
-			CModule.writeFloat(posPtr, navPosition.x);
-			CModule.writeFloat(posPtr + 4, navPosition.y);
-			CModule.writeFloat(posPtr + 8, navPosition.z);
-			
-			return sample.addTempObstacle(posPtr, obstacleRadius / scale.x, obstacleHeight * scale.y);
+//			var posPtr:int = CModule.alloca(12);
+//			CModule.writeFloat(posPtr, navPosition.x);
+//			CModule.writeFloat(posPtr + 4, navPosition.y);
+//			CModule.writeFloat(posPtr + 8, navPosition.z);
+//			
+			return sample.addTempObstacle(navPosition, obstacleRadius / scale.x, obstacleHeight * scale.y);
 		}
 		
 		public function removeObstalce(oid:int):void
@@ -222,7 +222,7 @@ package
 		public function getAgentX(idx:int):Number
 		{
 			var agent:dtCrowdAgent = new dtCrowdAgent();
-			agent.swigCPtr = crowd.getAgent(int(idx));
+			agent.swigCPtr = crowd.getAgent(idx);
 			return CModule.readFloat( agent.npos ) * scale.x;
 		}
 		
