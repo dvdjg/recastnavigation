@@ -65,8 +65,6 @@ void getTiles() {
       "var result:Array = [];\n"
       : : 
   );
-  
-
 
   const dtNavMesh* mesh = sample->getNavMesh();
   if( !mesh )
@@ -117,8 +115,6 @@ void getTiles() {
     {
       
       const dtPoly* poly = &tile->polys[j];
-
-      // AS3_Val as3verts = AS3_Array("");
       inline_as3(
           "var as3verts:Array = [];\n"
           : : 
@@ -196,11 +192,13 @@ void getTiles() {
 //		    so it's only useful within an inline_as3() block.  This is the object
 //   		we need to bring into the C world by populating values for $1 and $2
 //
-%typemap(in) (const double** ppVerts, int *pVertCount) {
+%typemap(in) (const double** ppVerts, int *pVertCount) (double* pVerts, int vertCount) {
 	%#ifdef _BUG_$1
 	%#undef _BUG_$1
 	%#endif 
 	%#define _BUG_$1 "$input"
+	$1 = ($1_ltype) &pVerts;
+	$2 = ($2_ltype) &vertCount;
 }
 
 // Bug? $input doesn't work here
@@ -218,11 +216,13 @@ void getTiles() {
 
 %typemap(astype) (const int** ppTris, int * pTriCount) "Vector.<int>";
 
-%typemap(in) (const int** ppTris, int * pTriCount) {
+%typemap(in) (const int** ppTris, int * pTriCount) (int* pTris, int triCount){
 	%#ifdef _BUG_$1
 	%#undef _BUG_$1
 	%#endif 
 	%#define _BUG_$1 "$input"
+	$1 = ($1_ltype) &pTris;
+	$2 = ($2_ltype) &triCount;
 }
 
 // Bug? $input doesn't work here
@@ -661,7 +661,7 @@ void getTiles() {
 }
 
 
-%typemap(astype) double*, double[3] "Object";
+%typemap(astype) double*, double[3], const int*, int[3] "Object";
 
 %typemap(in) double* out (double dVector[3]) {
     // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
@@ -868,7 +868,7 @@ void getTiles() {
 
 	inline_as3("var ptr$1:int = %0;\n": : "r"(vector));
 	// Finally assign the parameters that C is expecting to our new values
-    $1 = vector;
+    $1 = ($1_ltype) vector;
 //	inline_as3("var ptr$1:Object = %0; // Alias of the input\n": : "r"($input));
 } 
 
@@ -879,6 +879,9 @@ void getTiles() {
     inline_as3(_BUG_$1"['value'] = CModule.read32(ptr$1);\n");
 };
 
+%apply (int&) {
+	(dtPolyRef*)
+};
 
 %typemap(astype) double& "Object";
 
@@ -1011,3 +1014,8 @@ void getTiles() {
 %include "Sample_TileMesh.h"
 %include "SampleInterfaces.h"
 %include "fastlz.h"
+
+%ignore rcMeshLoaderObj::getVerts();
+%ignore rcMeshLoaderObj::getNormals();
+%ignore rcMeshLoaderObj::getTris();
+

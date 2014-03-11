@@ -71,8 +71,10 @@ build/Recast.swc: build/Recast_wrap.o $(PROJECTS)
 	./build/Recast_wrap.o ./build/Recast.abc \
 	-Wl,--start-group \
 	-Wl,--end-group \
+	-fllvm-llc-opt=-ascopt=-optimize -fllvm-llc-opt=-ascopt=-removedeadcode  \
 	-emit-swc=org.recastnavigation $(CFLAGS) $(EXTRA_OPTS) $(ALL_ARCHIVES) -lGL -swf-version=17 -o build/Recast.swc # &> build/swc.log
 	#-emit-swc=org.recastnavigation $(CFLAGS) -flto-api=build/exports.txt $(EXTRA_OPTS) -o build/Recast.swc &> build/swc.log #with -flto option
+	#-fllvm-llc-opt=-ascopt=-load-config+=airmobile-config.xml \
 	
 DebugUtils: 
 	@echo "==== Building DebugUtils ($(config)) ===="
