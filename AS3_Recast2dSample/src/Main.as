@@ -222,16 +222,13 @@ package
 			var tris:Vector.<int> = new Vector.<int>; 
 			meshLoader.getTrisVal(tris);
 			var ntris:int = meshLoader.getTriCount();
-			
-			//var tris:Vector.<int> = CModule.readIntVector(triPtr, ntris * 3); 
-			
-			//var vertPtr:int = meshLoader.getVerts()
+
 			var nVerts:int = meshLoader.getVertCount();
 			
 			var verts:Vector.<Point> = new Vector.<Point>();
 			var p:Point;
 			
-			for ( var i:int = 0; i < nVerts * 3; i+=3 )
+			for ( var i:int = 0; i < nVerts; i++ )
 			{
 				var vert:Object = meshLoader.getVert(i);
 				p = new Point( vert.x,  vert.z );                    
