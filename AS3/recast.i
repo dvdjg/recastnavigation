@@ -259,7 +259,7 @@ void getTiles() {
     double* newBuffer;
     int newBufferSize = 0;
 
-    inline_as3("var ptr$1:int = $input == null ? 0 : CModule.malloc($input.length*8);\n"); // 8 bytes per double
+    inline_as3("var ptr$1:int = ($input == null) ? 0 : CModule.malloc($input.length*8);\n"); // 8 bytes per double
     inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
 
     inline_as3("if(ptr$1) {\n");
@@ -306,7 +306,7 @@ void getTiles() {
 }
 
 %typemap(out) double[ANY] {
-	inline_as3("var ptrRet:int = %0;\n": : "r"(result));
+	inline_as3("var $result:Vector.<Number>;\nvar ptrRet:int = %0;\n": : "r"(result));
     inline_as3("var sizeRet:int = %0;\n": : "r"($1_dim0));
 	inline_as3("var ret:Vector.<Number> = new Vector.<Number>;\n");
     // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
@@ -335,7 +335,7 @@ void getTiles() {
     // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
     // that will convert the Vector into something C can use.  Notice that we are using $input
     // inside this inline_as3() call.
-    inline_as3("var ptr$1:int = $input == null ? 0 : CModule.malloc($input.length*4);\n"); // 4 bytes per int
+    inline_as3("var ptr$1:int = ($input == null) ? 0 : CModule.malloc($input.length*4);\n"); // 4 bytes per int
 
     // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
     inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
@@ -381,7 +381,7 @@ void getTiles() {
     // setup some new C variables that we're going to modify from within our inline ActionScript
     int* newBuffer;
 	
-    inline_as3("var ptr$1:int = $input == null ? 0 : CModule.malloc($input.length*4);\n"); // 4 bytes per int
+    inline_as3("var ptr$1:int = ($input == null) ? 0 : CModule.malloc($input.length*4);\n"); // 4 bytes per int
     inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
 
     inline_as3("if(ptr$1) {\n");
@@ -419,7 +419,7 @@ void getTiles() {
     // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
     // that will convert the Vector into something C can use.  Notice that we are using $input
     // inside this inline_as3() call.
-    inline_as3("var ptr$1:int = $input == null ? 0 : CModule.malloc($input.length*2);\n"); // 2 bytes per unsigned short
+    inline_as3("var ptr$1:int = ($input == null) ? 0 : CModule.malloc($input.length*2);\n"); // 2 bytes per unsigned short
 
     // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
     inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
@@ -471,7 +471,7 @@ void getTiles() {
     // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
     // that will convert the Vector into something C can use.  Notice that we are using $input
     // inside this inline_as3() call.
-    inline_as3("var ptr$1:int = $input == null ? 0 : CModule.malloc($input.length*2);\n"); // 2 bytes per unsigned short
+    inline_as3("var ptr$1:int = ($input == null) ? 0 : CModule.malloc($input.length*2);\n"); // 2 bytes per unsigned short
 
     // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
     inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
@@ -530,7 +530,7 @@ void getTiles() {
     // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
     // that will convert the Vector into something C can use.  Notice that we are using $input
     // inside this inline_as3() call.
-    inline_as3("var ptr$1:int = $input == null ? 0 : CModule.malloc($input.length*4);\n"); // 4 bytes per int
+    inline_as3("var ptr$1:int = ($input == null) ? 0 : CModule.malloc($input.length*4);\n"); // 4 bytes per int
 
     // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
     inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
@@ -586,7 +586,7 @@ void getTiles() {
     // Use the inline_as3() function that is defined in AS3.h to write the ActionScript code
     // that will convert the Vector into something C can use.  Notice that we are using $input
     // inside this inline_as3() call.
-    inline_as3("$input.position=0;\nvar ptr$1:int = $input == null ? 0 : CModule.malloc($input.length);\n"); 
+    inline_as3("$input.position=0;\nvar ptr$1:int = ($input == null) ? 0 : CModule.malloc($input.length);\n"); 
 
     // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
     inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
@@ -626,7 +626,7 @@ void getTiles() {
 	%#endif 
 	%#define _BUG_$1 "$input"
 	unsigned char * newBuffer;
-	inline_as3("var ptr$1:int = $input == null ? 0 : CModule.malloc($input.length);\n"); 
+	inline_as3("var ptr$1:int = ($input == null) ? 0 : CModule.malloc($input.length);\n"); 
     // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
     inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
 
@@ -684,7 +684,7 @@ void getTiles() {
 	%#undef _BUG_$1
 	%#endif 
 	%#define _BUG_$1 "$input"
-	inline_as3("var ptr$1:int = $input == null ? 0 : %0;\n": : "r"(dVectorOut));
+	inline_as3("var ptr$1:int = ($input == null) ? 0 : %0;\n": : "r"(dVectorOut));
 
     inline_as3("if(ptr$1) {\n");
 	// Now push that Vector into flascc memory
@@ -710,10 +710,10 @@ void getTiles() {
 };
 
 %typemap(out) const double*, double[3] {
-	inline_as3("var ptrRet:int = %0;\n": : "r"(result));
+	inline_as3("var $result:Object;\nvar ptrRet:int = %0;\n": : "r"(result));
     inline_as3("if(ptrRet) {\n");
 	inline_as3("var ret:Object = new Object;\n");
-    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    // Now pull that Vector into flascc memory
     inline_as3("ret.x = CModule.readDouble(ptrRet + 8*0);\n");
     inline_as3("ret.y = CModule.readDouble(ptrRet + 8*1);\n");
     inline_as3("ret.z = CModule.readDouble(ptrRet + 8*2);\n");
@@ -724,10 +724,10 @@ void getTiles() {
 };
 
 %typemap(out) const int*, int[3] {
-	inline_as3("var ptrRet:int = %0;\n": : "r"(result));
+	inline_as3("var $result:Object;\nvar ptrRet:int = %0;\n": : "r"(result));
 	inline_as3("if(ptrRet) {\n");
 	inline_as3("var ret:Object = new Object;\n");
-    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    // Now pull that Vector into flascc memory
     inline_as3("ret.x = CModule.read32(ptrRet + 4*0);\n");
     inline_as3("ret.y = CModule.read32(ptrRet + 4*1);\n");
     inline_as3("ret.z = CModule.read32(ptrRet + 4*2);\n");
@@ -782,7 +782,7 @@ void getTiles() {
 	%#undef _BUG_$1
 	%#endif 
 	%#define _BUG_$1 "$input"
-	inline_as3("var ptr$1:int = $input == null ? 0 : %0;\n": : "r"(dVectorOut));
+	inline_as3("var ptr$1:int = ($input == null) ? 0 : %0;\n": : "r"(dVectorOut));
 	inline_as3("if(ptr$1) {\n");
 	inline_as3("$input.length = 16;\n");
 
@@ -825,7 +825,7 @@ void getTiles() {
 	%#undef _BUG_$1
 	%#endif 
 	%#define _BUG_$1 "$input"
-	inline_as3("var ptr$1:int = $input == null ? 0 : %0;\n": : "r"(dVectorOut));
+	inline_as3("var ptr$1:int = ($input == null) ? 0 : %0;\n": : "r"(dVectorOut));
 	inline_as3("if(ptr$1) {\n");
 	inline_as3("$input.length = 16;\n");
 

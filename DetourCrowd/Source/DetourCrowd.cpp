@@ -484,7 +484,7 @@ int dtCrowd::getAgentCount() const
 /// Agents in the pool may not be in use.  Check #dtCrowdAgent.active before using the returned object.
 const dtCrowdAgent* dtCrowd::getAgent(const int idx)
 {
-
+    return &m_agents[idx];
 }
 
 const double* dtCrowd::getAgentPosition(const int idx) const

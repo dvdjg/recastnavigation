@@ -105,8 +105,8 @@ int main(int /*argc*/, char** /*argv*/)
 	{	
 		width = vi->current_w - 20;
 		height = vi->current_h - 80;
-        width = 800;
-        height = 600;
+//        width = 800;
+//        height = 600;
         screen = SDL_SetVideoMode(width, height, 0, SDL_OPENGL);
 	}
 	

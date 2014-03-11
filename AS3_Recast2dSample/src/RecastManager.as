@@ -6,6 +6,7 @@ package
 	import org.recastnavigation.AS3_rcContext;
 	import org.recastnavigation.CModule;
 	import org.recastnavigation.InputGeom;
+	import org.recastnavigation.Recast;
 	import org.recastnavigation.Sample_TempObstacles;
 	import org.recastnavigation._wrap_DT_CROWD_ANTICIPATE_TURNS;
 	import org.recastnavigation._wrap_DT_CROWD_OBSTACLE_AVOIDANCE;
@@ -121,7 +122,7 @@ package
 			params.pathOptimizationRange = pathOptimizationRange;
 			
 			params.separationWeight = 2.0;
-			params.obstacleAvoidanceType = String.fromCharCode(3.0); //0, 3.0, 1
+			params.obstacleAvoidanceType = String.fromCharCode(3.0);
 			var updateFlags:uint = 0;
 			//todo - need to add class for enum 
 			updateFlags |= _wrap_DT_CROWD_ANTICIPATE_TURNS();
@@ -147,7 +148,10 @@ package
 			var targetPos:Object = {};
 			var queryExtents:Object = crowd.getQueryExtents();
 			
-			var statusPtr:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.getFilter(), targetRef, targetPos); // targetRef, targetPos
+			var statusPtr:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.getFilter(), targetRef, targetPos);
+			if (Recast.dtStatusFailed(statusPtr)) {
+				trace("Error");
+			}
 			trace("addAgentNear: navPosition={", navPosition.x, navPosition.y, navPosition.z, "} targetPos={", targetPos.x, targetPos.y, targetPos.z,"}");
 			
 			if (targetRef > 0)
@@ -178,7 +182,7 @@ package
 		public function addObstacle(scenePosition:Vector3D, obstacleRadius:Number, obstacleHeight:Number):int
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
-		
+			var obj:Object = sample.getBoundsMax();
 			return sample.addTempObstacle(navPosition, obstacleRadius / scale.x, obstacleHeight * scale.y);
 		}
 		
@@ -201,6 +205,8 @@ package
 		 */
 		public function getAgentPos(idx:int):Object
 		{
+			var count:int = crowd.getAgentCount();
+			var desired:Object = crowd.getAgentDesiredVelocity(idx);
 			var pos:Object = crowd.getAgentPosition(idx);
 			return { x: pos.x * scale.x, y: pos.y * scale.y, z: pos.z * scale.z };
 		}
