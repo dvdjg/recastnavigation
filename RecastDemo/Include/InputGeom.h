@@ -96,6 +96,16 @@ public:
 	void deleteConvexVolume(int i);
 	void drawConvexVolumes(struct duDebugDraw* dd, bool hilight = false);
 	///@}
+
+    /// @name Access functions.
+    ///@{
+    inline const double* getVert(int i) const { return m_mesh->getVert(i); }
+    inline const double* getNormal(int i) const { return m_mesh->getNormal(i); }
+    inline const int* getTri(int i) const { return m_mesh->getTri(i); }
+
+    inline int getVertCount() const { return  m_mesh->getVertCount(); }
+    inline int getTriCount() const { return m_mesh->getTriCount(); }
+    ///@}
 };
 
 #endif // INPUTGEOM_H
