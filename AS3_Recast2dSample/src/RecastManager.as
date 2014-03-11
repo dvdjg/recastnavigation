@@ -15,6 +15,8 @@ package
 	import org.recastnavigation.dtCrowdAgent;
 	import org.recastnavigation.dtCrowdAgentParams;
 	import org.recastnavigation.dtNavMeshQuery;
+	import org.recastnavigation.rcMeshLoaderObj;
+
 	/**
 	 * Example manager class for Recast Detour Path finding
 	 */
@@ -24,8 +26,6 @@ package
 		public var scale:Vector3D = new Vector3D(1, 1, 1); //the scale of the nav mesh to the world
 		public var maxAgents:int = 60;
 		public var maxAgentRadius:Number= 4;
-		//public var maxSpeed:Number = 4.5; 
-		//public var maxAcceleration:Number = 8.5; 
 		
 		public var m_cellSize:Number = 0.3,
 					m_cellHeight:Number = 0.2,
@@ -48,13 +48,25 @@ package
 			CModule.startAsync(this);
 			
 			//load the mesh file into recast
-			CModule.vfs.addFile(filename, obj ); //formly CLibInit.supplyFile from Alchemy
+			CModule.vfs.addFile(filename, obj );
 			
 			var as3LogContext:AS3_rcContext = AS3_rcContext.create();
 			_sample = Sample_TempObstacles.create();
 			geom = InputGeom.create();
 			
 			var loadResult:Boolean = geom.loadMesh(as3LogContext.swigCPtr, filename);
+			
+			var meshLoader:rcMeshLoaderObj = new rcMeshLoaderObj();
+			meshLoader.swigCPtr = geom.getMesh();
+			//var triPtr:int = meshLoader.getTris();
+			var tris:Vector.<int> = new Vector.<int>;
+			var ntris:int = geom.getTriCount();
+			for(var i:int = 0; i < ntris; ++i) {
+				var tri:Object = geom.getTri(i);
+			}
+			var triss:Vector.<int> = new Vector.<int>; 
+			meshLoader.getTrisVal(triss);
+			//var tris:Vector.<int> = CModule.readIntVector(triPtr, ntris * 3); 
 			
 			//update mesh settings
 			sample.m_cellSize = m_cellSize;
@@ -85,9 +97,6 @@ package
 			crowd = new dtCrowd();
 			crowd.swigCPtr = sample.getCrowd();
 			crowd.init(maxAgents, maxAgentRadius, sample.getNavMesh() );
-			
-			//var debug:dtCrowdAgentDebugInfo = dtCrowdAgentDebugInfo.create();
-			//crowdDebugPtr = debug.swigCPtr;
 		}
 		
 		public function advanceTime(deltaTime:Number):void
@@ -102,11 +111,6 @@ package
 		public function addAgentNear(scenePosition:Vector3D, radius:Number = 1.0, height:Number = 2.0, maxAccel:Number=8.5, maxSpeed:Number=4.5, collisionQueryRange:Number=12, pathOptimizationRange:Number=30 ):int
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
-			
-//			var posPtr:int = CModule.alloca(12);
-//			CModule.writeFloat(posPtr, navPosition.x);
-//			CModule.writeFloat(posPtr + 4, navPosition.y);
-//			CModule.writeFloat(posPtr + 8, navPosition.z);
 			
 			var params:dtCrowdAgentParams = dtCrowdAgentParams.create();
 			params.radius  = radius / scale.x;
@@ -126,36 +130,28 @@ package
 			updateFlags |= _wrap_DT_CROWD_OBSTACLE_AVOIDANCE();
 			//updateFlags |= _wrap_DT_CROWD_SEPARATION();
 			params.updateFlags = String.fromCharCode(updateFlags); //since updateFlags is stored as a char in recast, need to save the string as the char code value
-			trace(params.updateFlags.charCodeAt(0) );
+			//trace(params.updateFlags.charCodeAt(0) );
 			
+			var idx:int = crowd.addAgent(navPosition, params.swigCPtr );			
 			
-			//params.updateFlags = String(1);
+			var pos:Object = getAgentPos(idx);
 			
-			//params.updateFlags = "0";
-			//params.obstacleAvoidanceType = 1.0;
-			//params.updateFlags |= "1";
+			var pos2:Object = crowd.getAgentPosition(idx);
 			
-			var idx:int = crowd.addAgent(navPosition, params.swigCPtr );
+			var nagents:int = crowd.getAgentCount();
 			
 			var navquery:dtNavMeshQuery  = new dtNavMeshQuery();
 			navquery.swigCPtr =  sample.getNavMeshQuery();
-			//const dtQueryFilter* filter = crowd->getFilter();
-			//const float* ext = crowd->getQueryExtents();
 
-			var targetRef:int;
+			var targetRef:Object = {};
 			var targetPos:Object = {};
+			var queryExtents:Object = crowd.getQueryExtents();
 			
-			var statusPtr:int = navquery.findNearestPoly(navPosition, crowd.getQueryExtents(), crowd.getFilter(), targetRef, targetPos); // targetRef, targetPos
-			//var status:int = findNearestPoly2(navquery, posPtr, crowd.getQueryExtents(), crowd.getFilter(), targetRef, targetPos);
+			var statusPtr:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.getFilter(), targetRef, targetPos); // targetRef, targetPos
+			trace("addAgentNear: navPosition={", navPosition.x, navPosition.y, navPosition.z, "} targetPos={", targetPos.x, targetPos.y, targetPos.z,"}");
 			
-			//trace(CModule.readFloat(targetPos), CModule.readFloat(targetPos+4), CModule.readFloat(targetPos+8));
-			trace(targetPos.x, targetPos.y, targetPos.z);
-			
-			//var test1:int = CModule.read32(targetRef);
-			//var test2:Number = CModule.readFloat(targetPos);
-		
 			if (targetRef > 0)
-				crowd.requestMoveTarget(idx, targetRef, targetPos);	
+				crowd.requestMoveTarget(idx, targetRef.value, targetPos);	
 			
 			return idx;
 		}
@@ -165,40 +161,24 @@ package
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
 			
-//			var posPtr:int = CModule.alloca(12);
-//			CModule.writeFloat(posPtr, navPosition.x);
-//			CModule.writeFloat(posPtr + 4, navPosition.y);
-//			CModule.writeFloat(posPtr + 8, navPosition.z);
-			
 			var navquery:dtNavMeshQuery  = new dtNavMeshQuery();
 			navquery.swigCPtr =  sample.getNavMeshQuery();
 			
-			var targetRef:int = CModule.alloca(4);
+			var targetRef:Object = {};
 			var targetPos:Object = {};
+			var queryExtents:Object = crowd.getQueryExtents();
 			
-			var status:int = navquery.findNearestPoly(navPosition, crowd.getQueryExtents(), crowd.getFilter(), targetRef, targetPos);
-			//var status:int = findNearestPoly2(navquery,posPtr, crowd.getQueryExtents(), crowd.getFilter(), targetRef, targetPos);
-			
-			
-			//trace(CModule.readFloat(targetPos), CModule.readFloat(targetPos+4), CModule.readFloat(targetPos+8));
-			
-			//var test1:int = CModule.read32(targetRef);
-			//var test2:Number = CModule.readFloat(targetPos);
+			var status:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.getFilter(), targetRef, targetPos);
 		
 			if ( targetRef > 0)
-				crowd.requestMoveTarget(idx,targetRef, targetPos);
+				crowd.requestMoveTarget(idx,targetRef.value, targetPos);
 			
 		}
 		
 		public function addObstacle(scenePosition:Vector3D, obstacleRadius:Number, obstacleHeight:Number):int
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
-			
-//			var posPtr:int = CModule.alloca(12);
-//			CModule.writeFloat(posPtr, navPosition.x);
-//			CModule.writeFloat(posPtr + 4, navPosition.y);
-//			CModule.writeFloat(posPtr + 8, navPosition.z);
-//			
+		
 			return sample.addTempObstacle(navPosition, obstacleRadius / scale.x, obstacleHeight * scale.y);
 		}
 		
@@ -219,24 +199,10 @@ package
 		 * @param	idx
 		 * @return
 		 */
-		public function getAgentX(idx:int):Number
+		public function getAgentPos(idx:int):Object
 		{
-			var agent:dtCrowdAgent = new dtCrowdAgent();
-			agent.swigCPtr = crowd.getAgent(idx);
-			return CModule.readFloat( agent.npos ) * scale.x;
-		}
-		
-		public function getAgentY(idx:int):Number
-		{
-			var agent:dtCrowdAgent = new dtCrowdAgent();
-			agent.swigCPtr = crowd.getAgent(int(idx));
-			return CModule.readFloat( agent.npos +4 ) * scale.x;
-		}
-		public function getAgentZ(idx:int):Number
-		{
-			var agent:dtCrowdAgent = new dtCrowdAgent();
-			agent.swigCPtr = crowd.getAgent(int(idx));
-			return CModule.readFloat( agent.npos +8 ) * scale.x;
+			var pos:Object = crowd.getAgentPosition(idx);
+			return { x: pos.x * scale.x, y: pos.y * scale.y, z: pos.z * scale.z };
 		}
 		
 		public function get sample():Sample_TempObstacles

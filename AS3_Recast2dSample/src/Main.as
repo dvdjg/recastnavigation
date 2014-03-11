@@ -118,9 +118,10 @@ package
 			for ( var idx:Object in agentObjectsByAgendIdx ) //iteratore through each object key
 			{
 				recastManager.moveAgentNear(int(idx), scenePosition );
+				trace("onMouseRightClick: ",int(idx), "scenePosition={", scenePosition.x, scenePosition.z,"}");
 			}
-			//recastManager.moveAgentNear(0, scenePosition );
 		}
+		
 		private function onMouseClick(e:MouseEvent):void
 		{
 			var scenePosition:Vector3D = new Vector3D(world.mouseX, WORLD_Z * SCALE, world.mouseY  );
@@ -139,6 +140,7 @@ package
 			s.y =scenePosition.z
 			
 			world.addChild(s);
+			trace("onMouseClick: ",int(idx), "scenePosition={", scenePosition.x,  scenePosition.z,"}");
 			
 			
 			agentObjectsByAgendIdx[ idx ] = s;
@@ -202,10 +204,10 @@ package
 			//todo - change this to a vector or use domain memory to speed this up.  for each in a dictionary is very slow when called every frame!
 			for ( var idx:Object in agentObjectsByAgendIdx ) //iteratore through each object key
 			{
+				var pos:Object = recastManager.getAgentPos(int(idx));
 				//trace("agent at:",CModule.readFloat( agent.npos ), CModule.readFloat( agent.npos + 4 ), CModule.readFloat( agent.npos + 8));
-				agentObjectsByAgendIdx[ idx ].x = recastManager.getAgentX(int(idx));
-				//agentObjectsByAgendIdx[ idx ].y = recastManager.getAgentY(int(idx));
-				agentObjectsByAgendIdx[ idx ].y = recastManager.getAgentZ(int(idx));
+				agentObjectsByAgendIdx[ idx ].x = pos.x;
+				agentObjectsByAgendIdx[ idx ].y = pos.y;
 			}
 		}
 		
@@ -217,10 +219,11 @@ package
 			var meshLoader:rcMeshLoaderObj = new rcMeshLoaderObj();
 			meshLoader.swigCPtr = recastManager.geomerty.getMesh();
 			
-			var triPtr:int = meshLoader.getTris();
+			var tris:Vector.<int> = new Vector.<int>; 
+			meshLoader.getTrisVal(tris);
 			var ntris:int = meshLoader.getTriCount();
 			
-			var tris:Vector.<int> = CModule.readIntVector(triPtr, ntris * 3); 
+			//var tris:Vector.<int> = CModule.readIntVector(triPtr, ntris * 3); 
 			
 			//var vertPtr:int = meshLoader.getVerts()
 			var nVerts:int = meshLoader.getVertCount();
@@ -231,16 +234,11 @@ package
 			for ( var i:int = 0; i < nVerts * 3; i+=3 )
 			{
 				var vert:Object = meshLoader.getVert(i);
-				//p = new Point( CModule.readFloat(vertPtr + (i * 4)),  CModule.readFloat(vertPtr + ((i + 2) * 4)) ); //* 4 since floats take up 4 bytes , where x=i, z=i+1, y=i+2                      
-				p = new Point( vert.x,  vert.z ); //* 4 since floats take up 4 bytes , where x=i, z=i+1, y=i+2                      
+				p = new Point( vert.x,  vert.z );                    
 				verts.push(p);
 			}
 			debugDrawMesh(tris, verts); //try obj mesh
-			
-			
-			
 			//now draw the actual nav mesh
-			//debugDrawNavMesh();
 			var tiles:Array = getTiles(recastManager.sample.swigCPtr);
 			drawNavMesh(tiles);
 		}
@@ -251,9 +249,9 @@ package
 			//this.graphics.clear();
 			for ( var i:int = 0; i < tris.length; i += 3)
 			{
-				var v1:Object = verts[tris[i]];
-				var v2:Object = verts[tris[i + 1]];
-				var v3:Object = verts[tris[i + 2]];
+				var v1:Point = verts[tris[i]];
+				var v2:Point = verts[tris[i + 1]];
+				var v3:Point = verts[tris[i + 2]];
 				
 				debugSprite.graphics.lineStyle(0.1, 0x514a3c);
 				debugSprite.graphics.beginFill(0x92856d, 1 );
@@ -264,55 +262,7 @@ package
 				debugSprite.graphics.endFill();
 			}
 		}
-		/*
-		private function debugDrawNavMesh():void
-		{
-			var navMesh:dtNavMesh = new dtNavMesh();
-			navMesh.swigCPtr = recastManager.sample.getNavMesh();
-			
-			//debugSprite.graphics.beginFill(0x00ff00, 0.8 );
-			//debugSprite.graphics.drawCircle( 200,0, 0.5 );
-			//debugSprite.graphics.endFill();
-					
-			//loop through every nav mesh tile
-			for ( var t:int = 0; t < navMesh.getMaxTiles(); t++)
-			{
-				var tile:dtMeshTile = new dtMeshTile();
-				tile.swigCPtr = navMesh.getTile(t);
-				
-				if (tile.header == 0 ) //check if the ptr points anywhere
-					continue;
-				var header:dtMeshHeader = new dtMeshHeader();
-				header.swigCPtr = tile.header;
-				
-				var as3tileverts:Vector.<Vector3D> = new Vector.<Vector3D>();
-				
-				var v:Vector3D;
-				
-				trace(header.polyCount, header.vertCount, header.detailTriCount );
-				
-				
-				var poly:dtPoly = new dtPoly();
-				poly.swigCPtr = tile.polys;
-				
-				for ( var p:int = 0; p < header.polyCount; p++)
-				{
-					var polyDetail:dtPolyDetail = new dtPolyDetail();
-					polyDetail.swigCPtr = getPolyDetail(tile.swigCPtr, p );
-					
-					var triCount:int = getPolyDetailTriCount(tile.swigCPtr, p );
-					var triBase:int = getPolyDetailTriBase(tile.swigCPtr, p );
-					
-					var tricCountChar:int = polyDetail.triCount.charCodeAt(0);
-					var vertCountChar:int = polyDetail.vertCount.charCodeAt(0);
-					//trace("tricount", getPolyDetail(tile.swigCPtr, p ) );
-					
-				}
-				
-			}
-		}
 		
-		*/
 		//draw the actual walkable navigation mesh
 		private function drawNavMesh(tiles:Array):void
 		{
@@ -341,7 +291,6 @@ package
 						debugSprite.graphics.lineTo(p2.x, p2.z);
 						debugSprite.graphics.lineTo(p3.x, p3.z);
 						debugSprite.graphics.lineTo(p1.x, p1.z);
-						
 					}
 					debugSprite.graphics.endFill();
 				}
