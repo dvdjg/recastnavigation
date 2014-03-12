@@ -968,16 +968,16 @@ bool Sample_TempObstacles::handleBuild()
 	return true;
 }
 
-void Sample_TempObstacles::handleUpdate(const double dt)
+dtStatus Sample_TempObstacles::handleUpdate(const double dt)
 {
 	Sample::handleUpdate(dt);
 	
 	if (!m_navMesh)
-		return;
+        return DT_FAILURE;
 	if (!m_tileCache)
-		return;
+        return DT_FAILURE;
 	
-	m_tileCache->update(dt, m_navMesh);
+    return m_tileCache->update(dt, m_navMesh);
 }
 
 void Sample_TempObstacles::getTilePos(const double* pos, int& tx, int& ty)

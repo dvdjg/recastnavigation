@@ -117,8 +117,8 @@ bool Sample::handleBuild()
 	return true;
 }
 
-void Sample::handleUpdate(const double dt)
+dtStatus Sample::handleUpdate(const double dt)
 {
-	
+    return DT_SUCCESS;
 }
 

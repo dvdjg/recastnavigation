@@ -178,8 +178,9 @@ void getTiles() {
 
 // djg
 %as3import("flash.utils.ByteArray");
-
-%apply int{size_t};
+%apply unsigned int{unsigned char};
+%apply unsigned int{unsigned short};
+%apply unsigned int{size_t};
 //const int* tris, const double* normals, int ntris
 
 // (\bdouble\s*\*\s*\w+\s*,\s*)const +(int +\w+)
@@ -1013,4 +1014,5 @@ void getTiles() {
 %ignore rcMeshLoaderObj::getVerts();
 %ignore rcMeshLoaderObj::getNormals();
 %ignore rcMeshLoaderObj::getTris();
+
 

@@ -90,7 +90,9 @@ package
 			
 			var startTime:Number = new Date().valueOf();
 			var buildSuccess:Boolean = sample.handleBuild();
-			trace("build time", new Date().valueOf() - startTime, "ms");
+			trace("Build=" + buildSuccess, ". Build time", new Date().valueOf() - startTime, "ms");
+			
+			var oid:int = addObstacle(new Vector3D(22, 33, 44), 55, 11);
 			
 			crowd = new dtCrowd();
 			crowd.swigCPtr = sample.getCrowd();
@@ -102,7 +104,9 @@ package
 			if( crowd )
 				crowd.update(deltaTime, crowdDebugPtr);
 				
-			sample.handleUpdate(deltaTime); //update the tileCache
+			var res:int = sample.handleUpdate(deltaTime); //update the tileCache
+			var re:Boolean = Recast.dtStatusSucceed(res);
+			re = !re;
 		}
 		
 		//todo - this should take 2 params, position, and dtCrowdAgentParams
@@ -119,15 +123,15 @@ package
 			params.pathOptimizationRange = pathOptimizationRange;
 			
 			params.separationWeight = 2.0;
-			params.obstacleAvoidanceType = String.fromCharCode(3.0);
+			params.obstacleAvoidanceType = 3;
 			var updateFlags:uint = 0;
 			//todo - need to add class for enum 
-			updateFlags |= _wrap_DT_CROWD_ANTICIPATE_TURNS();
-			updateFlags |= _wrap_DT_CROWD_OPTIMIZE_VIS();
-			updateFlags |= _wrap_DT_CROWD_OPTIMIZE_TOPO();
-			updateFlags |= _wrap_DT_CROWD_OBSTACLE_AVOIDANCE();
-			//updateFlags |= _wrap_DT_CROWD_SEPARATION();
-			params.updateFlags = String.fromCharCode(updateFlags); //since updateFlags is stored as a char in recast, need to save the string as the char code value
+			updateFlags |= Recast.DT_CROWD_ANTICIPATE_TURNS;
+			updateFlags |= Recast.DT_CROWD_OPTIMIZE_VIS;
+			updateFlags |= Recast.DT_CROWD_OPTIMIZE_TOPO;
+			updateFlags |= Recast.DT_CROWD_OBSTACLE_AVOIDANCE;
+			//updateFlags |= Recast.DT_CROWD_SEPARATION();
+			params.updateFlags = updateFlags; //since updateFlags is stored as a char in recast, need to save the string as the char code value
 			//trace(params.updateFlags.charCodeAt(0) );
 			
 			var idx:int = crowd.addAgent(navPosition, params.swigCPtr );			

@@ -55,7 +55,7 @@ public:
 	virtual void handleSettings();
 	virtual void handleMeshChanged(class InputGeom* geom);
 	virtual bool handleBuild();
-	virtual void handleUpdate(const double dt);
+    virtual dtStatus handleUpdate(const double dt);
 
 	void getTilePos(const double* pos, int& tx, int& ty);
 

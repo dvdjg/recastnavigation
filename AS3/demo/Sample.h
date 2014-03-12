@@ -19,6 +19,7 @@
 #ifndef RECASTSAMPLE_H
 #define RECASTSAMPLE_H
 
+#include "DetourStatus.h"
 #include "Recast.h"
 
 
@@ -91,7 +92,7 @@ public:
 	//virtual void handleRenderOverlay(double* proj, double* model, int* view);
 	virtual void handleMeshChanged(class InputGeom* geom);
 	virtual bool handleBuild();
-	virtual void handleUpdate(const double dt);
+    virtual dtStatus handleUpdate(const double dt);
 
 	void setContext(rcContext* ctx) { m_ctx = ctx; }
 
