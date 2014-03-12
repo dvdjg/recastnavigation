@@ -68,12 +68,14 @@ public:
 	virtual ~Sample_TempObstacles();
 	
 	virtual void handleSettings();
-	virtual void handleTools();
+    virtual void handleSettingsLite();
+    virtual void handleTools();
 	virtual void handleDebugMode();
 	virtual void handleRender();
 	virtual void handleRenderOverlay(double* proj, double* model, int* view);
 	virtual void handleMeshChanged(class InputGeom* geom);
-	virtual bool handleBuild();
+    virtual void handleMeshChangedLite(class InputGeom* geom);
+    virtual bool handleBuild();
 	virtual void handleUpdate(const double dt);
 
 	void getTilePos(const double* pos, int& tx, int& ty);

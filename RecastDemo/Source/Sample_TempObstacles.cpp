@@ -850,6 +850,53 @@ Sample_TempObstacles::~Sample_TempObstacles()
 	dtFreeTileCache(m_tileCache);
 }
 
+void Sample_TempObstacles::handleSettingsLite()
+{
+    int gridSize = 1;
+    if (m_geom)
+    {
+        const double* bmin = m_geom->getMeshBoundsMin();
+        const double* bmax = m_geom->getMeshBoundsMax();
+        char text[64];
+        int gw = 0, gh = 0;
+        rcCalcGridSize(bmin, bmax, m_cellSize, &gw, &gh);
+        const int ts = (int)m_tileSize;
+        const int tw = (gw + ts-1) / ts;
+        const int th = (gh + ts-1) / ts;
+        snprintf(text, 64, "Tiles  %d x %d", tw, th);
+
+        // Max tiles and max polys affect how the tile IDs are caculated.
+        // There are 22 bits available for identifying a tile and a polygon.
+        int tileBits = rcMin((int)dtIlog2(dtNextPow2(tw*th*EXPECTED_LAYERS_PER_TILE)), 14);
+        if (tileBits > 14) tileBits = 14;
+        int polyBits = 22 - tileBits;
+        m_maxTiles = 1 << tileBits;
+        m_maxPolysPerTile = 1 << polyBits;
+        snprintf(text, 64, "Max Tiles  %d", m_maxTiles);
+        snprintf(text, 64, "Max Polys  %d", m_maxPolysPerTile);
+        gridSize = tw*th;
+    }
+    else
+    {
+        m_maxTiles = 0;
+        m_maxPolysPerTile = 0;
+    }
+
+
+    char msg[64];
+
+    const double compressionRatio = (double)m_cacheCompressedSize / (double)(m_cacheRawSize+1);
+
+    snprintf(msg, 64, "Layers  %d", m_cacheLayerCount);
+    snprintf(msg, 64, "Layers (per tile)  %.1f", (double)m_cacheLayerCount/(double)gridSize);
+
+    snprintf(msg, 64, "Memory  %.1f kB / %.1f kB (%.1f%%)", m_cacheCompressedSize/1024.0f, m_cacheRawSize/1024.0f, compressionRatio*100.0f);
+
+    snprintf(msg, 64, "Navmesh Build Time  %.1f ms", m_cacheBuildTimeMs);
+
+    snprintf(msg, 64, "Build Peak Mem Usage  %.1f kB", m_cacheBuildMemUsage/1024.0f);
+
+}
 void Sample_TempObstacles::handleSettings()
 {
 	Sample::handleCommonSettings();
@@ -1141,6 +1188,16 @@ void Sample_TempObstacles::handleMeshChanged(class InputGeom* geom)
 	initToolStates(this);
 }
 
+void Sample_TempObstacles::handleMeshChangedLite(class InputGeom* geom)
+{
+    Sample::handleMeshChanged(geom);
+
+    dtFreeTileCache(m_tileCache);
+    m_tileCache = 0;
+
+    dtFreeNavMesh(m_navMesh);
+    m_navMesh = 0;
+}
 
 dtObstacleRef Sample_TempObstacles::addTempObstacleDumb(double radius, double height)
 {
