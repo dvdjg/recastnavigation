@@ -652,7 +652,7 @@ void dtNavMesh::closestPointOnPoly(dtPolyRef ref, const double* pos, double* clo
 	if (!dtDistancePtPolyEdgesSqr(pos, verts, nv, edged, edget))
 	{
 		// Point is outside the polygon, dtClamp to nearest edge.
-		double dmin = FLT_MAX;
+		double dmin = DBL_MAX;
 		int imin = -1;
 		for (int i = 0; i < nv; ++i)
 		{
@@ -710,7 +710,7 @@ dtPolyRef dtNavMesh::findNearestPolyInTile(const dtMeshTile* tile,
 	
 	// Find nearest polygon amongst the nearby polygons.
 	dtPolyRef nearest = 0;
-	double nearestDistanceSqr = FLT_MAX;
+	double nearestDistanceSqr = DBL_MAX;
 	for (int i = 0; i < polyCount; ++i)
 	{
 		dtPolyRef ref = polys[i];

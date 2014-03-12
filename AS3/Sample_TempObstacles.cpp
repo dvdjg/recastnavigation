@@ -61,8 +61,8 @@ static bool isectSegAABB(const float* sp, const float* sq,
 	
 	float d[3];
 	rcVsub(d, sq, sp);
-	tmin = 0;  // set to -FLT_MAX to get first hit on line
-	tmax = FLT_MAX;		// set to max distance ray can travel (for segment)
+	tmin = 0;  // set to -DBL_MAX to get first hit on line
+	tmax = DBL_MAX;		// set to max distance ray can travel (for segment)
 	
 	// For all three slabs
 	for (int i = 0; i < 3; i++)
@@ -614,7 +614,7 @@ void drawDetailOverlay(const dtTileCache* tc, const int tx, const int ty, double
 		
 dtObstacleRef hitTestObstacle(const dtTileCache* tc, const float* sp, const float* sq)
 {
-	float tmin = FLT_MAX;
+	float tmin = DBL_MAX;
 	const dtTileCacheObstacle* obmin = 0;
 	for (int i = 0; i < tc->getObstacleCount(); ++i)
 	{

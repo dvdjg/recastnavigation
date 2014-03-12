@@ -540,7 +540,7 @@ dtStatus dtNavMeshQuery::closestPointOnPoly(dtPolyRef ref, const double* pos, do
 	if (!dtDistancePtPolyEdgesSqr(pos, verts, nv, edged, edget))
 	{
 		// Point is outside the polygon, dtClamp to nearest edge.
-		double dmin = FLT_MAX;
+		double dmin = DBL_MAX;
 		int imin = -1;
 		for (int i = 0; i < nv; ++i)
 		{
@@ -626,7 +626,7 @@ dtStatus dtNavMeshQuery::closestPointOnPolyBoundary(dtPolyRef ref, const double*
 	else
 	{
 		// Point is outside the polygon, dtClamp to nearest edge.
-		double dmin = FLT_MAX;
+		double dmin = DBL_MAX;
 		int imin = -1;
 		for (int i = 0; i < nv; ++i)
 		{
@@ -722,7 +722,7 @@ dtStatus dtNavMeshQuery::findNearestPoly(const double* center, const double* ext
 	
 	// Find nearest polygon amongst the nearby polygons.
 	dtPolyRef nearest = 0;
-	double nearestDistanceSqr = FLT_MAX;
+	double nearestDistanceSqr = DBL_MAX;
 	for (int i = 0; i < polyCount; ++i)
 	{
 		dtPolyRef ref = polys[i];
@@ -1874,7 +1874,7 @@ dtStatus dtNavMeshQuery::moveAlongSurface(dtPolyRef startRef, const double* star
 	stack[nstack++] = startNode;
 	
 	double bestPos[3];
-	double bestDist = FLT_MAX;
+	double bestDist = DBL_MAX;
 	dtNode* bestNode = 0;
 	dtVcopy(bestPos, startPos);
 	
@@ -2169,7 +2169,7 @@ dtStatus dtNavMeshQuery::getEdgeMidPoint(dtPolyRef from, const dtPoly* fromPoly,
 ///
 /// <b>Using the Hit Parameter (t)</b>
 /// 
-/// If the hit parameter is a very high value (FLT_MAX), then the ray has hit 
+/// If the hit parameter is a very high value (DBL_MAX), then the ray has hit 
 /// the end position. In this case the path represents a valid corridor to the 
 /// end position and the value of @p hitNormal is undefined.
 ///
@@ -2194,7 +2194,7 @@ dtStatus dtNavMeshQuery::getEdgeMidPoint(dtPolyRef from, const dtPoly* fromPoly,
 /// position is on the balcony.
 ///
 /// The raycast will search toward the end position along the first floor mesh. 
-/// If it reaches the end position's xz-coordinates it will indicate FLT_MAX
+/// If it reaches the end position's xz-coordinates it will indicate DBL_MAX
 /// (no wall hit), meaning it reached the end position. This is one example of why
 /// this method is meant for short distance checks.
 ///
@@ -2261,7 +2261,7 @@ dtStatus dtNavMeshQuery::raycast(dtPolyRef startRef, const double* startPos, con
 		// Ray end is completely inside the polygon.
 		if (segMax == -1)
 		{
-			*t = FLT_MAX;
+			*t = DBL_MAX;
 			if (pathCount)
 				*pathCount = n;
 			return status;

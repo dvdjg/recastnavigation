@@ -19,6 +19,8 @@
 #ifndef RECAST_DUMP_H
 #define RECAST_DUMP_H
 
+struct rcContext;
+
 struct duFileIO
 {
 	virtual ~duFileIO() = 0;

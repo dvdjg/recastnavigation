@@ -10,7 +10,7 @@
 #include "DebugDraw.h"
 #include "DetourDebugDraw.h"
 #include "RecastDebugDraw.h"
-//#include "RecastDump.h"
+#include "RecastDump.h"
 
 //Detour
 #include "DetourAlloc.h"
@@ -21,6 +21,7 @@
 #include "DetourNavMeshQuery.h"
 #include "DetourNode.h"
 #include "DetourStatus.h"
+
 //Detour Crowd
 #include "DetourCrowd.h"
 #include "DetourLocalBoundary.h"
@@ -28,6 +29,7 @@
 #include "DetourPathCorridor.h"
 #include "DetourPathQueue.h"
 #include "DetourProximityGrid.h"
+
 //DetourTileCache
 #include "DetourTileCache.h"
 #include "DetourTileCacheBuilder.h"
@@ -41,11 +43,11 @@
 #include "ChunkyTriMesh.h"
 #include "MeshLoaderObj.h"
 #include "InputGeom.h"
-#include "Filelist.h"
+//#include "Filelist.h"
 #include "Sample.h"
 #include "Sample_TempObstacles.h"
-#include "Sample_TileMesh.h"
-#include "SampleInterfaces.h"
+//#include "Sample_TileMesh.h"
+//#include "SampleInterfaces.h"
 #include "fastlz.h"
 
 //inline_as3("import flash.utils.ByteArray;\n");
@@ -1000,12 +1002,12 @@ void getTiles() {
 
 %include "MeshLoaderObj.h"
 %include "InputGeom.h"
-%include "Filelist.h"
+//%include "Filelist.h"
 %include "Sample.h"
 //%ignore addTempObstacle(const double* pos);
 %include "Sample_TempObstacles.h"
-%include "Sample_TileMesh.h"
-%include "SampleInterfaces.h"
+//%include "Sample_TileMesh.h"
+//%include "SampleInterfaces.h"
 %include "fastlz.h"
 
 %ignore rcMeshLoaderObj::getVerts();

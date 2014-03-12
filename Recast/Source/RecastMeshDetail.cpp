@@ -112,7 +112,7 @@ static double distPtTri(const double* p, const double* a, const double* b, const
 		const double y = a[1] + v0[1]*u + v1[1]*v;
 		return fabsf(y-p[1]);
 	}
-	return FLT_MAX;
+	return DBL_MAX;
 }
 
 static double distancePtSeg(const double* pt, const double* p, const double* q)
@@ -162,7 +162,7 @@ static double distancePtSeg2d(const double* pt, const double* p, const double* q
 
 static double distToTriMesh(const double* p, const double* verts, const int /*nverts*/, const int* tris, int ntris)
 {
-	double dmin = FLT_MAX;
+	double dmin = DBL_MAX;
 	for (int i = 0; i < ntris; ++i)
 	{
 		const double* va = &verts[tris[i*4+0]*3];
@@ -172,14 +172,14 @@ static double distToTriMesh(const double* p, const double* verts, const int /*nv
 		if (d < dmin)
 			dmin = d;
 	}
-	if (dmin == FLT_MAX) return -1;
+	if (dmin == DBL_MAX) return -1;
 	return dmin;
 }
 
 static double distToPoly(int nvert, const double* verts, const double* p)
 {
 
-	double dmin = FLT_MAX;
+	double dmin = DBL_MAX;
 	int i, j, c = 0;
 	for (i = 0, j = nvert-1; i < nvert; j = i++)
 	{
@@ -208,7 +208,7 @@ static unsigned short getHeight(const double fx, const double fy, const double f
 		// Special case when data might be bad.
 		// Find nearest neighbour pixel which has valid height.
 		const int off[8*2] = { -1,0, -1,-1, 0,-1, 1,-1, 1,0, 1,1, 0,1, -1,1};
-		double dmin = FLT_MAX;
+		double dmin = DBL_MAX;
 		for (int i = 0; i < 8; ++i)
 		{
 			const int nx = ix+off[i*2+0];

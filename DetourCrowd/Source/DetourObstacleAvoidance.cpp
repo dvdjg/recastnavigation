@@ -168,8 +168,8 @@ void dtObstacleAvoidanceDebugData::addSample(const double* vel, const double ssi
 static void normalizeArray(double* arr, int n)
 {
 	// Normalize penaly range.
-	double minPen = FLT_MAX;
-	double maxPen = -FLT_MAX;
+	double minPen = DBL_MAX;
+	double maxPen = -DBL_MAX;
 	for (int i = 0; i < n; ++i)
 	{
 		minPen = dtMin(minPen, arr[i]);
@@ -426,7 +426,7 @@ int dtObstacleAvoidanceQuery::sampleVelocityGrid(const double* pos, const double
 	const double cs = vmax * 2 * (1 - m_params.velBias) / (double)(m_params.gridSize-1);
 	const double half = (m_params.gridSize-1)*cs*0.5;
 		
-	double minPenalty = FLT_MAX;
+	double minPenalty = DBL_MAX;
 	int ns = 0;
 		
 	for (int y = 0; y < m_params.gridSize; ++y)
@@ -510,7 +510,7 @@ int dtObstacleAvoidanceQuery::sampleVelocityAdaptive(const double* pos, const do
 
 	for (int k = 0; k < depth; ++k)
 	{
-		double minPenalty = FLT_MAX;
+		double minPenalty = DBL_MAX;
 		double bvel[3];
 		dtVset(bvel, 0,0,0);
 		

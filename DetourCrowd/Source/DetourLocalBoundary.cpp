@@ -28,7 +28,7 @@ dtLocalBoundary::dtLocalBoundary() :
 	m_nsegs(0),
 	m_npolys(0)
 {
-	dtVset(m_center, FLT_MAX,FLT_MAX,FLT_MAX);
+	dtVset(m_center, DBL_MAX,DBL_MAX,DBL_MAX);
 }
 
 dtLocalBoundary::~dtLocalBoundary()
@@ -37,7 +37,7 @@ dtLocalBoundary::~dtLocalBoundary()
 
 void dtLocalBoundary::reset()
 {
-	dtVset(m_center, FLT_MAX,FLT_MAX,FLT_MAX);
+	dtVset(m_center, DBL_MAX,DBL_MAX,DBL_MAX);
 	m_npolys = 0;
 	m_nsegs = 0;
 }
@@ -88,7 +88,7 @@ void dtLocalBoundary::update(dtPolyRef ref, const double* pos, const double coll
 	
 	if (!ref)
 	{
-		dtVset(m_center, FLT_MAX,FLT_MAX,FLT_MAX);
+		dtVset(m_center, DBL_MAX,DBL_MAX,DBL_MAX);
 		m_nsegs = 0;
 		m_npolys = 0;
 		return;
