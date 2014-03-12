@@ -9,31 +9,36 @@ export config
 ifeq ($(config),debug)
   OBJDIR     = obj/Release/RecastDemo
   TARGETDIR  = ../RecastDemo/Bin
+  TARGETLIB  = lib/Debug
 #  TARGETDIR  = lib/Release
   TARGET     = $(TARGETDIR)/RecastDemod
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -O2 -g
   CXXFLAGS  += $(CFLAGS) 
-  ALL_ARCHIVES = -Llib/Debug -lRecastDemo -lDebugUtils -lDetourCrowd -lDetourTileCache -lDetour -lRecast
+  ALL_ARCHIVES = -L$(TARGETLIB) -lRecastDemoBis -lDebugUtils -lDetourCrowd -lDetourTileCache -lDetour -lRecast
 endif
 
 ifeq ($(config),release)
   OBJDIR     = obj/Release/RecastDemo
   TARGETDIR  = ../RecastDemo/Bin
+  TARGETLIB  = lib/Release
 #  TARGETDIR  = lib/Release
   TARGET     = $(TARGETDIR)/RecastDemo
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -O4
   CXXFLAGS  += $(CFLAGS) -fno-exceptions -fno-rtti
-  ALL_ARCHIVES = -Llib/Release -lRecastDemo -lDebugUtils -lDetourCrowd -lDetourTileCache -lDetour -lRecast
+  ALL_ARCHIVES = -L$(TARGETLIB) -lRecastDemoBis -lDebugUtils -lDetourCrowd -lDetourTileCache -lDetour -lRecast
 endif
   
 RECAST_INC=-I../Recast/Include
 DETOUR_INC=-I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include
 DEBUG_INC=-I../DebugUtils/Include
-DEMO_INC=-I../RecastDemo/Include -I../RecastDemo/Contrib/fastlz
+#DEMO_INC=-I../RecastDemo/Include -I../RecastDemo/Contrib/fastlz
+DEMO_INC=-I./demo
 
-#DEMO_INC=-I./demo
+RECAST_DEMO_SOURCE=./demo
+
+
 ALL_INCS=${RECAST_INC} ${DETOUR_INC} ${DEBUG_INC} ${DEMO_INC} -I.
 
 PROJECTS := DebugUtils Detour DetourCrowd DetourTileCache Recast RecastDemo
@@ -64,7 +69,7 @@ build/Recast_wrap.o: recast.i $(PROJECTS)
 	#chmod u+rw build/exports.txt
 	#nm build/Recast_wrap.o | grep " T " | awk '{print $$3}' | sed 's/__/_/' >> build/exports.txt
 
-build/Recast.swc: build/Recast_wrap.o $(PROJECTS)
+build/Recast.swc: build/Recast_wrap.o $(PROJECTS) $(TARGETLIB)/libRecastDemoBis.a
 
 	# Link the final library
 	g++ -jvmopt=-Xmx1G $(BASE_CFLAGS) $(ALL_INCS) swigmain.cpp \
@@ -128,3 +133,13 @@ help:
 	@echo "   RecastDemo"
 	@echo ""
 	@echo "For more information, see http://industriousone.com/premake/quick-start"
+	
+$(TARGETLIB)/libRecastDemoBis.a: ${RECAST_DEMO_SOURCE}/ChunkyTriMesh.cpp ${RECAST_DEMO_SOURCE}/MeshLoaderObj.cpp ${RECAST_DEMO_SOURCE}/InputGeom.cpp ${RECAST_DEMO_SOURCE}/Sample.cpp ${RECAST_DEMO_SOURCE}/SoloMesh.cpp ${RECAST_DEMO_SOURCE}/fastlz.c ${RECAST_DEMO_SOURCE}/Sample_TempObstacles.cpp
+	g++ $(CXXFLAGS) -c ${RECAST_INC} ${DEMO_INC} -o ${OBJDIR}/ChunkyTriMesh.o ${RECAST_DEMO_SOURCE}/ChunkyTriMesh.cpp
+	g++ $(CXXFLAGS) -c ${RECAST_INC} ${DEMO_INC} -o ${OBJDIR}/MeshLoaderObj.o ${RECAST_DEMO_SOURCE}/MeshLoaderObj.cpp
+	g++ $(CXXFLAGS) -c ${ALL_INCS} -o ${OBJDIR}/InputGeom.o ${RECAST_DEMO_SOURCE}/InputGeom.cpp
+	g++ $(CXXFLAGS) -c ${ALL_INCS} -o ${OBJDIR}/Sample.o ${RECAST_DEMO_SOURCE}/Sample.cpp
+	g++ $(CXXFLAGS) -c ${ALL_INCS} -o ${OBJDIR}/SoloMesh.o ${RECAST_DEMO_SOURCE}/SoloMesh.cpp
+	gcc $(CFLAGS) -c -o ${OBJDIR}/fastlz.o ${RECAST_DEMO_SOURCE}/fastlz.c
+	g++ $(CXXFLAGS) -c ${ALL_INCS} -o ${OBJDIR}/Sample_TempObstacles.o ${RECAST_DEMO_SOURCE}/Sample_TempObstacles.cpp
+	ar -rcs $(TARGETLIB)/libRecastDemoBis.a ${OBJDIR}/ChunkyTriMesh.o ${OBJDIR}/MeshLoaderObj.o ${OBJDIR}/InputGeom.o ${OBJDIR}/SoloMesh.o ${OBJDIR}/Sample.o ${OBJDIR}/fastlz.o ${OBJDIR}/Sample_TempObstacles.o
