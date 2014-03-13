@@ -8,10 +8,6 @@ package
 	import org.recastnavigation.InputGeom;
 	import org.recastnavigation.Recast;
 	import org.recastnavigation.Sample_TempObstacles;
-	import org.recastnavigation._wrap_DT_CROWD_ANTICIPATE_TURNS;
-	import org.recastnavigation._wrap_DT_CROWD_OBSTACLE_AVOIDANCE;
-	import org.recastnavigation._wrap_DT_CROWD_OPTIMIZE_TOPO;
-	import org.recastnavigation._wrap_DT_CROWD_OPTIMIZE_VIS;
 	import org.recastnavigation.dtCrowd;
 	import org.recastnavigation.dtCrowdAgent;
 	import org.recastnavigation.dtCrowdAgentParams;
