@@ -28,14 +28,14 @@ ifeq ($(config),debug)
   DEFINES   += -DDEBUG
   INCLUDES  += -I../RecastDemo/Include -I../RecastDemo/Contrib -I../RecastDemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include -I/cygdrive/c/Crossbridge/sdk/usr/include/SDL
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g -O4
   CXXFLAGS  += $(CFLAGS) -fno-exceptions -fno-rtti
   LDFLAGS   += -Llib/Debug
   LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lRecast -lGL -lSDL -lSDLmain -lvgl
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += lib/Debug/libDebugUtils.a lib/Debug/libDetour.a lib/Debug/libDetourCrowd.a lib/Debug/libDetourTileCache.a lib/Debug/libRecast.a
-#  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=17
-  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=17
+#  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
+  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=22
   LINKCMD    = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -60,8 +60,8 @@ ifeq ($(config),release)
   LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lGL -lSDL -lSDLmain -lvgl
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += lib/Release/libDebugUtils.a lib/Release/libDetour.a lib/Release/libDetourCrowd.a lib/Release/libDetourTileCache.a lib/Release/libRecast.a
-#  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=17
-  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=17
+#  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
+  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=22
   LINKCMD    = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -78,14 +78,14 @@ ifeq ($(config),debug32)
   DEFINES   += -DDEBUG
   INCLUDES  += -I../RecastDemo/Include -I../RecastDemo/Contrib -I../RecastDemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g -m32
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g -O4 -m32
   CXXFLAGS  += $(CFLAGS) -fno-exceptions -fno-rtti
   LDFLAGS   += -m32 -L/usr/lib32 -Llib/Debug
   LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lGL -lSDL -lSDLmain -lvgl
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += lib/Debug/libDebugUtils.a lib/Debug/libDetour.a lib/Debug/libDetourCrowd.a lib/Debug/libDetourTileCache.a lib/Debug/libRecast.a
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=17
-  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf  -swf-version=17
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
+  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf  -swf-version=22
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -107,8 +107,8 @@ ifeq ($(config),release32)
   LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lGL -lSDL -lSDLmain -lvgl
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += lib/Release/libDebugUtils.a lib/Release/libDetour.a lib/Release/libDetourCrowd.a lib/Release/libDetourTileCache.a lib/Release/libRecast.a
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=17
-  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=17
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
+  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=22
   define PREBUILDCMDS
   endef
   define PRELINKCMDS

@@ -12,7 +12,7 @@ ifeq ($(config),debug)
 #  TARGETDIR  = lib/Debug
   TARGET     = $(TARGETDIR)/Recastd.swc
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -O4 -g
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g -O4
   CXXFLAGS  += $(CFLAGS) 
   ALL_ARCHIVES = -Llib/Debug -lRecastDemoLite -lDebugUtils -lDetourCrowd -lDetourTileCache -lDetour -lRecast
 endif
@@ -40,7 +40,6 @@ ALL_INCS=${RECAST_INC} ${DETOUR_INC} ${DEBUG_INC} ${DEMOLITE_INC}
 PROJECTS := DebugUtils Detour DetourCrowd DetourTileCache Recast RecastDemoLite
 
 .PHONY: all clean help 
-#$(PROJECTS)
 
 all: $(TARGET)
 
@@ -48,8 +47,7 @@ build/Recast_wrap.o: recast.i $(PROJECTS) Makefile
 	
 	#swig from recast.i file
 	# Generate the SWIG wrappers
-	swig -as3 -package org.recastnavigation -c++ $(ALL_INCS) -module Recast recast.i
-#	&> build/swig.log
+	swig -as3 -package org.recastnavigation -c++ $(ALL_INCS) -module Recast recast.i 2>&1 | tee build/swig.log
 	mv Recast_wrap.cxx build
 	mv Recast.as build
 	
@@ -57,13 +55,8 @@ build/Recast_wrap.o: recast.i $(PROJECTS) Makefile
 	java -jar "C:\Crossbridge\sdk\usr\lib\asc2.jar" -import "C:\Crossbridge\sdk\usr\lib\builtin.abc" -import "C:\Crossbridge\sdk\usr\lib\playerglobal.abc" build/Recast.as
 
 	# Compile the SWIG C++ wrappers
-	g++ $(BASE_CFLAGS) $(CXXFLAGS) $(ALL_INCS) build/Recast_wrap.cxx -c &> build/swig_wrapper.log
+	g++ $(BASE_CFLAGS) $(CXXFLAGS) $(ALL_INCS) build/Recast_wrap.cxx -c 2>&1 | tee build/swig_wrapper.log
 	mv Recast_wrap.o build
-
-	# protect the required symbols in the LTO exports file
-	#cp -f exports.txt build/
-	#chmod u+rw build/exports.txt
-	#nm build/Recast_wrap.o | grep " T " | awk '{print $$3}' | sed 's/__/_/' >> build/exports.txt
 	
 Recast_wrapper.txt: build/Recast_wrap.o fixed_exports.txt Makefile
 	cp fixed_exports.txt Recast_wrapper.txt
@@ -80,7 +73,7 @@ $(TARGET): build/Recast_wrap.o $(PROJECTS) Recast_wrapper.txt Makefile
 	./build/Recast_wrap.o ./build/Recast.abc \
 	-Wl,--start-group -flto-api=Recast_wrapper.txt \
 	-Wl,--end-group \
-	-emit-swc=org.recastnavigation $(CFLAGS) $(EXTRA_OPTS) $(ALL_ARCHIVES) -swf-version=17 -o $(TARGET) # &> build/swc.log
+	-emit-swc=org.recastnavigation $(CFLAGS) $(EXTRA_OPTS) $(ALL_ARCHIVES) -swf-version=22 -o $(TARGET) 2>&1 | tee build/swc.log
 	#-fllvm-llc-opt=-ascopt=-optimize -fllvm-llc-opt=-ascopt=-removedeadcode  \  -lGL
 	#-emit-swc=org.recastnavigation $(CFLAGS) -flto-api=build/exports.txt $(EXTRA_OPTS) -o build/Recast.swc &> build/swc.log #with -flto option
 	#-fllvm-llc-opt=-ascopt=-load-config+=airmobile-config.xml \

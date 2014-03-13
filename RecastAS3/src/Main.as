@@ -178,8 +178,7 @@ package
 			e.stopPropagation();
 			setTimeout(debugRender, 50 );
 		}
-		
-	
+
 		
 		/**
 		 * render loop

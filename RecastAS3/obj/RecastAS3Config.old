@@ -36,7 +36,7 @@
       <path-element>C:\Program Files (x86)\FlashDevelop\Library\AS3\classes</path-element>
     </source-path>
     <library-path append="true">
-      <path-element>C:\Crossbridge\samples\15_MyRecastAndDetour\recastnavigation\AS3\build\Recast.swc</path-element>
+      <path-element>C:\Crossbridge\samples\15_MyRecastAndDetour\recastnavigation\AS3\build\Recastd.swc</path-element>
     </library-path>
   </compiler>
   <file-specs>

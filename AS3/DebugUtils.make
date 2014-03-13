@@ -26,7 +26,7 @@ ifeq ($(config),debug)
   DEFINES   += -DDEBUG
   INCLUDES  += -I../DebugUtils/Include -I../Detour/Include -I../DetourTileCache/Include -I../Recast/Include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g -O4
   CXXFLAGS  += $(CFLAGS) -fno-exceptions -fno-rtti
   LDFLAGS   += 
   LIBS      += 
@@ -70,7 +70,7 @@ ifeq ($(config),debug32)
   DEFINES   += -DDEBUG
   INCLUDES  += -I../DebugUtils/Include -I../Detour/Include -I../DetourTileCache/Include -I../Recast/Include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g -m32
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g -O4 -m32
   CXXFLAGS  += $(CFLAGS) -fno-exceptions -fno-rtti
   LDFLAGS   += -m32 -L/usr/lib32
   LIBS      += 
