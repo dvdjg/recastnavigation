@@ -4,15 +4,14 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\AS3RecastSample.swf" />
-    <movie fps="60" />
+    <movie path="bin\RecastAS3.swf" />
+    <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
     <movie version="3" />
     <movie minorVersion="9" />
     <movie platform="AIR" />
     <movie background="#FFFFFF" />
-    <movie preferredSDK="AIR 4.0.0;4.0.0;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -43,7 +42,7 @@
     <option linkReport="" />
     <option loadExterns="" />
     <option staticLinkRSL="True" />
-    <option additional="-locale en_US&#xA;-swf-version=23" />
+    <option additional="" />
     <option compilerConstants="" />
     <option minorVersion="" />
   </build>
@@ -86,8 +85,8 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="OpenDocument" />
-    <option testMovieCommand="" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="Run.bat" />
   </options>
   <!-- Plugin storage -->
   <storage />
