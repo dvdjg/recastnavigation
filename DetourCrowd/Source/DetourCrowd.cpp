@@ -30,6 +30,7 @@
 #include "DetourAssert.h"
 #include "DetourAlloc.h"
 
+//#include <stdio.h> // djg
 
 dtCrowd* dtAllocCrowd()
 {
@@ -538,6 +539,7 @@ int dtCrowd::addAgent(const double* pos, const dtCrowdAgentParams* params)
 	{
 		dtVcopy(nearest, pos);
 		ref = 0;
+        //printf("dtCrowd::addAgent findNearestPoly() Failed. (%lf, %lf, %lf)\n", nearest[0],  nearest[1],  nearest[2]); // djg
 	}
 	
 	ag->corridor.reset(ref, nearest);
@@ -556,14 +558,17 @@ int dtCrowd::addAgent(const double* pos, const dtCrowdAgentParams* params)
 	
 	ag->desiredSpeed = 0;
 
-	if (ref)
-		ag->state = DT_CROWDAGENT_STATE_WALKING;
-	else
+    if (ref) {
+        //printf("dtCrowd::addAgent findNearestPoly() Walking. (%lf, %lf, %lf)\n", nearest[0],  nearest[1],  nearest[2]); // djg
+        ag->state = DT_CROWDAGENT_STATE_WALKING;
+    } else {
 		ag->state = DT_CROWDAGENT_STATE_INVALID;
-	
+    }
+
 	ag->targetState = DT_CROWDAGENT_TARGET_NONE;
 	
 	ag->active = 1;
+
 
 	return idx;
 }
@@ -1134,9 +1139,11 @@ void dtCrowd::update(const double dt, dtCrowdAgentDebugInfo* debug)
 		
 		if (ag->state != DT_CROWDAGENT_STATE_WALKING)
 			continue;
-		if (ag->targetState == DT_CROWDAGENT_TARGET_NONE || ag->targetState == DT_CROWDAGENT_TARGET_VELOCITY)
+        if (ag->targetState == DT_CROWDAGENT_TARGET_NONE || ag->targetState == DT_CROWDAGENT_TARGET_VELOCITY) {
+            //printf("dtCrowd::update targetState Walking. (0x%x)\n",  ag->targetState); // djg
 			continue;
-		
+        }
+
 		// Check 
 		const double triggerRadius = ag->params.radius*2.25;
 		if (overOffmeshConnection(ag, triggerRadius))
@@ -1397,8 +1404,12 @@ void dtCrowd::update(const double dt, dtCrowdAgentDebugInfo* debug)
 			ag->corridor.reset(ag->corridor.getFirstPoly(), ag->npos);
 		}
 
-	}
+        //printf("dtCrowd::update findNearestPoly() ag->state=0x%x\nag->params.updateFlags=0x%x\ndvel (%lf, %lf, %lf)\n",
+         //      ag->state, ag->params.updateFlags, ag->dvel[0],  ag->dvel[1],  ag->dvel[2]); // djg
+
+    }
 	
+
 	// Update agents using off-mesh connection.
 	for (int i = 0; i < m_maxAgents; ++i)
 	{

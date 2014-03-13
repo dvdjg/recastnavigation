@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <stdio.h>
 #include "AS3/AS3.h"
 
 int main()
@@ -29,6 +30,7 @@ int main()
     // The main function for a library must throw an exception so that it does
     // not return normally. Returning normally would cause the static
     // destructors to be executed leaving the library in an unuseable state.
+	printf("Initializing Recast&Detour\n");
 
     AS3_GoAsync();
 }

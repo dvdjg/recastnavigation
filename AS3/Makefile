@@ -47,6 +47,7 @@ build/Recast_wrap.o: recast.i $(PROJECTS) Makefile
 	
 	#swig from recast.i file
 	# Generate the SWIG wrappers
+	mkdir -p build
 	swig -as3 -package org.recastnavigation -c++ $(ALL_INCS) -module Recast recast.i 2>&1 | tee build/swig.log
 	mv Recast_wrap.cxx build
 	mv Recast.as build

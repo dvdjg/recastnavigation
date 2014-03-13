@@ -16,12 +16,13 @@ package
 	import org.recastnavigation.CModule;
 	import org.recastnavigation.rcMeshLoaderObj;
 	import org.recastnavigation.util.getTiles;
-	
+	import org.recastnavigation.vfs.ISpecialFile;
+
 	/**
 	 * Simple 2D Recast Example.
 	 * @author Zo
 	 */
-	public class Main extends Sprite 
+	public class Main extends Sprite implements ISpecialFile 
 	{
 		[Embed(source="../assets/nav_test.obj",mimeType="application/octet-stream")]
 		private var myObjFile:Class;
@@ -35,17 +36,38 @@ package
 		private static var MAX_SPEED:Number = 4.5; 
 		private static var MAX_ACCEL:Number = 8.5; 
 		
-		
 		public function Main():void 
 		{
 			if (stage) init();
 			else addEventListener(Event.ADDED_TO_STAGE, init);
 		}
+		//private var tf:TextField;
+		
+        /**
+         * The PlayerKernel implementation will use this function to handle
+         * C IO write requests to the file "/dev/tty" (e.g. output from
+         * printf will pass through this function). See the ISpecialFile
+         * documentation for more information about the arguments and return value.
+         */
+        public function write(fd:int, bufPtr:int, nbyte:int, errnoPtr:int):int
+        {
+            var str:String = CModule.readString(bufPtr, nbyte);
+            //tf.appendText(str);
+            trace(str);
+            return nbyte;
+        }
+ 
+        /** See ISpecialFile */
+        public function read(fd:int, bufPtr:int, nbyte:int, errnoPtr:int):int { return 0; }
+        public function fcntl(fd:int, com:int, data:int, errnoPtr:int):int { return 0; }
+        public function ioctl(fd:int, com:int, data:int, errnoPtr:int):int { return 0; }
 		
 		private function init(e:Event = null):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-			// entry point
+					
+			// set the console before starting
+            CModule.vfs.console = this;
 			
 			initRecast();
 			initEngine();

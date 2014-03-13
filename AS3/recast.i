@@ -681,7 +681,7 @@ void getTiles() {
 // Used for:
 //  [in] const double*
 //  [in,out] double*
-%typemap(in) double* (double dVectorOut[3]) {
+%typemap(in) const double* (double dVectorOut[3]) {
     // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
 	%#ifdef _BUG_$1
 	%#undef _BUG_$1
@@ -733,7 +733,7 @@ void getTiles() {
     inline_as3("}\n");
 };
 
-%apply (double*) {
+%apply (const double*) {
 	(double[3])
 };
 

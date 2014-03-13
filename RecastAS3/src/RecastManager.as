@@ -1,6 +1,7 @@
 package  
 {
 	import flash.geom.Vector3D;
+	import flash.text.TextField;
 	import flash.utils.ByteArray;
 	
 	import org.recastnavigation.AS3_rcContext;
@@ -41,10 +42,14 @@ package
 		
 		public function loadMesh(filename:String, obj:ByteArray):void
 		{
-			CModule.startAsync(this);
-			
+			// entry point
+			//tf = new TextField();
+            //addChild(tf);
+            //tf.appendText("SWC Output:\n");
 			//load the mesh file into recast
 			CModule.vfs.addFile(filename, obj );
+			
+			CModule.startAsync(this);
 			
 			var as3LogContext:AS3_rcContext = AS3_rcContext.create();
 			_sample = Sample_TempObstacles.create();
@@ -151,7 +156,7 @@ package
 			}
 			trace("addAgentNear: navPosition={", navPosition.x, navPosition.y, navPosition.z, "} targetPos={", targetPos.x, targetPos.y, targetPos.z,"}");
 			
-			if (targetRef > 0)
+			if (targetRef.value != 0)
 				crowd.requestMoveTarget(idx, targetRef.value, targetPos);	
 			
 			return idx;
@@ -171,7 +176,7 @@ package
 			
 			var status:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.getFilter(), targetRef, targetPos);
 		
-			if ( targetRef > 0)
+			if ( targetRef.value != 0)
 				crowd.requestMoveTarget(idx,targetRef.value, targetPos);
 			
 		}
