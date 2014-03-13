@@ -1,0 +1,40 @@
+# built in symbols that must always be preserved
+_start1
+malloc
+free
+memcpy
+memmove
+flascc_uiTickProc
+_sync_synchronize
+
+# symbols for C++ exception handling
+_Unwind_SjLj_Register
+_Unwind_SjLj_Resume
+_Unwind_SjLj_Unregister
+_Unwind_SjLj_RaiseException
+
+# symbols from libm.a
+__muldi3
+
+# symbols for the GLUT based examples
+_avm2_glut_keyhandler
+glutMainLoopBody
+
+# C++ cout initialization
+# _ZNSt8ios_base4InitC1Ev
+# C++ operator new
+_Znwj
+# C++ exception handling
+___gxx_personality_sj0
+__gxx_personality_sj0
+_gxx_personality_sj0
+_ZdlPv
+
+# C functions
+_time
+__time
+_srand
+_p_time
+__p_time
+
+# End default exports

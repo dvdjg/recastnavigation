@@ -64,13 +64,21 @@ build/Recast_wrap.o: recast.i $(PROJECTS) Makefile
 	#cp -f exports.txt build/
 	#chmod u+rw build/exports.txt
 	#nm build/Recast_wrap.o | grep " T " | awk '{print $$3}' | sed 's/__/_/' >> build/exports.txt
-
-$(TARGET): build/Recast_wrap.o $(PROJECTS) Makefile
+	
+Recast_wrapper.txt: build/Recast_wrap.o fixed_exports.txt Makefile
+	cp fixed_exports.txt Recast_wrapper.txt
+	@echo "-------- Symbols extraction --------"
+	# "$(FLASCC)/usr/bin/g++" $(BASE_CFLAGS) $(OPT_CFLAGS) -I$(LIBDIR) -c Recast_wrapper.cpp
+	# cat stdc++_wrapper.txt c_wrapper.txt >> Recast_wrapper.txt
+	# echo "_ZNSt8ios_base4InitC1Ev" >> Recast_wrapper.txt
+	nm build/Recast_wrap.o | grep " T " | cut -d\  -f3 - | sed 's/__/_/' | sort -u >> Recast_wrapper.txt
+	
+$(TARGET): build/Recast_wrap.o $(PROJECTS) Recast_wrapper.txt Makefile
 
 	# Link the final library
 	g++ -jvmopt=-Xmx1G $(BASE_CFLAGS) $(ALL_INCS) swigmain.cpp \
 	./build/Recast_wrap.o ./build/Recast.abc \
-	-Wl,--start-group \
+	-Wl,--start-group -flto-api=Recast_wrapper.txt \
 	-Wl,--end-group \
 	-emit-swc=org.recastnavigation $(CFLAGS) $(EXTRA_OPTS) $(ALL_ARCHIVES) -swf-version=17 -o $(TARGET) # &> build/swc.log
 	#-fllvm-llc-opt=-ascopt=-optimize -fllvm-llc-opt=-ascopt=-removedeadcode  \  -lGL
