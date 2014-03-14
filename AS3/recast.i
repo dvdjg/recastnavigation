@@ -632,11 +632,6 @@ void getTiles() {
 	inline_as3("var ptr$1:int = ($input == null) ? 0 : CModule.malloc($input.length);\n"); 
     // Similarly we'll pass the value of the ptr$1 variable in ActionScript to the C newBuffer variable
     inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
-
-    // This next inline call is a little more complicated.  Here we use the %0 flag to pass
-    // the value of the ActionScript $input.length variable to the C variable named newBufferSize.
-    //inline_as3("%0 = $input.length;\n": "=r"(newBufferSize));
-	
 	inline_as3("var ba$1:ByteArray = $input;\n");
 	
 	// Finally assign the parameters that C is expecting to our new values
@@ -852,7 +847,32 @@ void getTiles() {
 	(int* vista)
 };
 
+%typemap(astype) const unsigned short*, unsigned short [3] "Object";
 
+// Used for:
+//  [in] const int*
+//  [in,out] int*
+%typemap(in) const unsigned short* (unsigned short v[3]) {
+    // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+	inline_as3("var ptr$1:int = ($input == null) ? 0 : %0;\n": : "r"(v));
+
+    inline_as3("if(ptr$1) {\n");
+	// Now push that Vector into flascc memory
+    inline_as3("CModule.write16(ptr$1 + 2*0, $input.x);\n");
+    inline_as3("CModule.write16(ptr$1 + 2*1, $input.y);\n");
+    inline_as3("CModule.write16(ptr$1 + 2*2, $input.z);\n");
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = v;
+    inline_as3("}\n");
+}
+
+%apply (const unsigned short*) {
+	(unsigned short [3])
+};
 %typemap(astype) int& "Object";
 
 %typemap(in) int& (int vector[1]) {
