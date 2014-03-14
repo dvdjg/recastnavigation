@@ -241,6 +241,32 @@ void getTiles() {
     inline_as3("}\n");
 }
 
+%typemap(astype) (unsigned char** data, int* dataSize) "ByteArray";
+
+%typemap(in) (unsigned char** data, int* dataSize) (unsigned char* p, int c){
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+	$1 = ($1_ltype) &p;
+	$2 = ($2_ltype) &c;
+}
+
+// Bug? $input doesn't work here
+%typemap(argout) (unsigned char** data, int* dataSize) {
+	AS3_DeclareVar(len$1, int);
+	AS3_CopyScalarToVar(len$1, *$2);
+    AS3_DeclareVar(ptr$1, int);
+	AS3_CopyScalarToVar(ptr$1, *$1);
+
+	// Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3("if(ptr$1 && "_BUG_$1" != null) {\n  "_BUG_$1".length=len$1;\n  "_BUG_$1".position = 0;\n");
+	inline_as3("CModule.readBytes(ptr$1, len$1, "_BUG_$1");\n}\n");
+}
+
+%apply (unsigned char** data, int* dataSize) {
+	(unsigned char**, int*)
+};
 
 %typemap(astype) (const double* p, int n), double[ANY] "Vector.<Number>";
 
@@ -254,6 +280,11 @@ void getTiles() {
 //   		we need to bring into the C world by populating values for $1 and $2
 //
 %typemap(in) (const double* p, int n) {
+	// Pass the number of triangles to other typemaps
+	%#ifdef _TRI_NUMBER_
+	%#undef _TRI_NUMBER_
+	%#endif 
+	%#define _TRI_NUMBER_ $2
 	// For 10 vertices, the Vector must have 30 Numbers.
 	//  @param[in]		verts		The vertices of the polygon [Form: (x, y, z) * @p nverts]
 	//  @param[in]		nverts		The number of vertices in the polygon.
@@ -282,6 +313,40 @@ void getTiles() {
 %typemap(freearg) (const double* p, int n) {
 	inline_as3("if(%0) CModule.free(%0);\n": : "r"($1));
 };
+
+// const double* pts, int npts, double* areas
+%typemap(astype) double* areas "Vector.<Number>";
+
+%typemap(in) double* areas {
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+    // setup some new C variables that we're going to modify from within our inline ActionScript
+    double* newBuffer;
+
+    inline_as3("var triNumber:int = %0;\n": : "r"(_TRI_NUMBER_));
+	inline_as3("var ptr$1:int = ($input == null) ? 0 : CModule.malloc(triNumber*8);\n"); // 8 bytes per double
+    inline_as3("%0 = ptr$1;\n": "=r"(newBuffer));
+
+    inline_as3("if(ptr$1) {\n");
+	inline_as3("$input.length = triNumber;\n}\n");
+
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = newBuffer;
+}
+
+// Free the memory that we CModule.malloc'd in the equivalent typemap(in)
+%typemap(freearg) double* areas {
+	inline_as3("if(%0) CModule.free(%0);\n": : "r"($1));
+};
+
+%typemap(argout) double* areas {
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3("for (var i:int = 0; i < "_BUG_$1".length; i++){\n");
+    inline_as3("	"_BUG_$1"[i] = CModule.readDouble(ptr$1 + 8*i);\n");
+    inline_as3("}\n");
+}
 
 // const int* tris, const double* normals, int ntris
 %apply (const double* p, int n) {
@@ -316,7 +381,6 @@ void getTiles() {
 	inline_as3("for (var i:int = 0; i < sizeRet ; i++)\n");
     inline_as3("  ret[i] = CModule.readDouble(ptrRet + 8*i);\n");
 	inline_as3("$result = ret;\n");
-
 }
 
 %typemap(astype) (const int* tris, int nt) "Vector.<int>";
@@ -614,6 +678,7 @@ void getTiles() {
 };
 
 %apply (const unsigned char* p, int n) {
+	(unsigned char* data, int dataSize),
 	(const void* input, int length),
 	(const unsigned char* buffer, int bufferSize),
 	(const unsigned char* compressed, int compressedSize),
@@ -655,7 +720,8 @@ void getTiles() {
     AS3_DeclareVar(asres, int); // The final asresult variable is not set at this point
     AS3_CopyScalarToVar(asres, result);
     // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
-    inline_as3("if(asres && "_BUG_$1" != null) {\n  "_BUG_$1".length=asres;\n  "_BUG_$1".position = 0;\nCModule.readBytes(ptr$1, asres, ba$1); // _BUG_$1 is the same object as ba$1\n}\n");
+    inline_as3("if(asres && "_BUG_$1" != null) {\n  "_BUG_$1".length=asres;\n  "_BUG_$1".position = 0;\n");
+	inline_as3("CModule.readBytes(ptr$1, asres, ba$1); // _BUG_$1 is the same object as ba$1\n}\n");
 }
 
 
@@ -959,13 +1025,14 @@ void getTiles() {
 
 %ignore dtSwapEndian(unsigned short *);
 %ignore dtSwapEndian(unsigned int *);
+%ignore dtSwapEndian(short *);
+%ignore dtSwapEndian(int *);
 %ignore  dtSwapEndian(int *);
-//%ignore  dtSwapEndian(double 
+%ignore dtSwapEndian(double *);
 
 %include "DetourAlloc.h"
 %include "DetourAssert.h"
 
-%ignore dtSwapEndian(double *);
 
 %include "DetourCommon.h"
 %include "DetourNavMesh.h"
