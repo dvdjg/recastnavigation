@@ -725,7 +725,7 @@ void getTiles() {
 }
 
 
-%typemap(astype) double*, double[3], const int*, int[3] "Object";
+%typemap(astype) double*, double[3], const int*, int[3], short* tx "Object";
 
 %typemap(in) double* out (double dVector[3]) {
     // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
@@ -767,6 +767,53 @@ void getTiles() {
 	inline_as3(_BUG_$1".x = CModule.readDouble(ptr$1 + 8*0); // Return to _BUG_$1, $input, $result, $symname, $0, $1\n");
     inline_as3(_BUG_$1".y = CModule.readDouble(ptr$1 + 8*1);\n");
     inline_as3(_BUG_$1".z = CModule.readDouble(ptr$1 + 8*2);\n");
+    inline_as3("}\n");
+};
+
+%typemap(in) short* tx (short dVector[3]) {
+    // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+
+	inline_as3("var ptr$1:int = %0;\n": : "r"(dVector));
+	// Finally assign the parameters that C is expecting to our new values
+    $1 = dVector;
+} 
+
+// Used for:
+//  [in] const double*
+//  [in,out] double*
+%typemap(in) const short* tx (short dVectorOut[3]) {
+    // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
+	%#ifdef _BUG_$1
+	%#undef _BUG_$1
+	%#endif 
+	%#define _BUG_$1 "$input"
+	inline_as3("var ptr$1:int = ($input == null) ? 0 : %0;\n": : "r"(dVectorOut));
+
+    inline_as3("if(ptr$1) {\n");
+	// Now push that Vector into flascc memory
+    inline_as3("CModule.write16(ptr$1 + 2*0, $input.x);\n");
+    inline_as3("CModule.write16(ptr$1 + 2*1, $input.y);\n");
+    inline_as3("CModule.write16(ptr$1 + 2*2, $input.z);\n");
+    // Finally assign the parameters that C is expecting to our new values
+    $1 = dVectorOut;
+    inline_as3("}\n");
+}
+
+%apply (short* ) {
+	(short* )
+};
+
+// Bug? $input doesn't work here
+%typemap(argout) short* tx, short[3] {
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3("if(ptr$1) {\n");
+	inline_as3(_BUG_$1".x = CModule.read16(ptr$1 + 2*0);\n");
+    inline_as3(_BUG_$1".y = CModule.read16(ptr$1 + 2*1);\n");
+    inline_as3(_BUG_$1".z = CModule.read16(ptr$1 + 2*2);\n");
     inline_as3("}\n");
 };
 
@@ -962,7 +1009,9 @@ void getTiles() {
 };
 
 %apply (int&) {
-	(dtPolyRef*)
+	(dtPolyRef*),
+	(int* tx),
+	(int* ty)
 };
 
 %typemap(astype) double& "Object";
