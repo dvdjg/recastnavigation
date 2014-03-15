@@ -263,7 +263,7 @@ int main(int /*argc*/, char** /*argv*/)
 							// Reset camera and fog to match the mesh bounds.
 							if (bmin && bmax)
 							{
-								camr = sqrtf(rcSqr(bmax[0]-bmin[0]) +
+								camr = sqrt(rcSqr(bmax[0]-bmin[0]) +
 											 rcSqr(bmax[1]-bmin[1]) +
 											 rcSqr(bmax[2]-bmin[2])) / 2;
 								camx = (bmax[0] + bmin[0]) / 2 + camr;
@@ -666,7 +666,7 @@ int main(int /*argc*/, char** /*argv*/)
 				// Reset camera and fog to match the mesh bounds.
 				if (bmin && bmax)
 				{
-					camr = sqrtf(rcSqr(bmax[0]-bmin[0]) +
+					camr = sqrt(rcSqr(bmax[0]-bmin[0]) +
 								 rcSqr(bmax[1]-bmin[1]) +
 								 rcSqr(bmax[2]-bmin[2])) / 2;
 					camx = (bmax[0] + bmin[0]) / 2 + camr;
@@ -742,7 +742,7 @@ int main(int /*argc*/, char** /*argv*/)
 					// Reset camera and fog to match the mesh bounds.
 					if (bmin && bmax)
 					{
-						camr = sqrtf(rcSqr(bmax[0]-bmin[0]) +
+						camr = sqrt(rcSqr(bmax[0]-bmin[0]) +
 									 rcSqr(bmax[1]-bmin[1]) +
 									 rcSqr(bmax[2]-bmin[2])) / 2;
 						camx = (bmax[0] + bmin[0]) / 2 + camr;
@@ -859,7 +859,7 @@ int main(int /*argc*/, char** /*argv*/)
 						// Reset camera and fog to match the mesh bounds.
 						if (bmin && bmax)
 						{
-							camr = sqrtf(rcSqr(bmax[0]-bmin[0]) +
+							camr = sqrt(rcSqr(bmax[0]-bmin[0]) +
 										 rcSqr(bmax[1]-bmin[1]) +
 										 rcSqr(bmax[2]-bmin[2])) / 2;
 							camx = (bmax[0] + bmin[0]) / 2 + camr;
@@ -919,8 +919,8 @@ int main(int /*argc*/, char** /*argv*/)
 			for (int i = 0; i < 20; ++i)
 			{
 				const double a = (double)i / 20.0 * RC_PI*2;
-				const double fx = (double)x + cosf(a)*r;
-				const double fy = (double)y + sinf(a)*r;
+				const double fx = (double)x + cos(a)*r;
+				const double fy = (double)y + sin(a)*r;
 				glVertex2d(fx,fy);
 			}
 			glEnd();

@@ -25,6 +25,8 @@
 #include "Recast.h"
 #include "ChunkyTriMesh.h"
 
+#include "DetourTileCacheBuilder.h"
+
 
 class Sample_TempObstacles : public Sample
 {
@@ -63,10 +65,28 @@ public:
 	dtObstacleRef addTempObstacle(const double* pos, const double radius, const double height );
 	void removeTempObstacleById(dtObstacleRef id);
 	void removeTempObstacle(const double* sp, const double* sq);
-	void clearAllTempObstacles();
+    dtObstacleRef hitTempObstacle(const double* sp, const double* sq);
+    void clearAllTempObstacles();
 	double m_tileSize;
 	double m_maxObstacles;
 };
 
+bool isectSegAABB(const double* sp, const double* sq,
+                         const double* amin, const double* amax,
+                         double& tmin, double& tmax);
+int calcLayerBufferSize(const int gridWidth, const int gridHeight);
+
+class InputGeom;
+struct MeshProcess : public dtTileCacheMeshProcess
+{
+    InputGeom* m_geom;
+
+    MeshProcess();
+
+    void init(InputGeom* geom);
+
+    virtual void process(struct dtNavMeshCreateParams* params,
+                         unsigned char* polyAreas, unsigned short* polyFlags);
+};
 
 #endif // RECASTSAMPLETEMPOBSTACLE_H

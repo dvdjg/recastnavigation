@@ -24,11 +24,11 @@ package
 		public var maxAgents:int = 60;
 		public var maxAgentRadius:Number= 4;
 		
-		public var m_cellSize:Number = 0.3,
+		public var  m_cellSize:Number = 0.3,
 					m_cellHeight:Number = 0.2,
 					m_agentHeight:Number = 3.0,
 					m_agentRadius:Number = 0.32,
-					m_agentMaxClimb:Number = 0.9,
+					m_agentMaxClimb:Number = 2.9,
 					m_agentMaxSlope:Number = 45.0,
 					m_regionMinSize:Number = 8,
 					m_regionMergeSize:Number = 20,
@@ -42,10 +42,6 @@ package
 		
 		public function loadMesh(filename:String, obj:ByteArray):void
 		{
-			// entry point
-			//tf = new TextField();
-            //addChild(tf);
-            //tf.appendText("SWC Output:\n");
 			//load the mesh file into recast
 			CModule.vfs.addFile(filename, obj );
 			

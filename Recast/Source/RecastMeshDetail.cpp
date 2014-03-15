@@ -52,7 +52,7 @@ inline double vdistSq2(const double* p, const double* q)
 
 inline double vdist2(const double* p, const double* q)
 {
-	return sqrtf(vdistSq2(p,q));
+	return sqrt(vdistSq2(p,q));
 }
 
 inline double vcross2(const double* p1, const double* p2, const double* p3)
@@ -70,7 +70,7 @@ static bool circumCircle(const double* p1, const double* p2, const double* p3,
 	static const double EPS = 1e-6f;
 	
 	const double cp = vcross2(p1, p2, p3);
-	if (fabsf(cp) > EPS)
+    if (fabs(cp) > EPS)
 	{
 		const double p1Sq = vdot2(p1,p1);
 		const double p2Sq = vdot2(p2,p2);
@@ -110,7 +110,7 @@ static double distPtTri(const double* p, const double* a, const double* b, const
 	if (u >= -EPS && v >= -EPS && (u+v) <= 1+EPS)
 	{
 		const double y = a[1] + v0[1]*u + v1[1]*v;
-		return fabsf(y-p[1]);
+        return fabs(y-p[1]);
 	}
 	return DBL_MAX;
 }
@@ -198,8 +198,8 @@ static unsigned short getHeight(const double fx, const double fy, const double f
 								const double /*cs*/, const double ics, const double ch,
 								const rcHeightPatch& hp)
 {
-	int ix = (int)floorf(fx*ics + 0.01);
-	int iz = (int)floorf(fz*ics + 0.01);
+	int ix = (int)floor(fx*ics + 0.01);
+	int iz = (int)floor(fz*ics + 0.01);
 	ix = rcClamp(ix-hp.xmin, 0, hp.width - 1);
 	iz = rcClamp(iz-hp.ymin, 0, hp.height - 1);
 	unsigned short h = hp.data[ix+iz*hp.width];
@@ -217,7 +217,7 @@ static unsigned short getHeight(const double fx, const double fy, const double f
 			const unsigned short nh = hp.data[nx+nz*hp.width];
 			if (nh == RC_UNSET_HEIGHT) continue;
 
-			const double d = fabsf(nh*ch - fy);
+            const double d = fabs(nh*ch - fy);
 			if (d < dmin)
 			{
 				h = nh;
@@ -534,7 +534,7 @@ static bool buildPolyDetail(rcContext* ctx, const double* in, int nin,
 			bool swapped = false;
 			// Make sure the segments are always handled in same order
 			// using lexological sort or else there will be seams.
-			if (fabsf(vj[0]-vi[0]) < 1e-6f)
+            if (fabs(vj[0]-vi[0]) < 1e-6f)
 			{
 				if (vj[2] > vi[2])
 				{
@@ -554,8 +554,8 @@ static bool buildPolyDetail(rcContext* ctx, const double* in, int nin,
 			double dx = vi[0] - vj[0];
 			double dy = vi[1] - vj[1];
 			double dz = vi[2] - vj[2];
-			double d = sqrtf(dx*dx + dz*dz);
-			int nn = 1 + (int)floorf(d/sampleDist);
+			double d = sqrt(dx*dx + dz*dz);
+			int nn = 1 + (int)floor(d/sampleDist);
 			if (nn >= MAX_VERTS_PER_EDGE) nn = MAX_VERTS_PER_EDGE-1;
 			if (nverts+nn >= MAX_VERTS)
 				nn = MAX_VERTS-1-nverts;
@@ -660,10 +660,10 @@ static bool buildPolyDetail(rcContext* ctx, const double* in, int nin,
 			rcVmin(bmin, &in[i*3]);
 			rcVmax(bmax, &in[i*3]);
 		}
-		int x0 = (int)floorf(bmin[0]/sampleDist);
-		int x1 = (int)ceilf(bmax[0]/sampleDist);
-		int z0 = (int)floorf(bmin[2]/sampleDist);
-		int z1 = (int)ceilf(bmax[2]/sampleDist);
+		int x0 = (int)floor(bmin[0]/sampleDist);
+		int x1 = (int)ceil(bmax[0]/sampleDist);
+		int z0 = (int)floor(bmin[2]/sampleDist);
+		int z1 = (int)ceil(bmax[2]/sampleDist);
 		samples.resize(0);
 		for (int z = z0; z < z1; ++z)
 		{

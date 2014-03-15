@@ -260,8 +260,11 @@ void getTiles() {
 	AS3_CopyScalarToVar(ptr$1, *$1);
 
 	// Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
-    inline_as3("if(ptr$1 && "_BUG_$1" != null) {\n  "_BUG_$1".length=len$1;\n  "_BUG_$1".position = 0;\n");
-	inline_as3("CModule.readBytes(ptr$1, len$1, "_BUG_$1");\n}\n");
+    inline_as3("if(ptr$1 && "_BUG_$1" != null) {\n  "
+				_BUG_$1".length=len$1;\n  "
+				_BUG_$1".position = 0;\n");
+	inline_as3("CModule.readBytes(ptr$1, len$1, "_BUG_$1");\n"
+				"}\n");
 }
 
 %apply (unsigned char** data, int* dataSize) {

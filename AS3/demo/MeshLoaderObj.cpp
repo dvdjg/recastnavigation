@@ -212,7 +212,7 @@ bool rcMeshLoaderObj::load(const char* filename)
 		n[0] = e0[1]*e1[2] - e0[2]*e1[1];
 		n[1] = e0[2]*e1[0] - e0[0]*e1[2];
 		n[2] = e0[0]*e1[1] - e0[1]*e1[0];
-		double d = sqrtf(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
+		double d = sqrt(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
 		if (d > 0)
 		{
 			d = 1.0f/d;

@@ -29,7 +29,7 @@
 
 double rcSqrt(double x)
 {
-	return sqrtf(x);
+	return sqrt(x);
 }
 
 /// @class rcContext
@@ -251,7 +251,7 @@ void rcMarkWalkableTriangles(rcContext* ctx, const double walkableSlopeAngle,
 {
 	rcIgnoreUnused(ctx);
 	
-	const double walkableThr = cosf(walkableSlopeAngle/180.0*RC_PI);
+	const double walkableThr = cos(walkableSlopeAngle/180.0*RC_PI);
 
 	double norm[3];
 	
@@ -280,7 +280,7 @@ void rcClearUnwalkableTriangles(rcContext* ctx, const double walkableSlopeAngle,
 {
 	rcIgnoreUnused(ctx);
 	
-	const double walkableThr = cosf(walkableSlopeAngle/180.0*RC_PI);
+	const double walkableThr = cos(walkableSlopeAngle/180.0*RC_PI);
 	
 	double norm[3];
 	

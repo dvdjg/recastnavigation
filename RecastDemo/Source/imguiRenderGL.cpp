@@ -68,7 +68,7 @@ static void drawPolygon(const double* coords, unsigned numCoords, double r, unsi
 		const double* v1 = &coords[i*2];
 		double dx = v1[0] - v0[0];
 		double dy = v1[1] - v0[1];
-		double d = sqrtf(dx*dx+dy*dy);
+		double d = sqrt(dx*dx+dy*dy);
 		if (d > 0)
 		{
 			d = 1.0/d;
@@ -200,7 +200,7 @@ static void drawLine(double x0, double y0, double x1, double y1, double r, doubl
 {
 	double dx = x1-x0;
 	double dy = y1-y0;
-	double d = sqrtf(dx*dx+dy*dy);
+	double d = sqrt(dx*dx+dy*dy);
 	if (d > 0.0001)
 	{
 		d = 1.0/d;
@@ -239,8 +239,8 @@ bool imguiRenderGLInit(const char* fontpath)
 	for (int i = 0; i < CIRCLE_VERTS; ++i)
 	{
 		double a = (double)i/(double)CIRCLE_VERTS * PI*2;
-		g_circleVerts[i*2+0] = cosf(a);
-		g_circleVerts[i*2+1] = sinf(a);
+		g_circleVerts[i*2+0] = cos(a);
+		g_circleVerts[i*2+1] = sin(a);
 	}
 
 	// Load font.

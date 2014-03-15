@@ -1321,13 +1321,13 @@ bool rcMergePolyMeshes(rcContext* ctx, rcPolyMesh** meshes, const int nmeshes, r
 	{
 		const rcPolyMesh* pmesh = meshes[i];
 		
-		const unsigned short ox = (unsigned short)floorf((pmesh->bmin[0]-mesh.bmin[0])/mesh.cs+0.5);
-		const unsigned short oz = (unsigned short)floorf((pmesh->bmin[2]-mesh.bmin[2])/mesh.cs+0.5);
+		const unsigned short ox = (unsigned short)floor((pmesh->bmin[0]-mesh.bmin[0])/mesh.cs+0.5);
+		const unsigned short oz = (unsigned short)floor((pmesh->bmin[2]-mesh.bmin[2])/mesh.cs+0.5);
 		
 		bool isMinX = (ox == 0);
 		bool isMinZ = (oz == 0);
-		bool isMaxX = ((unsigned short)floorf((mesh.bmax[0] - pmesh->bmax[0]) / mesh.cs + 0.5)) == 0;
-		bool isMaxZ = ((unsigned short)floorf((mesh.bmax[2] - pmesh->bmax[2]) / mesh.cs + 0.5)) == 0;
+		bool isMaxX = ((unsigned short)floor((mesh.bmax[0] - pmesh->bmax[0]) / mesh.cs + 0.5)) == 0;
+		bool isMaxZ = ((unsigned short)floor((mesh.bmax[2] - pmesh->bmax[2]) / mesh.cs + 0.5)) == 0;
 		bool isOnBorder = (isMinX || isMinZ || isMaxX || isMaxZ);
 
 		for (int j = 0; j < pmesh->nverts; ++j)

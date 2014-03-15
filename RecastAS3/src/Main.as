@@ -22,7 +22,7 @@ package
 	 * Simple 2D Recast Example.
 	 * @author Zo
 	 */
-	public class Main extends Sprite implements ISpecialFile 
+	public class Main extends Sprite implements ISpecialFile
 	{
 		[Embed(source="../assets/nav_test.obj",mimeType="application/octet-stream")]
 		private var myObjFile:Class;
@@ -214,7 +214,6 @@ package
 			recastManager.advanceTime(passedTime);
 			
 			updateAgents();
-			
 		}
 		
 		/**
@@ -231,7 +230,6 @@ package
 				agentObjectsByAgendIdx[ idx ].y = pos.z;
 			}
 		}
-		
 		
 		protected function debugRender():void
 		{

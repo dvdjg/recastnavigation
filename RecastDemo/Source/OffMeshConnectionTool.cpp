@@ -99,7 +99,7 @@ void OffMeshConnectionTool::handleClick(const double* /*s*/, const double* p, bo
 		}
 		// If end point close enough, delete it.
 		if (nearestIndex != -1 &&
-			sqrtf(nearestDist) < m_sample->getAgentRadius())
+			sqrt(nearestDist) < m_sample->getAgentRadius())
 		{
 			geom->deleteOffMeshConnection(nearestIndex);
 		}

@@ -313,8 +313,8 @@ void duAppendCylinder(struct duDebugDraw* dd, double minx, double miny, double m
 		for (int i = 0; i < NUM_SEG; ++i)
 		{
 			const double a = (double)i/(double)NUM_SEG*DU_PI*2;
-			dir[i*2] = cosf(a);
-			dir[i*2+1] = sinf(a);
+			dir[i*2] = cos(a);
+			dir[i*2+1] = sin(a);
 		}
 	}
 	
@@ -371,7 +371,7 @@ inline void vcross(double* dest, const double* v1, const double* v2)
 
 inline void vnormalize(double* v)
 {
-	double d = 1.0 / sqrtf(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+	double d = 1.0 / sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 	v[0] *= d;
 	v[1] *= d;
 	v[2] *= d;
@@ -427,7 +427,7 @@ void duAppendArc(struct duDebugDraw* dd, const double x0, const double y0, const
 	const double dx = x1 - x0;
 	const double dy = y1 - y0;
 	const double dz = z1 - z0;
-	const double len = sqrtf(dx*dx + dy*dy + dz*dz);
+	const double len = sqrt(dx*dx + dy*dy + dz*dz);
 	double prev[3];
 	evalArc(x0,y0,z0, dx,dy,dz, len*h, PAD, prev);
 	for (int i = 1; i <= NUM_ARC_PTS; ++i)
@@ -488,8 +488,8 @@ void duAppendCircle(struct duDebugDraw* dd, const double x, const double y, cons
 		for (int i = 0; i < NUM_SEG; ++i)
 		{
 			const double a = (double)i/(double)NUM_SEG*DU_PI*2;
-			dir[i*2] = cosf(a);
-			dir[i*2+1] = sinf(a);
+			dir[i*2] = cos(a);
+			dir[i*2+1] = sin(a);
 		}
 	}
 	

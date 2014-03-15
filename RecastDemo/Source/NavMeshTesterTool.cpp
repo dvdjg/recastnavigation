@@ -52,7 +52,7 @@ inline bool inRange(const double* v1, const double* v2, const double r, const do
 	const double dx = v2[0] - v1[0];
 	const double dy = v2[1] - v1[1];
 	const double dz = v2[2] - v1[2];
-	return (dx*dx + dz*dz) < r*r && fabsf(dy) < h;
+	return (dx*dx + dz*dz) < r*r && fabs(dy) < h;
 }
 
 
@@ -547,7 +547,7 @@ void NavMeshTesterTool::handleToggle()
 	// Find movement delta.
 	double delta[3], len;
 	dtVsub(delta, steerPos, m_iterPos);
-	len = sqrtf(dtVdot(delta,delta));
+	len = sqrt(dtVdot(delta,delta));
 	// If the steer target is end of path or off-mesh link, do not move past the location.
 	if ((endOfPath || offMeshConnection) && len < STEP_SIZE)
 		len = 1;
@@ -947,7 +947,7 @@ void NavMeshTesterTool::recalc()
 		{
 			const double dx = m_epos[0] - m_spos[0];
 			const double dz = m_epos[2] - m_spos[2];
-			double dist = sqrtf(dx*dx + dz*dz);
+			double dist = sqrt(dx*dx + dz*dz);
 #ifdef DUMP_REQS
 			printf("fpc  %lf %lf %lf  %lf  0x%x 0x%x\n",
 				   m_spos[0],m_spos[1],m_spos[2], dist,
@@ -1241,7 +1241,7 @@ void NavMeshTesterTool::handleRender()
 			dd.depthMask(false);
 			const double dx = m_epos[0] - m_spos[0];
 			const double dz = m_epos[2] - m_spos[2];
-			const double dist = sqrtf(dx*dx + dz*dz);
+			const double dist = sqrt(dx*dx + dz*dz);
 			duDebugDrawCircle(&dd, m_spos[0], m_spos[1]+agentHeight/2, m_spos[2], dist, duRGBA(64,16,0,220), 2.0);
 			dd.depthMask(true);
 		}
