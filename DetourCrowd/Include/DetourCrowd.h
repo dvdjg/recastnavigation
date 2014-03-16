@@ -299,15 +299,23 @@ public:
 	int getActiveAgents(dtCrowdAgent** agents, const int maxAgents);
 
 	/// Updates the steering and positions of all agents.
+    /// This function simply calls sequentially:
+    ///    #updateComputeDesiredPosition, #updateReinsertToNavmesh, #updateHandleCollisions,
 	///  @param[in]		dt		The time, in seconds, to update the simulation. [Limit: > 0]
 	///  @param[out]	debug	A debug object to load with debug information. [Opt]
 	void update(const double dt, dtCrowdAgentDebugInfo* debug);
-    /// djg
+
+    /// Compute the agents desired positions.
+    /// @note djg
     void updateComputeDesiredPosition(const double dt, dtCrowdAgentDebugInfo* debug);
-    /// djg
-    void updateReinsertToNavmesh(const double dt);
-    /// djg
+
+    /// Corrects positions considering collisions with other agents
+    /// @note djg
     void updateHandleCollisions();
+
+    /// Ensures that the final position is within the navigation mesh
+    /// @note djg
+    void updateReinsertToNavmesh(const double dt);
 
 	/// Gets the filter used by the crowd.
 	/// @return The filter used by the crowd.

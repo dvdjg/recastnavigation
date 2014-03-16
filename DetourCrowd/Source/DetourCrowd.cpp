@@ -1116,6 +1116,7 @@ void dtCrowd::updateHandleCollisions()
     dtCrowdAgent** agents = m_activeAgents;
     const int nagents = m_currentAgentCount;
 
+    // Handle collisions.
     for (int iter = 0; iter < 4; ++iter)
     {
         for (int i = 0; i < nagents; ++i)
@@ -1191,6 +1192,7 @@ void dtCrowd::updateComputeDesiredPosition(const double dt, dtCrowdAgentDebugInf
 
     const int debugIdx = debug ? debug->idx : -1;
 
+    // Check that all agents still have valid paths.
     checkPathValidity(agents, nagents, dt);
 
     // Update async move request and path finder.
@@ -1463,10 +1465,8 @@ void dtCrowd::updateComputeDesiredPosition(const double dt, dtCrowdAgentDebugInf
 
 void dtCrowd::update(const double dt, dtCrowdAgentDebugInfo* debug)
 {
-    // Check that all agents still have valid paths.
     updateComputeDesiredPosition(dt, debug);
 	
-	// Handle collisions.
     updateHandleCollisions();
 	
     updateReinsertToNavmesh(dt);

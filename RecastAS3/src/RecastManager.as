@@ -53,7 +53,7 @@ package
 			
 			var loadResult:Boolean = geom.loadMesh(as3LogContext.swigCPtr, filename);
 
-			geom.getTrisVector(tris);
+			//geom.getTrisVector(tris);
 			
 			//update mesh settings
 			sample.m_cellSize = m_cellSize;
@@ -90,9 +90,12 @@ package
 		
 		public function advanceTime(deltaTime:Number):void
 		{
-			if( crowd )
-				crowd.update(deltaTime, crowdDebugPtr);
-				
+			if( crowd ) {
+				//crowd.update(deltaTime, crowdDebugPtr);
+				crowd.updateComputeDesiredPosition(deltaTime, crowdDebugPtr);
+				crowd.updateHandleCollisions();
+				crowd.updateReinsertToNavmesh(deltaTime);
+			}
 			var res:int = sample.handleUpdate(deltaTime); //update the tileCache
 			var re:Boolean = Recast.dtStatusSucceed(res);
 			re = !re;
