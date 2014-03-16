@@ -61,8 +61,10 @@ public:
 	~InputGeom();
 	
 	bool loadMesh(class rcContext* ctx, const char* filepath);
+    bool loadMeshFromBuffer(rcContext* ctx, const unsigned char* buf, int bufSize);
 	
 	bool load(class rcContext* ctx, const char* filepath);
+    bool loadFromBuffer(rcContext* ctx, const unsigned char* buf, int bufSize); // djg
 	bool save(const char* filepath);
 	
 	/// Method to return static mesh data.

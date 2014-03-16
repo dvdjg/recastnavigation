@@ -25,7 +25,9 @@ public:
 	rcMeshLoaderObj();
 	~rcMeshLoaderObj();
 	
+    void setFilename(const char* filename);
 	bool load(const char* fileName);
+    bool loadFromBuffer(const unsigned char* buf, int bufSize);
 
     inline void getVertsVector(const double** ppVerts, int *pVertCount) const { *ppVerts = m_verts; *pVertCount = m_vertCount; }
     inline void getNormalsVector(const double** ppVerts, int * pVertCount) const { *ppVerts = m_normals; *pVertCount = m_vertCount; }
@@ -42,8 +44,11 @@ public:
 	inline int getTriCount() const { return m_triCount; }
 	inline const char* getFileName() const { return m_filename; }
 
+    void computeNormals();
+    void addVertex(double x, double y, double z) { addVertex(x, y, z, m_vcap); }
+    void addTriangle(int a, int b, int c) { addTriangle(a, b, c, m_tcap); }
+
 private:
-	
 	void addVertex(double x, double y, double z, int& cap);
 	void addTriangle(int a, int b, int c, int& cap);
 	
@@ -54,6 +59,8 @@ private:
 	double* m_normals;
 	int m_vertCount;
 	int m_triCount;
+    int m_vcap;
+    int m_tcap;
 };
 
 #endif // MESHLOADER_OBJ

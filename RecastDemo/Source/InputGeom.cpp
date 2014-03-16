@@ -69,7 +69,7 @@ static bool intersectSegmentTriangle(const double* sp, const double* sq,
 	return true;
 }
 
-static char* parseRow(char* buf, char* bufEnd, char* row, int len)
+static const char* parseRow(const char* buf, const char* bufEnd, char* row, int len)
 {
 	bool start = true;
 	bool done = false;
@@ -117,7 +117,48 @@ InputGeom::~InputGeom()
 	delete m_chunkyMesh;
 	delete m_mesh;
 }
-		
+
+bool InputGeom::loadMeshFromBuffer(rcContext* ctx, const unsigned char* buf, int bufSize)
+{
+    if (m_mesh)
+    {
+        delete m_chunkyMesh;
+        m_chunkyMesh = 0;
+        delete m_mesh;
+        m_mesh = 0;
+    }
+    m_offMeshConCount = 0;
+    m_volumeCount = 0;
+
+    m_mesh = new rcMeshLoaderObj;
+    if (!m_mesh)
+    {
+        ctx->log(RC_LOG_ERROR, "loadMesh: Out of memory 'm_mesh'.");
+        return false;
+    }
+    if (!m_mesh->loadFromBuffer(buf, bufSize))
+    {
+        ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not load from buffer");
+        return false;
+    }
+
+    rcCalcBounds(m_mesh->getVerts(), m_mesh->getVertCount(), m_meshBMin, m_meshBMax);
+
+    m_chunkyMesh = new rcChunkyTriMesh;
+    if (!m_chunkyMesh)
+    {
+        ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Out of memory 'm_chunkyMesh'.");
+        return false;
+    }
+    if (!rcCreateChunkyTriMesh(m_mesh->getVerts(), m_mesh->getTris(), m_mesh->getTriCount(), 256, m_chunkyMesh))
+    {
+        ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Failed to build chunky mesh.");
+        return false;
+    }
+
+    return true;
+}
+
 bool InputGeom::loadMesh(rcContext* ctx, const char* filepath)
 {
 	if (m_mesh)
@@ -159,16 +200,84 @@ bool InputGeom::loadMesh(rcContext* ctx, const char* filepath)
 	return true;
 }
 
+bool InputGeom::loadFromBuffer(rcContext* ctx, const unsigned char* buf, int bufSize)
+{
+    m_offMeshConCount = 0;
+    m_volumeCount = 0;
+    delete m_mesh;
+    m_mesh = 0;
+
+    const char* src = (const char*) buf;
+    const char* srcEnd = (const char*) buf + bufSize;
+    char row[512];
+    while (src < srcEnd)
+    {
+        // Parse one row
+        row[0] = '\0';
+        src = parseRow(src, srcEnd, row, sizeof(row)/sizeof(char));
+        if (row[0] == 'f')
+        {
+            // File name.
+            const char* name = row+1;
+            // Skip white spaces
+            while (*name && isspace(*name))
+                name++;
+            if (*name)
+            {
+                if (!loadMesh(ctx, name))
+                {
+                    delete [] buf;
+                    return false;
+                }
+            }
+        }
+        else if (row[0] == 'c')
+        {
+            // Off-mesh connection
+            if (m_offMeshConCount < MAX_OFFMESH_CONNECTIONS)
+            {
+                double* v = &m_offMeshConVerts[m_offMeshConCount*3*2];
+                int bidir, area = 0, flags = 0;
+                double rad;
+                sscanf(row+1, "%lf %lf %lf  %lf %lf %lf %lf %d %d %d",
+                       &v[0], &v[1], &v[2], &v[3], &v[4], &v[5], &rad, &bidir, &area, &flags);
+                m_offMeshConRads[m_offMeshConCount] = rad;
+                m_offMeshConDirs[m_offMeshConCount] = (unsigned char)bidir;
+                m_offMeshConAreas[m_offMeshConCount] = (unsigned char)area;
+                m_offMeshConFlags[m_offMeshConCount] = (unsigned short)flags;
+                m_offMeshConCount++;
+            }
+        }
+        else if (row[0] == 'v')
+        {
+            // Convex volumes
+            if (m_volumeCount < MAX_VOLUMES)
+            {
+                ConvexVolume* vol = &m_volumes[m_volumeCount++];
+                sscanf(row+1, "%d %d %lf %lf", &vol->nverts, &vol->area, &vol->hmin, &vol->hmax);
+                for (int i = 0; i < vol->nverts; ++i)
+                {
+                    row[0] = '\0';
+                    src = parseRow(src, srcEnd, row, sizeof(row)/sizeof(char));
+                    sscanf(row, "%lf %lf %lf", &vol->verts[i*3+0], &vol->verts[i*3+1], &vol->verts[i*3+2]);
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 bool InputGeom::load(rcContext* ctx, const char* filePath)
 {
-	char* buf = 0;
+    unsigned char* buf = 0;
 	FILE* fp = fopen(filePath, "rb");
 	if (!fp)
 		return false;
 	fseek(fp, 0, SEEK_END);
 	int bufSize = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
-	buf = new char[bufSize];
+    buf = new unsigned char[bufSize];
 	if (!buf)
 	{
 		fclose(fp);
@@ -177,72 +286,11 @@ bool InputGeom::load(rcContext* ctx, const char* filePath)
 	fread(buf, bufSize, 1, fp);
 	fclose(fp);
 	
-	m_offMeshConCount = 0;
-	m_volumeCount = 0;
-	delete m_mesh;
-	m_mesh = 0;
+    bool ret = loadFromBuffer(ctx, buf, bufSize);
 
-	char* src = buf;
-	char* srcEnd = buf + bufSize;
-	char row[512];
-	while (src < srcEnd)
-	{
-		// Parse one row
-		row[0] = '\0';
-		src = parseRow(src, srcEnd, row, sizeof(row)/sizeof(char));
-		if (row[0] == 'f')
-		{
-			// File name.
-			const char* name = row+1;
-			// Skip white spaces
-			while (*name && isspace(*name))
-				name++;
-			if (*name)
-			{
-				if (!loadMesh(ctx, name))
-				{
-					delete [] buf;
-					return false;
-				}
-			}
-		}
-		else if (row[0] == 'c')
-		{
-			// Off-mesh connection
-			if (m_offMeshConCount < MAX_OFFMESH_CONNECTIONS)
-			{
-				double* v = &m_offMeshConVerts[m_offMeshConCount*3*2];
-				int bidir, area = 0, flags = 0;
-				double rad;
-                sscanf(row+1, "%lf %lf %lf  %lf %lf %lf %lf %d %d %d",
-					   &v[0], &v[1], &v[2], &v[3], &v[4], &v[5], &rad, &bidir, &area, &flags);
-				m_offMeshConRads[m_offMeshConCount] = rad;
-				m_offMeshConDirs[m_offMeshConCount] = (unsigned char)bidir;
-				m_offMeshConAreas[m_offMeshConCount] = (unsigned char)area;
-				m_offMeshConFlags[m_offMeshConCount] = (unsigned short)flags;
-				m_offMeshConCount++;
-			}
-		}
-		else if (row[0] == 'v')
-		{
-			// Convex volumes
-			if (m_volumeCount < MAX_VOLUMES)
-			{
-				ConvexVolume* vol = &m_volumes[m_volumeCount++];
-                sscanf(row+1, "%d %d %lf %lf", &vol->nverts, &vol->area, &vol->hmin, &vol->hmax);
-				for (int i = 0; i < vol->nverts; ++i)
-				{
-					row[0] = '\0';
-					src = parseRow(src, srcEnd, row, sizeof(row)/sizeof(char));
-                    sscanf(row, "%lf %lf %lf", &vol->verts[i*3+0], &vol->verts[i*3+1], &vol->verts[i*3+2]);
-				}
-			}
-		}
-	}
-	
 	delete [] buf;
 	
-	return true;
+    return ret;
 }
 
 bool InputGeom::save(const char* filepath)
