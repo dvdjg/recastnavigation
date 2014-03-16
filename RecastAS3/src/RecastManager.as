@@ -52,16 +52,8 @@ package
 			geom = InputGeom.create();
 			
 			var loadResult:Boolean = geom.loadMesh(as3LogContext.swigCPtr, filename);
-			
-			var meshLoader:rcMeshLoaderObj = new rcMeshLoaderObj();
-			meshLoader.swigCPtr = geom.getMesh();
-			var tris:Vector.<int> = new Vector.<int>;
-			var ntris:int = geom.getTriCount();
-			for(var i:int = 0; i < ntris; ++i) {
-				var tri:Object = geom.getTri(i);
-			}
-			var triss:Vector.<int> = new Vector.<int>; 
-			meshLoader.getTrisVal(triss);
+
+			geom.getTrisVector(tris);
 			
 			//update mesh settings
 			sample.m_cellSize = m_cellSize;

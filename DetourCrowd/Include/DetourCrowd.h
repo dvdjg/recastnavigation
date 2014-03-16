@@ -191,6 +191,7 @@ struct dtCrowdAgentDebugInfo
 class dtCrowd
 {
 	int m_maxAgents;
+    int m_currentAgentCount; // djg
 	dtCrowdAgent* m_agents;
 	dtCrowdAgent** m_activeAgents;
 	dtCrowdAgentAnimation* m_agentAnims;
@@ -301,7 +302,13 @@ public:
 	///  @param[in]		dt		The time, in seconds, to update the simulation. [Limit: > 0]
 	///  @param[out]	debug	A debug object to load with debug information. [Opt]
 	void update(const double dt, dtCrowdAgentDebugInfo* debug);
-	
+    /// djg
+    void updateComputeDesiredPosition(const double dt, dtCrowdAgentDebugInfo* debug);
+    /// djg
+    void updateReinsertToNavmesh(const double dt);
+    /// djg
+    void updateHandleCollisions();
+
 	/// Gets the filter used by the crowd.
 	/// @return The filter used by the crowd.
 	const dtQueryFilter* getFilter() const { return &m_filter; }

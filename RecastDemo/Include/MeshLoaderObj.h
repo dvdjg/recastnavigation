@@ -27,13 +27,13 @@ public:
 	
 	bool load(const char* fileName);
 
-    inline void getVertsVal(const double** ppVerts, int *pVertCount) const { *ppVerts = m_verts; *pVertCount = m_vertCount; }
-    inline void getNormalsVal(const double** ppVerts, int * pVertCount) const { *ppVerts = m_normals; *pVertCount = m_vertCount; }
-    inline void getTrisVal(const int** ppTris, int * pTriCount) const { *ppTris = m_tris; *pTriCount = m_triCount; }
+    inline void getVertsVector(const double** ppVerts, int *pVertCount) const { *ppVerts = m_verts; *pVertCount = m_vertCount; }
+    inline void getNormalsVector(const double** ppVerts, int * pVertCount) const { *ppVerts = m_normals; *pVertCount = m_vertCount; }
+    inline void getTrisVector(const int** ppTris, int * pTriCount) const { *ppTris = m_tris; *pTriCount = m_triCount; }
 
-    inline const double* getVert(int i) const { return m_verts + i * 3; }
+    inline const double* getVertex(int i) const { return m_verts + i * 3; }
     inline const double* getNormal(int i) const { return m_normals + i * 3; }
-    inline const int* getTri(int i) const { return m_tris + i * 3; }
+    inline const int* getTriangle(int i) const { return m_tris + i * 3; }
 
     inline const double* getVerts() const { return m_verts; }
     inline const double* getNormals() const { return m_normals; }

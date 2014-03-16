@@ -97,11 +97,15 @@ public:
 	void drawConvexVolumes(struct duDebugDraw* dd, bool hilight = false);
 	///@}
 
-    /// @name Access functions.
+    /// @name Access functions (avoids the use of rcMeshLoaderObj).
     ///@{
-    inline const double* getVert(int i) const { return m_mesh->getVert(i); }
+    inline void getVertsVector(const double** ppVerts, int *pVertCount) const { m_mesh->getVertsVector(ppVerts, pVertCount); }
+    inline void getNormalsVector(const double** ppVerts, int * pVertCount) const { m_mesh->getNormalsVector(ppVerts, pVertCount); }
+    inline void getTrisVector(const int** ppTris, int * pTriCount) const { m_mesh->getTrisVector(ppTris, pTriCount); }
+
+    inline const double* getVertex(int i) const { return m_mesh->getVertex(i); }
     inline const double* getNormal(int i) const { return m_mesh->getNormal(i); }
-    inline const int* getTri(int i) const { return m_mesh->getTri(i); }
+    inline const int* getTriangle(int i) const { return m_mesh->getTriangle(i); }
 
     inline int getVertCount() const { return  m_mesh->getVertCount(); }
     inline int getTriCount() const { return m_mesh->getTriCount(); }
