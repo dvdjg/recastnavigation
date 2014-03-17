@@ -57,7 +57,7 @@ public:
 	virtual void handleSettings();
 	virtual void handleMeshChanged(class InputGeom* geom);
 	virtual bool handleBuild();
-    virtual dtStatus handleUpdate(const double dt);
+	virtual dtStatus handleUpdate(const double dt);
 
 	void getTilePos(const double* pos, int& tx, int& ty);
 
@@ -65,28 +65,28 @@ public:
 	dtObstacleRef addTempObstacle(const double* pos, const double radius, const double height );
 	void removeTempObstacleById(dtObstacleRef id);
 	void removeTempObstacle(const double* sp, const double* sq);
-    dtObstacleRef hitTempObstacle(const double* sp, const double* sq);
-    void clearAllTempObstacles();
+	dtObstacleRef hitTempObstacle(const double* sp, const double* sq);
+	void clearAllTempObstacles();
 	double m_tileSize;
 	double m_maxObstacles;
 };
 
 bool isectSegAABB(const double* sp, const double* sq,
-                         const double* amin, const double* amax,
-                         double& tmin, double& tmax);
+						 const double* amin, const double* amax,
+						 double& tmin, double& tmax);
 int calcLayerBufferSize(const int gridWidth, const int gridHeight);
 
 class InputGeom;
 struct MeshProcess : public dtTileCacheMeshProcess
 {
-    InputGeom* m_geom;
+	InputGeom* m_geom;
 
-    MeshProcess();
+	MeshProcess();
 
-    void init(InputGeom* geom);
+	void init(InputGeom* geom);
 
-    virtual void process(struct dtNavMeshCreateParams* params,
-                         unsigned char* polyAreas, unsigned short* polyFlags);
+	virtual void process(struct dtNavMeshCreateParams* params,
+						 unsigned char* polyAreas, unsigned short* polyFlags);
 };
 
 #endif // RECASTSAMPLETEMPOBSTACLE_H

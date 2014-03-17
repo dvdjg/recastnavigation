@@ -92,7 +92,7 @@ public:
 	//virtual void handleRenderOverlay(double* proj, double* model, int* view);
 	virtual void handleMeshChanged(class InputGeom* geom);
 	virtual bool handleBuild();
-    virtual dtStatus handleUpdate(const double dt);
+	virtual dtStatus handleUpdate(const double dt);
 
 	void setContext(rcContext* ctx) { m_ctx = ctx; }
 

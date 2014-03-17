@@ -119,6 +119,6 @@ bool Sample::handleBuild()
 
 dtStatus Sample::handleUpdate(const double dt)
 {
-    return DT_SUCCESS;
+	return DT_SUCCESS;
 }
 

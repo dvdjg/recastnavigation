@@ -24,11 +24,14 @@
 #include <math.h>
 
 rcMeshLoaderObj::rcMeshLoaderObj() :
+	m_scale(1.0),
 	m_verts(0),
 	m_tris(0),
 	m_normals(0),
 	m_vertCount(0),
-	m_triCount(0)
+	m_triCount(0),
+	m_vcap(0),
+	m_tcap(0)
 {
 }
 
@@ -51,14 +54,17 @@ void rcMeshLoaderObj::addVertex(double x, double y, double z, int& cap)
 		m_verts = nv;
 	}
 	double* dst = &m_verts[m_vertCount*3];
-	*dst++ = x;
-	*dst++ = y;
-	*dst++ = z;
+	*dst++ = x*m_scale;
+	*dst++ = y*m_scale;
+	*dst++ = z*m_scale;
 	m_vertCount++;
 }
 
 void rcMeshLoaderObj::addTriangle(int a, int b, int c, int& cap)
 {
+	if (a < 0 || a >= m_vertCount || b < 0 || b >= m_vertCount || c < 0 || c >= m_vertCount)
+		return;
+
 	if (m_triCount+1 > cap)
 	{
 		cap = !cap ? 8 : cap*2;
@@ -75,21 +81,21 @@ void rcMeshLoaderObj::addTriangle(int a, int b, int c, int& cap)
 	m_triCount++;
 }
 
-static char* parseRow(char* buf, char* bufEnd, char* row, int len)
+static const char* parseRow(const char* buf, const char* bufEnd, char* row, int len)
 {
-	bool cont = false;
+	//bool cont = false;
 	bool start = true;
 	bool done = false;
 	int n = 0;
 	while (!done && buf < bufEnd)
 	{
-		char c = *buf;
+		const char c = *buf;
 		buf++;
 		// multirow
 		switch (c)
 		{
 			case '\\':
-				cont = true; // multirow
+				//cont = true; // multirow
 				break;
 			case '\n':
 				if (start) break;
@@ -102,7 +108,7 @@ static char* parseRow(char* buf, char* bufEnd, char* row, int len)
 				if (start) break;
 			default:
 				start = false;
-				cont = false;
+				//cont = false;
 				row[n++] = c;
 				if (n >= len-1)
 					done = true;
@@ -137,65 +143,8 @@ static int parseFace(char* row, int* data, int n, int vcnt)
 	return j;
 }
 
-bool rcMeshLoaderObj::load(const char* filename)
+void rcMeshLoaderObj::computeNormals()
 {
-	char* buf = 0;
-	FILE* fp = fopen(filename, "rb");
-	if (!fp)
-		return false;
-	fseek(fp, 0, SEEK_END);
-	int bufSize = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
-	buf = new char[bufSize];
-	if (!buf)
-	{
-		fclose(fp);
-		return false;
-	}
-	fread(buf, bufSize, 1, fp);
-	fclose(fp);
-
-	char* src = buf;
-	char* srcEnd = buf + bufSize;
-	char row[512];
-	int face[32];
-	double x,y,z;
-	int nv;
-	int vcap = 0;
-	int tcap = 0;
-	
-	while (src < srcEnd)
-	{
-		// Parse one row
-		row[0] = '\0';
-		src = parseRow(src, srcEnd, row, sizeof(row)/sizeof(char));
-		// Skip comments
-		if (row[0] == '#') continue;
-		if (row[0] == 'v' && row[1] != 'n' && row[1] != 't')
-		{
-			// Vertex pos
-			sscanf(row+1, "%lf %lf %lf", &x, &y, &z);
-			addVertex(x, y, z, vcap);
-		}
-		if (row[0] == 'f')
-		{
-			// Faces
-			nv = parseFace(row+1, face, 32, m_vertCount);
-			for (int i = 2; i < nv; ++i)
-			{
-				const int a = face[0];
-				const int b = face[i-1];
-				const int c = face[i];
-				if (a < 0 || a >= m_vertCount || b < 0 || b >= m_vertCount || c < 0 || c >= m_vertCount)
-					continue;
-				addTriangle(a, b, c, tcap);
-			}
-		}
-	}
-
-	delete [] buf;
-
-	// Calculate normals.
 	m_normals = new double[m_triCount*3];
 	for (int i = 0; i < m_triCount*3; i += 3)
 	{
@@ -215,15 +164,90 @@ bool rcMeshLoaderObj::load(const char* filename)
 		double d = sqrt(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
 		if (d > 0)
 		{
-			d = 1.0f/d;
+			d = 1.0/d;
 			n[0] *= d;
 			n[1] *= d;
 			n[2] *= d;
 		}
 	}
-	
+}
+
+bool rcMeshLoaderObj::loadFromBuffer(const unsigned char* buf, int bufSize)
+{
+	const char* src = (const char*) buf;
+	const char* srcEnd = (const char*) buf + bufSize;
+	char row[512];
+	int face[32];
+	double x,y,z;
+	int nv;
+//	int vcap = 0;
+//	int tcap = 0;
+
+	while (src < srcEnd)
+	{
+		// Parse one row
+		row[0] = '\0';
+		src = parseRow(src, srcEnd, row, sizeof(row)/sizeof(char));
+		// Skip comments
+		if (row[0] == '#') continue;
+		if (row[0] == 'v' && row[1] != 'n' && row[1] != 't')
+		{
+			// Vertex pos
+			sscanf(row+1, "%lf %lf %lf", &x, &y, &z);
+			addVertex(x, y, z/*, vcap*/);
+		}
+		if (row[0] == 'f')
+		{
+			// Faces
+			nv = parseFace(row+1, face, 32, m_vertCount);
+			for (int i = 2; i < nv; ++i)
+			{
+				const int a = face[0];
+				const int b = face[i-1];
+				const int c = face[i];
+
+				addTriangle(a, b, c/*, tcap*/);
+			}
+		}
+	}
+	return true;
+}
+
+void rcMeshLoaderObj::setFilename(const char* filename)
+{
 	strncpy(m_filename, filename, sizeof(m_filename));
 	m_filename[sizeof(m_filename)-1] = '\0';
-	
-	return true;
+}
+
+bool rcMeshLoaderObj::load(const char* filename)
+{
+	char* buf = 0;
+	FILE* fp = fopen(filename, "rb");
+	if (!fp)
+		return false;
+	fseek(fp, 0, SEEK_END);
+	int bufSize = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+	buf = new char[bufSize];
+	if (!buf)
+	{
+		fclose(fp);
+		return false;
+	}
+	fread(buf, bufSize, 1, fp);
+	fclose(fp);
+
+	bool ret = loadFromBuffer((const unsigned char*)buf, bufSize);
+
+	delete [] buf;
+
+	if(ret)
+	{
+		// Calculate normals.
+		computeNormals();
+
+		setFilename(filename);
+	}
+
+	return ret;
 }

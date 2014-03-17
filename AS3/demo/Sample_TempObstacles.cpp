@@ -60,7 +60,7 @@ bool isectSegAABB(const double* sp, const double* sq,
 	// For all three slabs
 	for (int i = 0; i < 3; i++)
 	{
-        if (fabs(d[i]) < EPS)
+		if (fabs(d[i]) < EPS)
 		{
 			// Ray is parallel to slab. No hit if origin not within slab
 			if (sp[i] < amin[i] || sp[i] > amax[i])
@@ -95,33 +95,33 @@ int calcLayerBufferSize(const int gridWidth, const int gridHeight)
 
 struct FastLZCompressor : public dtTileCacheCompressor
 {
-    virtual int maxCompressedSize(const int bufferSize);
+	virtual int maxCompressedSize(const int bufferSize);
 
-    virtual dtStatus compress(const unsigned char* buffer, const int bufferSize,
-                              unsigned char* compressed, const int maxCompressedSize/**/, int* compressedSize);
+	virtual dtStatus compress(const unsigned char* buffer, const int bufferSize,
+							  unsigned char* compressed, const int maxCompressedSize/**/, int* compressedSize);
 
-    virtual dtStatus decompress(const unsigned char* compressed, const int compressedSize,
-                                unsigned char* buffer, const int maxBufferSize, int* bufferSize);
+	virtual dtStatus decompress(const unsigned char* compressed, const int compressedSize,
+								unsigned char* buffer, const int maxBufferSize, int* bufferSize);
 };
 
 
 int FastLZCompressor::maxCompressedSize(const int bufferSize)
 {
-    return (int)(bufferSize* 1.05f);
+	return (int)(bufferSize* 1.05f);
 }
 
 dtStatus FastLZCompressor::compress(const unsigned char* buffer, const int bufferSize,
-                          unsigned char* compressed, const int /*maxCompressedSize*/, int* compressedSize)
+						  unsigned char* compressed, const int /*maxCompressedSize*/, int* compressedSize)
 {
-    *compressedSize = fastlz_compress((const void *const)buffer, bufferSize, compressed);
-    return DT_SUCCESS;
+	*compressedSize = fastlz_compress((const void *const)buffer, bufferSize, compressed);
+	return DT_SUCCESS;
 }
 
 dtStatus FastLZCompressor::decompress(const unsigned char* compressed, const int compressedSize,
-                            unsigned char* buffer, const int maxBufferSize, int* bufferSize)
+							unsigned char* buffer, const int maxBufferSize, int* bufferSize)
 {
-    *bufferSize = fastlz_decompress(compressed, compressedSize, buffer, maxBufferSize);
-    return *bufferSize < 0 ? DT_FAILURE : DT_SUCCESS;
+	*bufferSize = fastlz_decompress(compressed, compressedSize, buffer, maxBufferSize);
+	return *bufferSize < 0 ? DT_FAILURE : DT_SUCCESS;
 }
 
 
@@ -178,45 +178,45 @@ MeshProcess::MeshProcess() : m_geom(0)
 
 void MeshProcess::init(InputGeom* geom)
 {
-    m_geom = geom;
+	m_geom = geom;
 }
 
 void MeshProcess::process(struct dtNavMeshCreateParams* params,
-                     unsigned char* polyAreas, unsigned short* polyFlags)
+					 unsigned char* polyAreas, unsigned short* polyFlags)
 {
-    // Update poly flags from areas.
-    for (int i = 0; i < params->polyCount; ++i)
-    {
-        if (polyAreas[i] == DT_TILECACHE_WALKABLE_AREA)
-            polyAreas[i] = SAMPLE_POLYAREA_GROUND;
+	// Update poly flags from areas.
+	for (int i = 0; i < params->polyCount; ++i)
+	{
+		if (polyAreas[i] == DT_TILECACHE_WALKABLE_AREA)
+			polyAreas[i] = SAMPLE_POLYAREA_GROUND;
 
-        if (polyAreas[i] == SAMPLE_POLYAREA_GROUND ||
-            polyAreas[i] == SAMPLE_POLYAREA_GRASS ||
-            polyAreas[i] == SAMPLE_POLYAREA_ROAD)
-        {
-            polyFlags[i] = SAMPLE_POLYFLAGS_WALK;
-        }
-        else if (polyAreas[i] == SAMPLE_POLYAREA_WATER)
-        {
-            polyFlags[i] = SAMPLE_POLYFLAGS_SWIM;
-        }
-        else if (polyAreas[i] == SAMPLE_POLYAREA_DOOR)
-        {
-            polyFlags[i] = SAMPLE_POLYFLAGS_WALK | SAMPLE_POLYFLAGS_DOOR;
-        }
-    }
+		if (polyAreas[i] == SAMPLE_POLYAREA_GROUND ||
+			polyAreas[i] == SAMPLE_POLYAREA_GRASS ||
+			polyAreas[i] == SAMPLE_POLYAREA_ROAD)
+		{
+			polyFlags[i] = SAMPLE_POLYFLAGS_WALK;
+		}
+		else if (polyAreas[i] == SAMPLE_POLYAREA_WATER)
+		{
+			polyFlags[i] = SAMPLE_POLYFLAGS_SWIM;
+		}
+		else if (polyAreas[i] == SAMPLE_POLYAREA_DOOR)
+		{
+			polyFlags[i] = SAMPLE_POLYFLAGS_WALK | SAMPLE_POLYFLAGS_DOOR;
+		}
+	}
 
-    // Pass in off-mesh connections.
-    if (m_geom)
-    {
-        params->offMeshConVerts = m_geom->getOffMeshConnectionVerts();
-        params->offMeshConRad = m_geom->getOffMeshConnectionRads();
-        params->offMeshConDir = m_geom->getOffMeshConnectionDirs();
-        params->offMeshConAreas = m_geom->getOffMeshConnectionAreas();
-        params->offMeshConFlags = m_geom->getOffMeshConnectionFlags();
-        params->offMeshConUserID = m_geom->getOffMeshConnectionId();
-        params->offMeshConCount = m_geom->getOffMeshConnectionCount();
-    }
+	// Pass in off-mesh connections.
+	if (m_geom)
+	{
+		params->offMeshConVerts = m_geom->getOffMeshConnectionVerts();
+		params->offMeshConRad = m_geom->getOffMeshConnectionRads();
+		params->offMeshConDir = m_geom->getOffMeshConnectionDirs();
+		params->offMeshConAreas = m_geom->getOffMeshConnectionAreas();
+		params->offMeshConFlags = m_geom->getOffMeshConnectionFlags();
+		params->offMeshConUserID = m_geom->getOffMeshConnectionId();
+		params->offMeshConCount = m_geom->getOffMeshConnectionCount();
+	}
 }
 
 
@@ -774,10 +774,10 @@ void Sample_TempObstacles::removeTempObstacle(const double* sp, const double* sq
 
 dtObstacleRef Sample_TempObstacles::hitTempObstacle(const double* sp, const double* sq)
 {
-    if (!m_tileCache)
-        return 0;
-    dtObstacleRef ref = ::hitTestObstacle(m_tileCache, sp, sq);
-    return ref;
+	if (!m_tileCache)
+		return 0;
+	dtObstacleRef ref = ::hitTestObstacle(m_tileCache, sp, sq);
+	return ref;
 }
 
 void Sample_TempObstacles::removeTempObstacleById(dtObstacleRef ref)
@@ -851,7 +851,7 @@ bool Sample_TempObstacles::handleBuild()
 	rcVcopy(cfg.bmin, bmin);
 	rcVcopy(cfg.bmax, bmax);
 
-    char tsstr[64];
+	char tsstr[64];
 	sprintf(tsstr, "tilesize %lf", m_tileSize);
 	m_ctx->log(RC_LOG_ERROR, tsstr);
 	
@@ -982,11 +982,11 @@ dtStatus Sample_TempObstacles::handleUpdate(const double dt)
 	Sample::handleUpdate(dt);
 	
 	if (!m_navMesh)
-        return DT_FAILURE;
+		return DT_FAILURE;
 	if (!m_tileCache)
-        return DT_FAILURE;
+		return DT_FAILURE;
 	
-    return m_tileCache->update(dt, m_navMesh);
+	return m_tileCache->update(dt, m_navMesh);
 }
 
 void Sample_TempObstacles::getTilePos(const double* pos, int& tx, int& ty)

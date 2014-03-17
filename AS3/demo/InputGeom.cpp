@@ -46,22 +46,22 @@ static bool intersectSegmentTriangle(const double* sp, const double* sq,
 	// Compute denominator d. If d <= 0, segment is parallel to or points
 	// away from triangle, so exit early
 	double d = rcVdot(qp, norm);
-	if (d <= 0.0f) return false;
+	if (d <= 0.0) return false;
 	
 	// Compute intersection t value of pq with plane of triangle. A ray
 	// intersects iff 0 <= t. Segment intersects iff 0 <= t <= 1. Delay
 	// dividing by d until intersection has been found to pierce triangle
 	rcVsub(ap, sp, a);
 	t = rcVdot(ap, norm);
-	if (t < 0.0f) return false;
+	if (t < 0.0) return false;
 	if (t > d) return false; // For segment; exclude this code line for a ray test
 	
 	// Compute barycentric coordinate components and test if within bounds
 	rcVcross(e, qp, ap);
 	v = rcVdot(ac, e);
-	if (v < 0.0f || v > d) return false;
+	if (v < 0.0 || v > d) return false;
 	w = -rcVdot(ab, e);
-	if (w < 0.0f || v + w > d) return false;
+	if (w < 0.0 || v + w > d) return false;
 	
 	// Segment/ray intersects triangle. Perform delayed division
 	t /= d;
@@ -69,7 +69,7 @@ static bool intersectSegmentTriangle(const double* sp, const double* sq,
 	return true;
 }
 
-static char* parseRow(char* buf, char* bufEnd, char* row, int len)
+static const char* parseRow(const char* buf, const char* bufEnd, char* row, int len)
 {
 	bool start = true;
 	bool done = false;
@@ -117,7 +117,48 @@ InputGeom::~InputGeom()
 	delete m_chunkyMesh;
 	delete m_mesh;
 }
-		
+
+bool InputGeom::loadMeshFromBuffer(rcContext* ctx, const unsigned char* buf, int bufSize)
+{
+	if (m_mesh)
+	{
+		delete m_chunkyMesh;
+		m_chunkyMesh = 0;
+		delete m_mesh;
+		m_mesh = 0;
+	}
+	m_offMeshConCount = 0;
+	m_volumeCount = 0;
+
+	m_mesh = new rcMeshLoaderObj;
+	if (!m_mesh)
+	{
+		ctx->log(RC_LOG_ERROR, "loadMesh: Out of memory 'm_mesh'.");
+		return false;
+	}
+	if (!m_mesh->loadFromBuffer(buf, bufSize))
+	{
+		ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not load from buffer");
+		return false;
+	}
+
+	rcCalcBounds(m_mesh->getVerts(), m_mesh->getVertCount(), m_meshBMin, m_meshBMax);
+
+	m_chunkyMesh = new rcChunkyTriMesh;
+	if (!m_chunkyMesh)
+	{
+		ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Out of memory 'm_chunkyMesh'.");
+		return false;
+	}
+	if (!rcCreateChunkyTriMesh(m_mesh->getVerts(), m_mesh->getTris(), m_mesh->getTriCount(), 256, m_chunkyMesh))
+	{
+		ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Failed to build chunky mesh.");
+		return false;
+	}
+
+	return true;
+}
+
 bool InputGeom::loadMesh(rcContext* ctx, const char* filepath)
 {
 	if (m_mesh)
@@ -159,31 +200,15 @@ bool InputGeom::loadMesh(rcContext* ctx, const char* filepath)
 	return true;
 }
 
-bool InputGeom::load(rcContext* ctx, const char* filePath)
+bool InputGeom::loadFromBuffer(rcContext* ctx, const unsigned char* buf, int bufSize)
 {
-	char* buf = 0;
-	FILE* fp = fopen(filePath, "rb");
-	if (!fp)
-		return false;
-	fseek(fp, 0, SEEK_END);
-	int bufSize = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
-	buf = new char[bufSize];
-	if (!buf)
-	{
-		fclose(fp);
-		return false;
-	}
-	fread(buf, bufSize, 1, fp);
-	fclose(fp);
-	
 	m_offMeshConCount = 0;
 	m_volumeCount = 0;
 	delete m_mesh;
 	m_mesh = 0;
 
-	char* src = buf;
-	char* srcEnd = buf + bufSize;
+	const char* src = (const char*) buf;
+	const char* srcEnd = (const char*) buf + bufSize;
 	char row[512];
 	while (src < srcEnd)
 	{
@@ -239,10 +264,33 @@ bool InputGeom::load(rcContext* ctx, const char* filePath)
 			}
 		}
 	}
+
+	return true;
+}
+
+bool InputGeom::load(rcContext* ctx, const char* filePath)
+{
+	unsigned char* buf = 0;
+	FILE* fp = fopen(filePath, "rb");
+	if (!fp)
+		return false;
+	fseek(fp, 0, SEEK_END);
+	int bufSize = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+	buf = new unsigned char[bufSize];
+	if (!buf)
+	{
+		fclose(fp);
+		return false;
+	}
+	fread(buf, bufSize, 1, fp);
+	fclose(fp);
 	
+	bool ret = loadFromBuffer(ctx, buf, bufSize);
+
 	delete [] buf;
 	
-	return true;
+	return ret;
 }
 
 bool InputGeom::save(const char* filepath)
@@ -292,18 +340,18 @@ static bool isectSegAABB(const double* sp, const double* sq,
 	d[1] = sq[1] - sp[1];
 	d[2] = sq[2] - sp[2];
 	tmin = 0.0;
-	tmax = 1.0f;
+	tmax = 1.0;
 	
 	for (int i = 0; i < 3; i++)
 	{
-		if (fabsf(d[i]) < EPS)
+		if (fabs(d[i]) < EPS)
 		{
 			if (sp[i] < amin[i] || sp[i] > amax[i])
 				return false;
 		}
 		else
 		{
-			const double ood = 1.0f / d[i];
+			const double ood = 1.0 / d[i];
 			double t1 = (amin[i] - sp[i]) * ood;
 			double t2 = (amax[i] - sp[i]) * ood;
 			if (t1 > t2) { double tmp = t1; t1 = t2; t2 = tmp; }
@@ -337,7 +385,7 @@ bool InputGeom::raycastMesh(double* src, double* dst, double& tmin)
 	if (!ncid)
 		return false;
 	
-	tmin = 1.0f;
+	tmin = 1.0;
 	bool hit = false;
 	const double* verts = m_mesh->getVerts();
 	
@@ -399,24 +447,24 @@ void InputGeom::drawOffMeshConnections(duDebugDraw* dd, bool hilight)
 	unsigned int baseColor = duRGBA(0,0,0,64);
 	dd->depthMask(false);
 
-	dd->begin(DU_DRAW_LINES, 2.0f);
+	dd->begin(DU_DRAW_LINES, 2.0);
 	for (int i = 0; i < m_offMeshConCount; ++i)
 	{
 		double* v = &m_offMeshConVerts[i*3*2];
 
 		dd->vertex(v[0],v[1],v[2], baseColor);
-		dd->vertex(v[0],v[1]+0.2f,v[2], baseColor);
+		dd->vertex(v[0],v[1]+0.2,v[2], baseColor);
 		
 		dd->vertex(v[3],v[4],v[5], baseColor);
-		dd->vertex(v[3],v[4]+0.2f,v[5], baseColor);
+		dd->vertex(v[3],v[4]+0.2,v[5], baseColor);
 		
-		duAppendCircle(dd, v[0],v[1]+0.1f,v[2], m_offMeshConRads[i], baseColor);
-		duAppendCircle(dd, v[3],v[4]+0.1f,v[5], m_offMeshConRads[i], baseColor);
+		duAppendCircle(dd, v[0],v[1]+0.1,v[2], m_offMeshConRads[i], baseColor);
+		duAppendCircle(dd, v[3],v[4]+0.1,v[5], m_offMeshConRads[i], baseColor);
 
 		if (hilight)
 		{
-			duAppendArc(dd, v[0],v[1],v[2], v[3],v[4],v[5], 0.25f,
-						(m_offMeshConDirs[i]&1) ? 0.6f : 0.0f, 0.6f, conColor);
+			duAppendArc(dd, v[0],v[1],v[2], v[3],v[4],v[5], 0.25,
+						(m_offMeshConDirs[i]&1) ? 0.6 : 0.0, 0.6, conColor);
 		}
 	}	
 	dd->end();
@@ -424,7 +472,7 @@ void InputGeom::drawOffMeshConnections(duDebugDraw* dd, bool hilight)
 	dd->depthMask(true);
 }
 
-void InputGeom::addConvexVolume(const double* verts, const int nverts,
+void InputGeom::addConvexVolume(const double* verts, int nverts,
 								const double minh, const double maxh, unsigned char area)
 {
 	if (m_volumeCount >= MAX_VOLUMES) return;
@@ -474,7 +522,7 @@ void InputGeom::drawConvexVolumes(struct duDebugDraw* dd, bool /*hilight*/)
 	
 	dd->end();
 
-	dd->begin(DU_DRAW_LINES, 2.0f);
+	dd->begin(DU_DRAW_LINES, 2.0);
 	for (int i = 0; i < m_volumeCount; ++i)
 	{
 		const ConvexVolume* vol = &m_volumes[i];
@@ -493,14 +541,14 @@ void InputGeom::drawConvexVolumes(struct duDebugDraw* dd, bool /*hilight*/)
 	}
 	dd->end();
 
-	dd->begin(DU_DRAW_POINTS, 3.0f);
+	dd->begin(DU_DRAW_POINTS, 3.0);
 	for (int i = 0; i < m_volumeCount; ++i)
 	{
 		const ConvexVolume* vol = &m_volumes[i];
 		unsigned int col = duDarkenCol(duIntToCol(vol->area, 255));
 		for (int j = 0; j < vol->nverts; ++j)
 		{
-			dd->vertex(vol->verts[j*3+0],vol->verts[j*3+1]+0.1f,vol->verts[j*3+2], col);
+			dd->vertex(vol->verts[j*3+0],vol->verts[j*3+1]+0.1,vol->verts[j*3+2], col);
 			dd->vertex(vol->verts[j*3+0],vol->hmin,vol->verts[j*3+2], col);
 			dd->vertex(vol->verts[j*3+0],vol->hmax,vol->verts[j*3+2], col);
 		}

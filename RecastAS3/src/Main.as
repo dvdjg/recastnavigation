@@ -239,7 +239,7 @@ package
 			meshLoader.swigCPtr = recastManager.geomerty.getMesh();
 			
 			var tris:Vector.<int> = new Vector.<int>; 
-			meshLoader.getTrisVal(tris);
+			meshLoader.getTrisVector(tris);
 			var ntris:int = meshLoader.getTriCount();
 
 			var nVerts:int = meshLoader.getVertCount();
@@ -249,7 +249,7 @@ package
 			
 			for ( var i:int = 0; i < nVerts; i++ )
 			{
-				var vert:Object = meshLoader.getVert(i);
+				var vert:Object = meshLoader.getVertex(i);
 				p = new Point( vert.x,  vert.z );                    
 				verts.push(p);
 			}

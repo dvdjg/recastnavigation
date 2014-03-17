@@ -61,8 +61,10 @@ public:
 	~InputGeom();
 	
 	bool loadMesh(class rcContext* ctx, const char* filepath);
+	bool loadMeshFromBuffer(rcContext* ctx, const unsigned char* buf, int bufSize);
 	
 	bool load(class rcContext* ctx, const char* filepath);
+	bool loadFromBuffer(rcContext* ctx, const unsigned char* buf, int bufSize); // djg
 	bool save(const char* filepath);
 	
 	/// Method to return static mesh data.
@@ -91,21 +93,25 @@ public:
 	///@{
 	int getConvexVolumeCount() const { return m_volumeCount; }
 	const ConvexVolume* getConvexVolumes() const { return m_volumes; }
-	void addConvexVolume(const double* verts, const int nverts,
+	void addConvexVolume(const double* verts, int nverts,
 						 const double minh, const double maxh, unsigned char area);
 	void deleteConvexVolume(int i);
 	void drawConvexVolumes(struct duDebugDraw* dd, bool hilight = false);
 	///@}
-	
-    /// @name Access functions.
-    ///@{
-    inline const double* getVert(int i) const { return m_mesh->getVert(i); }
-    inline const double* getNormal(int i) const { return m_mesh->getNormal(i); }
-    inline const int* getTri(int i) const { return m_mesh->getTri(i); }
 
-    inline int getVertCount() const { return  m_mesh->getVertCount(); }
-    inline int getTriCount() const { return m_mesh->getTriCount(); }
-    ///@}
+	/// @name Access functions (avoids the use of rcMeshLoaderObj).
+	///@{
+	inline void getVertsVector(const double** ppVerts, int *pVertCount) const { m_mesh->getVertsVector(ppVerts, pVertCount); }
+	inline void getNormalsVector(const double** ppVerts, int * pVertCount) const { m_mesh->getNormalsVector(ppVerts, pVertCount); }
+	inline void getTrisVector(const int** ppTris, int * pTriCount) const { m_mesh->getTrisVector(ppTris, pTriCount); }
+
+	inline const double* getVertex(int i) const { return m_mesh->getVertex(i); }
+	inline const double* getNormal(int i) const { return m_mesh->getNormal(i); }
+	inline const int* getTriangle(int i) const { return m_mesh->getTriangle(i); }
+
+	inline int getVertCount() const { return  m_mesh->getVertCount(); }
+	inline int getTriCount() const { return m_mesh->getTriCount(); }
+	///@}
 };
 
 #endif // INPUTGEOM_H
