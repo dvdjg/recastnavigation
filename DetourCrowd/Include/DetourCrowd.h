@@ -89,6 +89,8 @@ struct dtCrowdAgentParams
 
 	/// User defined data attached to the agent.
 	void* userData;
+
+    void set(const dtCrowdAgentParams * source);
 };
 
 enum MoveRequestState
@@ -257,6 +259,7 @@ public:
 	///	 @param[in]		idx		The agent index. [Limits: 0 <= value < #getAgentCount()]
 	/// @return The requested agent.
 	const dtCrowdAgent* getAgent(const int idx);
+    bool getAgentActiveState(const int idx) const;
     const double* getAgentPosition(const int idx) const;
     const double* getAgentDesiredVelocity(const int idx) const;
     const double* getAgentActualVelocity(const int idx) const;
@@ -273,7 +276,7 @@ public:
 	///  @param[in]		pos		The requested position of the agent. [(x, y, z)]
 	///  @param[in]		params	The configutation of the agent.
 	/// @return The index of the agent in the agent pool. Or -1 if the agent could not be added.
-	int addAgent(const double* pos, const dtCrowdAgentParams* params);
+    int addAgent(const double* pos, const dtCrowdAgentParams* params, int forceIndex = -1);
 
 	/// Updates the specified agent's configuration.
 	///  @param[in]		idx		The agent index. [Limits: 0 <= value < #getAgentCount()]
@@ -283,7 +286,8 @@ public:
 	/// Removes the agent from the crowd.
 	///  @param[in]		idx		The agent index. [Limits: 0 <= value < #getAgentCount()]
 	void removeAgent(const int idx);
-	
+    void removeAllAgents();
+
 	/// Submits a new move request for the specified agent.
 	///  @param[in]		idx		The agent index. [Limits: 0 <= value < #getAgentCount()]
 	///  @param[in]		ref		The position's polygon reference.

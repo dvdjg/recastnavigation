@@ -46,6 +46,10 @@ void dtFreeCrowd(dtCrowd* ptr)
 	dtFree(ptr);
 }
 
+void dtCrowdAgentParams::set(const dtCrowdAgentParams * source)
+{
+    memcpy(this, source, sizeof(dtCrowdAgentParams));
+}
 
 static const int MAX_ITERS_PER_UPDATE = 100;
 
@@ -490,6 +494,11 @@ const dtCrowdAgent* dtCrowd::getAgent(const int idx)
     return &m_agents[idx];
 }
 
+bool dtCrowd::getAgentActiveState(const int idx) const
+{
+    return m_agents[idx].active != 0;
+}
+
 const double* dtCrowd::getAgentPosition(const int idx) const
 {
     return m_agents[idx].npos;
@@ -525,27 +534,31 @@ void dtCrowd::updateAgentParameters(const int idx, const dtCrowdAgentParams* par
 {
 	if (idx < 0 || idx >= m_maxAgents)
 		return;
-	memcpy(&m_agents[idx].params, params, sizeof(dtCrowdAgentParams));
+    memcpy(&m_agents[idx].params, params, sizeof(dtCrowdAgentParams));
 }
 
 /// @par
 ///
 /// The agent's position will be constrained to the surface of the navigation mesh.
-int dtCrowd::addAgent(const double* pos, const dtCrowdAgentParams* params)
+int dtCrowd::addAgent(const double* pos, const dtCrowdAgentParams* params, int forceIndex)
 {
 	// Find empty slot.
 	int idx = -1;
-	for (int i = 0; i < m_maxAgents; ++i)
-	{
-		if (!m_agents[i].active)
+    if (forceIndex >= 0 && forceIndex < m_maxAgents) {
+        idx = forceIndex;
+    } else {
+        for (int i = 0; i < m_maxAgents; ++i)
         {
-			idx = i;
-			break;
-		}
-	}
-	if (idx == -1)
-		return -1;
-	
+            if (!m_agents[i].active)
+            {
+                idx = i;
+                break;
+            }
+        }
+        if (idx == -1)
+            return -1;
+    }
+
 	dtCrowdAgent* ag = &m_agents[idx];
 
 	// Find nearest position on navmesh and place the agent there.
@@ -601,6 +614,14 @@ void dtCrowd::removeAgent(const int idx)
 	{
 		m_agents[idx].active = 0;
 	}
+}
+
+void dtCrowd::removeAllAgents()
+{
+    for (int i = 0; i < m_maxAgents; ++i)
+    {
+        m_agents[i].active = 0;
+    }
 }
 
 bool dtCrowd::requestMoveTargetReplan(const int idx, dtPolyRef ref, const double* pos)

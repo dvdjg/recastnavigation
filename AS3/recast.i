@@ -241,6 +241,23 @@ void getTiles() {
     inline_as3("}\n");
 }
 
+// Bug? $input doesn't work here
+%typemap(argout) (const int** ppInt, int * pIntCount) {
+	AS3_DeclareVar(len$1, int);
+	AS3_CopyScalarToVar(len$1, *$2);
+    AS3_DeclareVar(ptr$1, int);
+	AS3_CopyScalarToVar(ptr$1, *$1);
+    // Now pull that Vector into flascc memory// Workaround to a SWIG bug: Can't access input.
+    inline_as3(_BUG_$1".length = len$1;\n");
+    inline_as3("for (var i:int = 0; i < "_BUG_$1".length; i++){\n");
+    inline_as3("	"_BUG_$1"[i] = CModule.read32(ptr$1 + 4*i);\n");
+    inline_as3("}\n");
+}
+
+%apply (const int** ppTris, int * pTriCount) {
+	(const int** ppInt, int * pIntCount)
+};
+
 %typemap(astype) (unsigned char** data, int* dataSize) "ByteArray";
 
 %typemap(in) (unsigned char** data, int* dataSize) (unsigned char* p, int c){

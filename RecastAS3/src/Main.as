@@ -1,10 +1,11 @@
-package 
+package
 {
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
@@ -12,12 +13,12 @@ package
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
-	
 	import org.recastnavigation.CModule;
 	import org.recastnavigation.rcMeshLoaderObj;
 	import org.recastnavigation.util.getTiles;
 	import org.recastnavigation.vfs.ISpecialFile;
-
+	
+	import flash.ui.Keyboard;
 	/**
 	 * Simple 2D Recast Example.
 	 * @author Zo
@@ -33,41 +34,55 @@ package
 		private static var SCALE:Number = 10; //the scale of the nav mesh to the world
 		private static var MAX_AGENTS:int = 60;
 		private static var MAX_AGENT_RADIUS:Number = 32;
-		private static var MAX_SPEED:Number = 4.5; 
-		private static var MAX_ACCEL:Number = 8.5; 
+		private static var MAX_SPEED:Number = 4.5;
+		private static var MAX_ACCEL:Number = 8.5;
 		
-		public function Main():void 
+		public function Main():void
 		{
-			if (stage) init();
-			else addEventListener(Event.ADDED_TO_STAGE, init);
+			if (stage)
+				init();
+			else
+				addEventListener(Event.ADDED_TO_STAGE, init);
 		}
+		
 		//private var tf:TextField;
 		
-        /**
-         * The PlayerKernel implementation will use this function to handle
-         * C IO write requests to the file "/dev/tty" (e.g. output from
-         * printf will pass through this function). See the ISpecialFile
-         * documentation for more information about the arguments and return value.
-         */
-        public function write(fd:int, bufPtr:int, nbyte:int, errnoPtr:int):int
-        {
-            var str:String = CModule.readString(bufPtr, nbyte);
-            //tf.appendText(str);
-            trace(str);
-            return nbyte;
-        }
- 
-        /** See ISpecialFile */
-        public function read(fd:int, bufPtr:int, nbyte:int, errnoPtr:int):int { return 0; }
-        public function fcntl(fd:int, com:int, data:int, errnoPtr:int):int { return 0; }
-        public function ioctl(fd:int, com:int, data:int, errnoPtr:int):int { return 0; }
+		/**
+		 * The PlayerKernel implementation will use this function to handle
+		 * C IO write requests to the file "/dev/tty" (e.g. output from
+		 * printf will pass through this function). See the ISpecialFile
+		 * documentation for more information about the arguments and return value.
+		 */
+		public function write(fd:int, bufPtr:int, nbyte:int, errnoPtr:int):int
+		{
+			var str:String = CModule.readString(bufPtr, nbyte);
+			//tf.appendText(str);
+			trace(str);
+			return nbyte;
+		}
 		
-		private function init(e:Event = null):void 
+		/** See ISpecialFile */
+		public function read(fd:int, bufPtr:int, nbyte:int, errnoPtr:int):int
+		{
+			return 0;
+		}
+		
+		public function fcntl(fd:int, com:int, data:int, errnoPtr:int):int
+		{
+			return 0;
+		}
+		
+		public function ioctl(fd:int, com:int, data:int, errnoPtr:int):int
+		{
+			return 0;
+		}
+		
+		private function init(e:Event = null):void
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-					
+			
 			// set the console before starting
-            CModule.vfs.console = this;
+			CModule.vfs.console = this;
 			
 			initRecast();
 			initEngine();
@@ -93,9 +108,8 @@ package
 		{
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
- 
-		}
 		
+		}
 		
 		private function initWorld():void
 		{
@@ -113,13 +127,11 @@ package
 			debugSprite = new Sprite();
 			addChild(debugSprite);
 			
-			
 			//render the mesh
 			debugRender();
 			debugSprite.scaleX = debugSprite.scaleY = SCALE;
-			
-		}
 		
+		}
 		
 		private function initListeners():void
 		{
@@ -127,26 +139,52 @@ package
 			stage.addEventListener(MouseEvent.CLICK, onMouseClick);
 			stage.addEventListener(MouseEvent.RIGHT_CLICK, onMouseRightClick);
 			stage.addEventListener(MouseEvent.MIDDLE_CLICK, onMiddleClick);
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyPressedDown);
 		}
 		
-		
+		private function keyPressedDown(event:KeyboardEvent):void
+		{
+			var key:uint = event.keyCode;
+			var step:uint = 5
+			switch (key)
+			{
+				case Keyboard.C: 
+					recastManager.captureState = true;
+					break;
+				case Keyboard.R: 
+					recastManager.restoreState = true;
+					break;
+				//case Keyboard.LEFT: 
+					//player.x -= step;
+					//break;
+				//case Keyboard.RIGHT: 
+					//player.x += step;
+					//break;
+				//case Keyboard.UP: 
+					//player.y -= step;
+					//break;
+				//case Keyboard.DOWN: 
+					//player.y += step;
+					//break;
+			}
+		}
 		
 		private function onMouseRightClick(e:MouseEvent):void
 		{
-			var scenePosition:Vector3D = new Vector3D(world.mouseX, WORLD_Z * SCALE, world.mouseY );
+			var scenePosition:Vector3D = new Vector3D(world.mouseX, WORLD_Z * SCALE, world.mouseY);
 			
 			//move all agents to the mouse position
 			//todo - change this to a vector or use domain memory to speed this up.  for each in a dictionary is very slow when called every frame!
-			for ( var idx:Object in agentObjectsByAgendIdx ) //iteratore through each object key
+			for (var idx:Object in agentObjectsByAgendIdx) //iteratore through each object key
 			{
-				recastManager.moveAgentNear(int(idx), scenePosition );
-				trace("onMouseRightClick: ",int(idx), "scenePosition={", scenePosition.x, scenePosition.z,"}");
+				recastManager.moveAgentNear(int(idx), scenePosition);
+				trace("onMouseRightClick: ", int(idx), "scenePosition={", scenePosition.x, scenePosition.z, "}");
 			}
 		}
 		
 		private function onMouseClick(e:MouseEvent):void
 		{
-			var scenePosition:Vector3D = new Vector3D(world.mouseX, WORLD_Z * SCALE, world.mouseY  );
+			var scenePosition:Vector3D = new Vector3D(world.mouseX, WORLD_Z * SCALE, world.mouseY);
 			
 			var agentRadius:Number = Math.random() * MAX_AGENT_RADIUS
 			var agentAcceleration:Number = MAX_AGENT_RADIUS - agentRadius; //make it the larger you are, the slower you are
@@ -155,19 +193,17 @@ package
 			
 			var s:Sprite = new Sprite();
 			s.graphics.lineStyle(2, 0x3a4e84);
-			s.graphics.beginFill(0x5275d3,0.8);
+			s.graphics.beginFill(0x5275d3, 0.8);
 			s.graphics.drawCircle(0, 0, agentRadius);
 			s.graphics.endFill();
 			s.x = scenePosition.x;
-			s.y =scenePosition.z
+			s.y = scenePosition.z
 			
 			world.addChild(s);
-			trace("onMouseClick: ",int(idx), "scenePosition={", scenePosition.x,  scenePosition.z,"}");
+			trace("onMouseClick: ", int(idx), "scenePosition={", scenePosition.x, scenePosition.z, "}");
 			
-			
-			agentObjectsByAgendIdx[ idx ] = s;
+			agentObjectsByAgendIdx[idx] = s;
 		}
-		
 		
 		private function onMiddleClick(e:MouseEvent):void
 		{
@@ -178,29 +214,28 @@ package
 			
 			var obstacleSprite:MovieClip = new MovieClip();
 			obstacleSprite.graphics.beginFill(0x00aaaa);
-			obstacleSprite.graphics.drawCircle(0,0, obstacleRadius);
+			obstacleSprite.graphics.drawCircle(0, 0, obstacleRadius);
 			obstacleSprite.graphics.endFill();
 			obstacleSprite.x = this.mouseX;
 			obstacleSprite.y = this.mouseY;
 			this.addChild(obstacleSprite);
 			obstacleSprite["oid"] = oid;
-			obstacleSprite.addEventListener(MouseEvent.MIDDLE_CLICK, removeObstacle );
-			setTimeout(debugRender, 50 );
+			obstacleSprite.addEventListener(MouseEvent.MIDDLE_CLICK, removeObstacle);
+			setTimeout(debugRender, 50);
 		}
 		
 		private function removeObstacle(e:MouseEvent):void
 		{
 			var target:MovieClip = e.target as MovieClip;
 			var oid:int = target["oid"];
-			recastManager.removeObstalce( oid );
-			this.removeChild( target );
-			target.removeEventListener(MouseEvent.MIDDLE_CLICK, removeObstacle );
+			recastManager.removeObstalce(oid);
+			this.removeChild(target);
+			target.removeEventListener(MouseEvent.MIDDLE_CLICK, removeObstacle);
 			target = null;
 			e.stopImmediatePropagation();
 			e.stopPropagation();
-			setTimeout(debugRender, 50 );
+			setTimeout(debugRender, 50);
 		}
-
 		
 		/**
 		 * render loop
@@ -208,8 +243,8 @@ package
 		private function onEnterFrame(e:Event):void
 		{
 			var now:Number = getTimer() / 1000.0;
-            var passedTime:Number = now - mLastFrameTimestamp;
-            mLastFrameTimestamp = now;
+			var passedTime:Number = now - mLastFrameTimestamp;
+			mLastFrameTimestamp = now;
 			
 			recastManager.advanceTime(passedTime);
 			
@@ -222,12 +257,12 @@ package
 		private function updateAgents():void
 		{
 			//todo - change this to a vector or use domain memory to speed this up.  for each in a dictionary is very slow when called every frame!
-			for ( var idx:Object in agentObjectsByAgendIdx ) //iteratore through each object key
+			for (var idx:Object in agentObjectsByAgendIdx) //iteratore through each object key
 			{
 				var pos:Object = recastManager.getAgentPos(int(idx));
 				//trace("agent at:",CModule.readFloat( agent.npos ), CModule.readFloat( agent.npos + 4 ), CModule.readFloat( agent.npos + 8));
-				agentObjectsByAgendIdx[ idx ].x = pos.x;
-				agentObjectsByAgendIdx[ idx ].y = pos.z;
+				agentObjectsByAgendIdx[idx].x = pos.x;
+				agentObjectsByAgendIdx[idx].y = pos.z;
 			}
 		}
 		
@@ -241,16 +276,16 @@ package
 			var tris:Vector.<int> = new Vector.<int>;
 			meshLoader.getTrisVector(tris);
 			var ntris:int = meshLoader.getTriCount();
-
+			
 			var nVerts:int = meshLoader.getVertCount();
 			
 			var verts:Vector.<Point> = new Vector.<Point>();
 			var p:Point;
 			
-			for ( var i:int = 0; i < nVerts; i++ )
+			for (var i:int = 0; i < nVerts; i++)
 			{
 				var vert:Object = meshLoader.getVertex(i);
-				p = new Point( vert.x,  vert.z );                    
+				p = new Point(vert.x, vert.z);
 				verts.push(p);
 			}
 			debugDrawMesh(tris, verts); //try obj mesh
@@ -263,14 +298,14 @@ package
 		private function debugDrawMesh(tris:Vector.<int>, verts:Vector.<Point>):void
 		{
 			//this.graphics.clear();
-			for ( var i:int = 0; i < tris.length; i += 3)
+			for (var i:int = 0; i < tris.length; i += 3)
 			{
 				var v1:Point = verts[tris[i]];
 				var v2:Point = verts[tris[i + 1]];
 				var v3:Point = verts[tris[i + 2]];
 				
 				debugSprite.graphics.lineStyle(0.1, 0x514a3c);
-				debugSprite.graphics.beginFill(0x92856d, 1 );
+				debugSprite.graphics.beginFill(0x92856d, 1);
 				debugSprite.graphics.moveTo(v1.x, v1.y);
 				debugSprite.graphics.lineTo(v2.x, v2.y);
 				debugSprite.graphics.lineTo(v3.x, v3.y);
@@ -283,24 +318,24 @@ package
 		private function drawNavMesh(tiles:Array):void
 		{
 			//draw each nav mesh tile
-			for ( var t:int = 0; t < tiles.length; t++)
+			for (var t:int = 0; t < tiles.length; t++)
 			{
 				var polys:Array = tiles[t].polys;
 				//draw each poly
-				for ( var p:int = 0; p < polys.length; p++)
+				for (var p:int = 0; p < polys.length; p++)
 				{
 					var poly:Object = polys[p];
 					//draw each tri in the poly
 					var triVerts:Array = poly.verts;
-					debugSprite.graphics.beginFill(0x6796a5, 0.5 );
-					for ( var i:int = 0; i < poly.triCount; i++)
+					debugSprite.graphics.beginFill(0x6796a5, 0.5);
+					for (var i:int = 0; i < poly.triCount; i++)
 					{
 						//each triangle has 3 vertices
 						//each vert has 3 points, xyz
-						var p1:Object = {x: triVerts[(i * 9) + 0], y: triVerts[(i * 9) + 1], z: triVerts[(i * 9) + 2]  };
-						var p2:Object = {x: triVerts[(i * 9) + 3], y: triVerts[(i * 9) + 4], z: triVerts[(i * 9) + 5]  };
-						var p3:Object = {x: triVerts[(i * 9) + 6], y: triVerts[(i * 9) + 7], z: triVerts[(i * 9) + 8]  };
-					
+						var p1:Object = {x: triVerts[(i * 9) + 0], y: triVerts[(i * 9) + 1], z: triVerts[(i * 9) + 2]};
+						var p2:Object = {x: triVerts[(i * 9) + 3], y: triVerts[(i * 9) + 4], z: triVerts[(i * 9) + 5]};
+						var p3:Object = {x: triVerts[(i * 9) + 6], y: triVerts[(i * 9) + 7], z: triVerts[(i * 9) + 8]};
+						
 						debugSprite.graphics.lineStyle(0.1, 0x123d4b);
 						
 						debugSprite.graphics.moveTo(p1.x, p1.z);
@@ -315,7 +350,7 @@ package
 			//draw origin
 			this.graphics.lineStyle(0.1, 0x00ff00);
 			this.graphics.moveTo(0, 0);
-			this.graphics.lineTo(0, 10 );
+			this.graphics.lineTo(0, 10);
 			this.graphics.lineStyle(0.1, 0x0000ff);
 			this.graphics.moveTo(0, 0);
 			this.graphics.lineTo(10, 0);
@@ -331,5 +366,5 @@ package
 		private var world:Sprite;
 		private var agentObjectsByAgendIdx:Dictionary = new Dictionary(); //sprites by their agent id
 	}
-	
+
 }

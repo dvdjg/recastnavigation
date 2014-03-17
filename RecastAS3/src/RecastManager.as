@@ -23,6 +23,9 @@ package
 		public var scale:Vector3D = new Vector3D(1, 1, 1); //the scale of the nav mesh to the world
 		public var maxAgents:int = 60;
 		public var maxAgentRadius:Number= 4;
+		public var captureState:Boolean = false;
+		public var restoreState:Boolean = false;
+		public var capturedStates:Array = new Array;
 		
 		public var  m_cellSize:Number = 0.3,
 					m_cellHeight:Number = 0.2,
@@ -53,8 +56,6 @@ package
 			
 			var loadResult:Boolean = geom.loadMesh(as3LogContext.swigCPtr, filename);
 
-			//geom.getTrisVector(tris);
-			
 			//update mesh settings
 			sample.m_cellSize = m_cellSize;
 			sample.m_cellHeight = m_cellHeight;
@@ -88,13 +89,74 @@ package
 			crowd.init(maxAgents, maxAgentRadius, sample.getNavMesh() );
 		}
 		
+		public function captureStates():void
+		{
+			var ag:dtCrowdAgent = new dtCrowdAgent;
+			var params:dtCrowdAgentParams = new dtCrowdAgentParams;
+			capturedStates.length = 0;
+			var totalAgents:int = crowd.getAgentCount();
+			for (var nAgent:int = 0; nAgent < totalAgents; ++nAgent)
+			{
+				if (crowd.getAgentActiveState(nAgent))
+				{
+					ag.swigCPtr = crowd.getAgent(nAgent);
+					params.swigCPtr = ag.params;
+					var rad:Number = params.radius;
+					var pos:Object = crowd.getAgentPosition(nAgent);
+					var vel:Object = crowd.getAgentActualVelocity(nAgent);
+					var agent:Object = { i:nAgent, p:pos, v:vel, r:rad, 
+						targetRef:ag.targetRef, targetPos:ag.targetPos //, targetPathqRef:ag.targetPathqRef, ag:_params.targetState
+						};
+					capturedStates.push(agent);
+				}
+			}
+			
+		}
+		
+		public function restoreStates():void
+		{
+			//var ag:dtCrowdAgent = new dtCrowdAgent;
+			//var params:dtCrowdAgentParams = new dtCrowdAgentParams;
+			var params:dtCrowdAgentParams = dtCrowdAgentParams.create();
+			params.set(_params.swigCPtr);
+			crowd.removeAllAgents();
+			var totalAgents:int = capturedStates.length;
+			for (var nAgent:int = 0; nAgent < totalAgents; ++nAgent)
+			{
+				var agent:Object = capturedStates[nAgent];
+				params.radius = agent.r;
+				//params.targetRef = agent.targetRef;
+				//params.targetPos = agent.targetPos;
+				//params.targetPathqRef = agent.targetPathqRef;
+				//params.targetState = agent.targetState;
+				crowd.addAgent(agent.p, params.swigCPtr, agent.i);
+				crowd.setAgentActualVelocity(agent.i, agent.v);
+				if (agent.targetRef) {
+					crowd.requestMoveTarget(agent.i, agent.targetRef, agent.targetPos);
+				} else {
+					crowd.requestMoveVelocity(agent.i, agent.targetPos);
+				}
+			}
+			params.destroy();
+		}
+		
 		public function advanceTime(deltaTime:Number):void
 		{
 			if( crowd ) {
 				//crowd.update(deltaTime, crowdDebugPtr);
 				crowd.updateComputeDesiredPosition(deltaTime, crowdDebugPtr);
 				//crowd.updateHandleCollisions();
+				if (restoreState) {
+					restoreStates();
+					restoreState = false;
+				}
+				
 				crowd.updateReinsertToNavmesh(deltaTime);
+				
+				if (captureState) {
+					captureStates();
+					captureState = false;
+				}
 			}
 			var res:int = sample.handleUpdate(deltaTime); //update the tileCache
 			var re:Boolean = Recast.dtStatusSucceed(res);
@@ -102,36 +164,36 @@ package
 		}
 		
 		//todo - this should take 2 params, position, and dtCrowdAgentParams
+		private var _params:dtCrowdAgentParams;
 		public function addAgentNear(scenePosition:Vector3D, radius:Number = 1.0, height:Number = 2.0, maxAccel:Number=8.5, maxSpeed:Number=4.5, collisionQueryRange:Number=12, pathOptimizationRange:Number=30 ):int
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
+			if(!_params)
+				_params = dtCrowdAgentParams.create();
+			_params.radius  = radius / scale.x;
+			_params.height  = height / scale.y;
+			_params.maxAcceleration = maxAccel;
+			_params.maxSpeed = maxSpeed;
+			_params.collisionQueryRange = collisionQueryRange;
+			_params.pathOptimizationRange = pathOptimizationRange;
 			
-			var params:dtCrowdAgentParams = dtCrowdAgentParams.create();
-			params.radius  = radius / scale.x;
-			params.height  = height / scale.y;
-			params.maxAcceleration = maxAccel;
-			params.maxSpeed = maxSpeed;
-			params.collisionQueryRange = collisionQueryRange;
-			params.pathOptimizationRange = pathOptimizationRange;
-			
-			params.separationWeight = 2.0;
-			params.obstacleAvoidanceType = 3;
+			_params.separationWeight = 2.0;
+			_params.obstacleAvoidanceType = 3;
 			var updateFlags:uint = 0;
 			//todo - need to add class for enum 
 			updateFlags |= Recast.DT_CROWD_ANTICIPATE_TURNS;
 			updateFlags |= Recast.DT_CROWD_OPTIMIZE_VIS;
 			updateFlags |= Recast.DT_CROWD_OPTIMIZE_TOPO;
 			updateFlags |= Recast.DT_CROWD_OBSTACLE_AVOIDANCE;
-			//updateFlags |= Recast.DT_CROWD_SEPARATION();
-			params.updateFlags = updateFlags; //since updateFlags is stored as a char in recast, need to save the string as the char code value
+			//updateFlags |= Recast.DT_CROWD_SEPARATION;
+			_params.updateFlags = updateFlags; //since updateFlags is stored as a char in recast, need to save the string as the char code value
 			//trace(params.updateFlags.charCodeAt(0) );
 			
-			var idx:int = crowd.addAgent(navPosition, params.swigCPtr );			
+			var idx:int = crowd.addAgent(navPosition, _params.swigCPtr, -1 );
+			//_params.destroy();
 			
 			var pos:Object = getAgentPos(idx);
-			
 			var pos2:Object = crowd.getAgentPosition(idx);
-			
 			var nagents:int = crowd.getAgentCount();
 			
 			var navquery:dtNavMeshQuery  = new dtNavMeshQuery();
