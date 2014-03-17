@@ -685,7 +685,8 @@ void getTiles() {
 	(const void* input, int length),
 	(const unsigned char* buffer, int bufferSize),
 	(const unsigned char* compressed, int compressedSize),
-	(const unsigned char* data, int maxDataSize)
+	(const unsigned char* data, int maxDataSize),
+	(const unsigned char* buf, int bufSize)
 };
 
 %typemap(astype) (unsigned char* surfaces) "ByteArray";

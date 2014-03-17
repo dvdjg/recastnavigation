@@ -109,54 +109,60 @@ struct dtCrowdAgent
 	/// 1 if the agent is active, or 0 if the agent is in an unused slot in the agent pool.
 	unsigned char active;
 
-	/// The type of mesh polygon the agent is traversing. (See: #CrowdAgentState)
-	unsigned char state;
+    /// The type of mesh polygon the agent is traversing: normal or off-mesh. (See: #CrowdAgentState)
+    unsigned char state; // djg Se recalcula en checkPathValidity() que es llamada desde updateComputeDesiredPosition()
 
 	/// The path corridor the agent is using.
-	dtPathCorridor corridor;
+    dtPathCorridor corridor; // djg Se recalcula en updateMoveRequest() que es llamada desde updateComputeDesiredPosition()
 
 	/// The local boundary data for the agent.
-	dtLocalBoundary boundary;
+    dtLocalBoundary boundary; // djg Se recalcula en updateComputeDesiredPosition()
 	
 	/// Time since the agent's path corridor was optimized.
+    /// By default optimizes every 0.5 s. This values must be serialized.
 	double topologyOptTime;
 	
 	/// The known neighbors of the agent.
 	dtCrowdNeighbour neis[DT_CROWDAGENT_MAX_NEIGHBOURS];
 
 	/// The number of neighbors.
-	int nneis;
+    int nneis; // djg Se recalcula en updateComputeDesiredPosition()
 	
 	/// The desired speed.
 	double desiredSpeed;
 
 	double npos[3];		///< The current agent position. [(x, y, z)]
-	double disp[3];
-	double dvel[3];		///< The desired velocity of the agent. [(x, y, z)]
-	double nvel[3];
+    double disp[3];     // Used only in updateHandleCollisions(). Temporal value
+    double dvel[3];		///< The desired velocity of the agent. [(x, y, z)]. Temporal value
+    double nvel[3];     // Used only in updateHandleCollisions() and updateComputeDesiredPosition. Temporal value
 	double vel[3];		///< The actual velocity of the agent. [(x, y, z)]
 
     /// The agent's configuration parameters.
 	dtCrowdAgentParams params;
 
+    // djg Se recalcula en updateComputeDesiredPosition()
 	/// The local path corridor corners for the agent. (Staight path.) [(x, y, z) * #ncorners]
 	double cornerVerts[DT_CROWDAGENT_MAX_CORNERS*3];
 
-	/// The local path corridor corner flags. (See: #dtStraightPathFlags) [(flags) * #ncorners]
+    // djg Se recalcula en updateComputeDesiredPosition()
+    /// The local path corridor corner flags. (See: #dtStraightPathFlags) [(flags) * #ncorners]
 	unsigned char cornerFlags[DT_CROWDAGENT_MAX_CORNERS];
 
-	/// The reference id of the polygon being entered at the corner. [(polyRef) * #ncorners]
+    // djg Se recalcula en updateComputeDesiredPosition()
+    /// The reference id of the polygon being entered at the corner. [(polyRef) * #ncorners]
 	dtPolyRef cornerPolys[DT_CROWDAGENT_MAX_CORNERS];
 
-	/// The number of corners.
+    // djg Se recalcula en updateComputeDesiredPosition()
+    /// The number of corners.
 	int ncorners;
 	
+    // djg Se recalcula en updateMoveRequest() que es llamada desde updateComputeDesiredPosition()
 	unsigned char targetState;			///< State of the movement request.
 	dtPolyRef targetRef;				///< Target polyref of the movement request.
-	double targetPos[3];					///< Target position of the movement request (or velocity in case of DT_CROWDAGENT_TARGET_VELOCITY).
+    double targetPos[3];				///< Target position of the movement request (or velocity in case of DT_CROWDAGENT_TARGET_VELOCITY).
 	dtPathQueueRef targetPathqRef;		///< Path finder ref.
 	bool targetReplan;					///< Flag indicating that the current path is being replanned.
-	double targetReplanTime;				/// <Time since the agent's target was replanned.
+    double targetReplanTime;			/// <Time since the agent's target was replanned.
 };
 
 struct dtCrowdAgentAnimation
@@ -254,6 +260,10 @@ public:
     const double* getAgentPosition(const int idx) const;
     const double* getAgentDesiredVelocity(const int idx) const;
     const double* getAgentActualVelocity(const int idx) const;
+
+    void setAgentPosition(const int idx, const double* v);
+    void setAgentDesiredVelocity(const int idx, const double* v);
+    void setAgentActualVelocity(const int idx, const double* v);
 
 	/// The maximum number of agents that can be managed by the object.
 	/// @return The maximum number of agents.

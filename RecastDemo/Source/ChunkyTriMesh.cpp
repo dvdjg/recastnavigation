@@ -23,8 +23,8 @@
 
 struct BoundsItem
 {
-    double bmin[2];
-    double bmax[2];
+	double bmin[2];
+	double bmax[2];
 	int i;
 };
 
@@ -52,7 +52,7 @@ static int compareItemY(const void* va, const void* vb)
 
 static void calcExtends(const BoundsItem* items, const int /*nitems*/,
 						const int imin, const int imax,
-                        double* bmin, double* bmax)
+						double* bmin, double* bmax)
 {
 	bmin[0] = items[imin].bmin[0];
 	bmin[1] = items[imin].bmin[1];
@@ -169,7 +169,7 @@ bool rcCreateChunkyTriMesh(const double* verts, const int* tris, int ntris,
 		it.bmin[1] = it.bmax[1] = verts[t[0]*3+2];
 		for (int j = 1; j < 3; ++j)
 		{
-            const double* v = &verts[t[j]*3];
+			const double* v = &verts[t[j]*3];
 			if (v[0] < it.bmin[0]) it.bmin[0] = v[0]; 
 			if (v[2] < it.bmin[1]) it.bmin[1] = v[2]; 
 
@@ -202,7 +202,7 @@ bool rcCreateChunkyTriMesh(const double* verts, const int* tris, int ntris,
 
 
 inline bool checkOverlapRect(const double amin[2], const double amax[2],
-                             const double bmin[2], const double bmax[2])
+							 const double bmin[2], const double bmax[2])
 {
 	bool overlap = true;
 	overlap = (amin[0] > bmax[0] || amax[0] < bmin[0]) ? false : overlap;
@@ -211,7 +211,7 @@ inline bool checkOverlapRect(const double amin[2], const double amax[2],
 }
 
 int rcGetChunksOverlappingRect(const rcChunkyTriMesh* cm,
-                               const double bmin[2], const double bmax[2],
+							   const double bmin[2], const double bmax[2],
 							   int* ids, int maxIds)
 {
 	// Traverse tree
@@ -247,19 +247,19 @@ int rcGetChunksOverlappingRect(const rcChunkyTriMesh* cm,
 
 
 static bool checkOverlapSegment(const double p[2], const double q[2],
-                                const double bmin[2], const double bmax[2])
+								const double bmin[2], const double bmax[2])
 {
-    static const double EPSILON = 1e-6f;
+	static const double EPSILON = 1e-6f;
 
-    double tmin = 0;
-    double tmax = 1;
-    double d[2];
+	double tmin = 0;
+	double tmax = 1;
+	double d[2];
 	d[0] = q[0] - p[0];
 	d[1] = q[1] - p[1];
 	
 	for (int i = 0; i < 2; i++)
 	{
-        if (fabs(d[i]) < EPSILON)
+		if (fabs(d[i]) < EPSILON)
 		{
 			// Ray is parallel to slab. No hit if origin not within slab
 			if (p[i] < bmin[i] || p[i] > bmax[i])
@@ -268,10 +268,10 @@ static bool checkOverlapSegment(const double p[2], const double q[2],
 		else
 		{
 			// Compute intersection t value of ray with near and far plane of slab
-            double ood = 1.0 / d[i];
-            double t1 = (bmin[i] - p[i]) * ood;
-            double t2 = (bmax[i] - p[i]) * ood;
-            if (t1 > t2) { double tmp = t1; t1 = t2; t2 = tmp; }
+			double ood = 1.0 / d[i];
+			double t1 = (bmin[i] - p[i]) * ood;
+			double t2 = (bmax[i] - p[i]) * ood;
+			if (t1 > t2) { double tmp = t1; t1 = t2; t2 = tmp; }
 			if (t1 > tmin) tmin = t1;
 			if (t2 < tmax) tmax = t2;
 			if (tmin > tmax) return false;
@@ -281,7 +281,7 @@ static bool checkOverlapSegment(const double p[2], const double q[2],
 }
 
 int rcGetChunksOverlappingSegment(const rcChunkyTriMesh* cm,
-                                  const double p[2], const double q[2],
+								  const double p[2], const double q[2],
 								  int* ids, int maxIds)
 {
 	// Traverse tree

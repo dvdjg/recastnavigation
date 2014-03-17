@@ -238,7 +238,7 @@ package
 			var meshLoader:rcMeshLoaderObj = new rcMeshLoaderObj();
 			meshLoader.swigCPtr = recastManager.geomerty.getMesh();
 			
-			var tris:Vector.<int> = new Vector.<int>; 
+			var tris:Vector.<int> = new Vector.<int>;
 			meshLoader.getTrisVector(tris);
 			var ntris:int = meshLoader.getTriCount();
 

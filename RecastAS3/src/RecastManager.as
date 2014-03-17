@@ -93,7 +93,7 @@ package
 			if( crowd ) {
 				//crowd.update(deltaTime, crowdDebugPtr);
 				crowd.updateComputeDesiredPosition(deltaTime, crowdDebugPtr);
-				crowd.updateHandleCollisions();
+				//crowd.updateHandleCollisions();
 				crowd.updateReinsertToNavmesh(deltaTime);
 			}
 			var res:int = sample.handleUpdate(deltaTime); //update the tileCache

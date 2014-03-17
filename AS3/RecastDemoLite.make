@@ -18,20 +18,20 @@ endif
 ifndef AR
   AR = ar
 endif
+  INCLUDES  += -I../RecastDemo/Include -I../RecastDemo/Contrib -I../RecastDemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include
 
 ifeq ($(config),debug)
   OBJDIR     = obj/Debug/RecastDemoLite
   TARGETDIR  = lib/Debug
-#  TARGETDIR  = demo/Bin
 #  TARGET     = $(TARGETDIR)/RecastDemoLite.exe
   TARGET     = $(TARGETDIR)/libRecastDemoLite.a
   DEFINES   += -DDEBUG
-  INCLUDES  += -Idemo/Include -Idemo/Contrib -Idemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include -I/cygdrive/c/Crossbridge/sdk/usr/include/SDL
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g -O4
   CXXFLAGS  += $(CFLAGS) -fno-exceptions -fno-rtti
   LDFLAGS   += -Llib/Debug
-  LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lRecast -lGL -lSDL -lSDLmain -lvgl
+  LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast 
+#  -lGL -lSDL -lSDLmain -lvgl
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += lib/Debug/libDebugUtils.a lib/Debug/libDetour.a lib/Debug/libDetourCrowd.a lib/Debug/libDetourTileCache.a lib/Debug/libRecast.a
 #  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
@@ -47,17 +47,16 @@ endif
 
 ifeq ($(config),release)
   OBJDIR     = obj/Release/RecastDemoLite
-#  TARGETDIR  = demo/Bin
   TARGETDIR  = lib/Release
   TARGET     = $(TARGETDIR)/libRecastDemoLite.a
 #  TARGET     = $(TARGETDIR)/RecastDemoLite.exe
   DEFINES   += -DNDEBUG
-  INCLUDES  += -Idemo/Include -Idemo/Contrib -Idemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include -I/cygdrive/c/Crossbridge/sdk/usr/include/SDL
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -O4
   CXXFLAGS  += $(CFLAGS) -fno-exceptions -fno-rtti
   LDFLAGS   += -Llib/Release
-  LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lGL -lSDL -lSDLmain -lvgl
+  LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast
+#  -lGL -lSDL -lSDLmain -lvgl
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += lib/Release/libDebugUtils.a lib/Release/libDetour.a lib/Release/libDetourCrowd.a lib/Release/libDetourTileCache.a lib/Release/libRecast.a
 #  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
@@ -71,59 +70,14 @@ ifeq ($(config),release)
   endef
 endif
 
-ifeq ($(config),debug32)
-  OBJDIR     = obj/x32/Debug/RecastDemoLite
-  TARGETDIR  = demo/Bin
-  TARGET     = $(TARGETDIR)/libRecastDemoLite.a
-  DEFINES   += -DDEBUG
-  INCLUDES  += -Idemo/Include -Idemo/Contrib -Idemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include
-  CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -g -O4 -m32
-  CXXFLAGS  += $(CFLAGS) -fno-exceptions -fno-rtti
-  LDFLAGS   += -m32 -L/usr/lib32 -Llib/Debug
-  LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lGL -lSDL -lSDLmain -lvgl
-  RESFLAGS  += $(DEFINES) $(INCLUDES) 
-  LDDEPS    += lib/Debug/libDebugUtils.a lib/Debug/libDetour.a lib/Debug/libDetourCrowd.a lib/Debug/libDetourTileCache.a lib/Debug/libRecast.a
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
-  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf  -swf-version=22
-  define PREBUILDCMDS
-  endef
-  define PRELINKCMDS
-  endef
-  define POSTBUILDCMDS
-  endef
-endif
-
-ifeq ($(config),release32)
-  OBJDIR     = obj/x32/Release/RecastDemoLite
-  TARGETDIR  = demo/Bin
-  TARGET     = $(TARGETDIR)/RecastDemoLite
-  DEFINES   += -DNDEBUG
-  INCLUDES  += -Idemo/Include -Idemo/Contrib -Idemo/Contrib/fastlz -I../DebugUtils/Include -I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include -I../Recast/Include
-  CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -ffast-math -O4 -m32
-  CXXFLAGS  += $(CFLAGS) -fno-exceptions -fno-rtti
-  LDFLAGS   += -m32 -L/usr/lib32 -Llib/Release
-  LIBS      += -lDebugUtils -lDetour -lDetourCrowd -lDetourTileCache -lRecast -lGL -lSDL -lSDLmain -lvgl
-  RESFLAGS  += $(DEFINES) $(INCLUDES) 
-  LDDEPS    += lib/Release/libDebugUtils.a lib/Release/libDetour.a lib/Release/libDetourCrowd.a lib/Release/libDetourTileCache.a lib/Release/libRecast.a
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -swf-version=22
-  LINKFLS    = $(CXX) -o $(TARGET).swf $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS) -emit-swf -swf-version=22
-  define PREBUILDCMDS
-  endef
-  define PRELINKCMDS
-  endef
-  define POSTBUILDCMDS
-  endef
-endif
 
 OBJECTS := \
-	$(OBJDIR)/ChunkyTriMesh.o \
-	$(OBJDIR)/InputGeom.o \
-	$(OBJDIR)/MeshLoaderObj.o \
 	$(OBJDIR)/Sample.o \
 	$(OBJDIR)/Sample_TempObstacles.o \
+	$(OBJDIR)/InputGeom.o \
+	$(OBJDIR)/MeshLoaderObj.o \
 	$(OBJDIR)/fastlz.o \
+	$(OBJDIR)/ChunkyTriMesh.o \
 	$(OBJDIR)/SoloMesh.o 
 	
 RESOURCES := \
@@ -186,52 +140,52 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
-$(OBJDIR)/ChunkyTriMesh.o: demo/ChunkyTriMesh.cpp
+$(OBJDIR)/ChunkyTriMesh.o: ../RecastDemo/Source/ChunkyTriMesh.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/ConvexVolumeTool.o: demo/ConvexVolumeTool.cpp
+$(OBJDIR)/ConvexVolumeTool.o: ../RecastDemo/Source/ConvexVolumeTool.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/CrowdTool.o: demo/CrowdTool.cpp
+$(OBJDIR)/CrowdTool.o: ../RecastDemo/Source/CrowdTool.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Filelist.o: demo/Filelist.cpp
+$(OBJDIR)/Filelist.o: ../RecastDemo/Source/Filelist.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/imgui.o: demo/imgui.cpp
+$(OBJDIR)/imgui.o: ../RecastDemo/Source/imgui.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/imguiRenderGL.o: demo/imguiRenderGL.cpp
+$(OBJDIR)/imguiRenderGL.o: ../RecastDemo/Source/imguiRenderGL.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/InputGeom.o: demo/InputGeom.cpp
+$(OBJDIR)/InputGeom.o: ../RecastDemo/Source/InputGeom.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/main.o: demo/main.cpp
+$(OBJDIR)/main.o: ../RecastDemo/Source/main.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/MeshLoaderObj.o: demo/MeshLoaderObj.cpp
+$(OBJDIR)/MeshLoaderObj.o: ../RecastDemo/Source/MeshLoaderObj.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/NavMeshPruneTool.o: demo/NavMeshPruneTool.cpp
+$(OBJDIR)/NavMeshPruneTool.o: ../RecastDemo/Source/NavMeshPruneTool.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/NavMeshTesterTool.o: demo/NavMeshTesterTool.cpp
+$(OBJDIR)/NavMeshTesterTool.o: ../RecastDemo/Source/NavMeshTesterTool.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/OffMeshConnectionTool.o: demo/OffMeshConnectionTool.cpp
+$(OBJDIR)/OffMeshConnectionTool.o: ../RecastDemo/Source/OffMeshConnectionTool.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/PerfTimer.o: demo/PerfTimer.cpp
+$(OBJDIR)/PerfTimer.o: ../RecastDemo/Source/PerfTimer.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Sample.o: demo/Sample.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/SampleInterfaces.o: demo/SampleInterfaces.cpp
+$(OBJDIR)/SampleInterfaces.o: ../RecastDemo/Source/SampleInterfaces.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Sample_Debug.o: demo/Sample_Debug.cpp
+$(OBJDIR)/Sample_Debug.o: ../RecastDemo/Source/Sample_Debug.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Sample_SoloMesh.o: demo/Sample_SoloMesh.cpp
@@ -243,19 +197,19 @@ $(OBJDIR)/Sample_TempObstacles.o: demo/Sample_TempObstacles.cpp
 $(OBJDIR)/Sample_TileMesh.o: demo/Sample_TileMesh.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/SlideShow.o: demo/SlideShow.cpp
+$(OBJDIR)/SlideShow.o: ../RecastDemo/Source/SlideShow.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/TestCase.o: demo/TestCase.cpp
+$(OBJDIR)/TestCase.o: ../RecastDemo/Source/TestCase.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/ValueHistory.o: demo/ValueHistory.cpp
+$(OBJDIR)/ValueHistory.o: ../RecastDemo/Source/ValueHistory.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/SoloMesh.o: demo/SoloMesh.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/fastlz.o: demo/fastlz.c
+$(OBJDIR)/fastlz.o: ../RecastDemo/Contrib/fastlz/fastlz.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(CFLAGS) -o "$@" -c "$<"
 

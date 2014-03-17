@@ -32,9 +32,8 @@ RECAST_INC=-I../Recast/Include
 DETOUR_INC=-I../Detour/Include -I../DetourCrowd/Include -I../DetourTileCache/Include
 DEBUG_INC=-I../DebugUtils/Include
 DEMO_INC=-I../RecastDemo/Include -I../RecastDemo/Contrib/fastlz
-DEMOLITE_INC=-Idemo
+DEMOLITE_INC=-Idemo ${DEMO_INC}
 
-#DEMO_INC=-I./demo
 ALL_INCS=${RECAST_INC} ${DETOUR_INC} ${DEBUG_INC} ${DEMOLITE_INC}
 
 PROJECTS := DebugUtils Detour DetourCrowd DetourTileCache Recast RecastDemoLite

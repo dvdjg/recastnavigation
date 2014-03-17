@@ -505,6 +505,22 @@ const double* dtCrowd::getAgentActualVelocity(const int idx) const
     return m_agents[idx].vel;
 }
 
+void dtCrowd::setAgentPosition(const int idx, const double* v)
+{
+    dtVcopy(m_agents[idx].npos, v);
+}
+
+void dtCrowd::setAgentDesiredVelocity(const int idx, const double* v)
+{
+    dtVcopy(m_agents[idx].dvel, v);
+}
+
+void dtCrowd::setAgentActualVelocity(const int idx, const double* v)
+{
+    dtVcopy(m_agents[idx].vel, v);
+}
+
+
 void dtCrowd::updateAgentParameters(const int idx, const dtCrowdAgentParams* params)
 {
 	if (idx < 0 || idx >= m_maxAgents)
@@ -522,7 +538,7 @@ int dtCrowd::addAgent(const double* pos, const dtCrowdAgentParams* params)
 	for (int i = 0; i < m_maxAgents; ++i)
 	{
 		if (!m_agents[i].active)
-		{
+        {
 			idx = i;
 			break;
 		}
@@ -1139,6 +1155,7 @@ void dtCrowd::updateHandleCollisions()
                 double diff[3];
                 dtVsub(diff, ag->npos, nei->npos);
                 diff[1] = 0;
+                // djg: What if agents overlaps in different levels? Have no neighbours then?
 
                 double dist = dtVlenSqr(diff);
                 if (dist > dtSqr(ag->params.radius + nei->params.radius))
@@ -1164,7 +1181,7 @@ void dtCrowd::updateHandleCollisions()
                 w += 1.0;
             }
 
-            if (w > 0.0001)
+            if (w > 0.0)
             {
                 const double iw = 1.0 / w;
                 dtVscale(ag->disp, ag->disp, iw);
@@ -1434,6 +1451,7 @@ void dtCrowd::updateComputeDesiredPosition(const double dt, dtCrowdAgentDebugInf
 
             const dtObstacleAvoidanceParams* params = &m_obstacleQueryParams[ag->params.obstacleAvoidanceType];
 
+            // Retrieve ag->nvel
             if (adaptive)
             {
                 ns = m_obstacleQuery->sampleVelocityAdaptive(ag->npos, ag->params.radius, ag->desiredSpeed,

@@ -25,28 +25,28 @@ public:
 	rcMeshLoaderObj();
 	~rcMeshLoaderObj();
 	
-    void setFilename(const char* filename);
+	void setFilename(const char* filename);
 	bool load(const char* fileName);
-    bool loadFromBuffer(const unsigned char* buf, int bufSize);
+	bool loadFromBuffer(const unsigned char* buf, int bufSize);
 
-    inline void getVertsVector(const double** ppVerts, int *pVertCount) const { *ppVerts = m_verts; *pVertCount = m_vertCount; }
-    inline void getNormalsVector(const double** ppVerts, int * pVertCount) const { *ppVerts = m_normals; *pVertCount = m_vertCount; }
-    inline void getTrisVector(const int** ppTris, int * pTriCount) const { *ppTris = m_tris; *pTriCount = m_triCount; }
+	inline void getVertsVector(const double** ppVerts, int *pVertCount) const { *ppVerts = m_verts; *pVertCount = m_vertCount; }
+	inline void getNormalsVector(const double** ppVerts, int * pVertCount) const { *ppVerts = m_normals; *pVertCount = m_vertCount; }
+	inline void getTrisVector(const int** ppTris, int * pTriCount) const { *ppTris = m_tris; *pTriCount = m_triCount; }
 
-    inline const double* getVertex(int i) const { return m_verts + i * 3; }
-    inline const double* getNormal(int i) const { return m_normals + i * 3; }
-    inline const int* getTriangle(int i) const { return m_tris + i * 3; }
+	inline const double* getVertex(int i) const { return m_verts + i * 3; }
+	inline const double* getNormal(int i) const { return m_normals + i * 3; }
+	inline const int* getTriangle(int i) const { return m_tris + i * 3; }
 
-    inline const double* getVerts() const { return m_verts; }
-    inline const double* getNormals() const { return m_normals; }
-    inline const int* getTris() const { return m_tris; }
-    inline int getVertCount() const { return m_vertCount; }
+	inline const double* getVerts() const { return m_verts; }
+	inline const double* getNormals() const { return m_normals; }
+	inline const int* getTris() const { return m_tris; }
+	inline int getVertCount() const { return m_vertCount; }
 	inline int getTriCount() const { return m_triCount; }
 	inline const char* getFileName() const { return m_filename; }
 
-    void computeNormals();
-    void addVertex(double x, double y, double z) { addVertex(x, y, z, m_vcap); }
-    void addTriangle(int a, int b, int c) { addTriangle(a, b, c, m_tcap); }
+	void computeNormals();
+	void addVertex(double x, double y, double z) { addVertex(x, y, z, m_vcap); }
+	void addTriangle(int a, int b, int c) { addTriangle(a, b, c, m_tcap); }
 
 private:
 	void addVertex(double x, double y, double z, int& cap);
@@ -59,8 +59,8 @@ private:
 	double* m_normals;
 	int m_vertCount;
 	int m_triCount;
-    int m_vcap;
-    int m_tcap;
+	int m_vcap;
+	int m_tcap;
 };
 
 #endif // MESHLOADER_OBJ
