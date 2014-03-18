@@ -183,6 +183,11 @@ void getTiles() {
 %apply unsigned int{unsigned short};
 %apply unsigned int{size_t};
 
+//%typemap(astype) SWIGTYPE *             "int /**< {$*1_ltype} */";
+%typemap(astype) dtCrowdAgentParams *, dtCrowdAgent *, dtTileCacheContourSet*, dtTileCachePolyMesh*, dtCrowdNeighbour*, dtCrowdAgentAnimation*, dtCrowdAgentDebugInfo*, dtObstacleCircle*, dtObstacleSegment*, dtObstacleAvoidanceParams*             "int /**< {$*1_ltype} */";
+%typemap(astype) void *, dtPolyRef *, dtTileRef *, dtPathQueueRef *, dtObstacleRef *, dtCompressedTileRef *  "int /**< $1_ltype */";
+
+
 //%typemap(astype) dtCrowdAgentParams*, dtCrowdAgentParams& "Object /**< dtCrowdAgentParams */";
 //%typemap(astype) dtCrowdAgent*, dtCrowdAgent& "Object /**< dtCrowdAgent */";
 //%typemap(astype) dtTileCacheContourSet*, dtTileCacheContourSet& "Object /**< dtTileCacheContourSet */";
