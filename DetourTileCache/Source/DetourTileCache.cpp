@@ -407,8 +407,8 @@ dtStatus dtTileCache::queryTiles(const double* bmin, const double* bmax,
 	
 	int n = 0;
 	
-	const double tw = m_params.width * m_params.cs;
-	const double th = m_params.height * m_params.cs;
+	const double tw = m_params.width * m_params.cellSize;
+	const double th = m_params.height * m_params.cellSize;
 	const int tx0 = (int)dtMathFloorf((bmin[0]-m_params.orig[0]) / tw);
 	const int tx1 = (int)dtMathFloorf((bmax[0]-m_params.orig[0]) / tw);
 	const int ty0 = (int)dtMathFloorf((bmin[2]-m_params.orig[2]) / th);
@@ -588,7 +588,7 @@ dtStatus dtTileCache::buildNavMeshTile(const dtCompressedTileRef ref, dtNavMesh*
 	m_talloc->reset();
 	
 	BuildContext bc(m_talloc);
-	const int walkableClimbVx = (int)(m_params.walkableClimb / m_params.ch);
+	const int walkableClimbVx = (int)(m_params.walkableClimb / m_params.cellHeight);
 	dtStatus status;
 	
 	// Decompress tile layer data. 
@@ -604,7 +604,7 @@ dtStatus dtTileCache::buildNavMeshTile(const dtCompressedTileRef ref, dtNavMesh*
 			continue;
 		if (contains(ob->touched, ob->ntouched, ref))
 		{
-			dtMarkCylinderArea(*bc.layer, tile->header->bmin, m_params.cs, m_params.ch,
+			dtMarkCylinderArea(*bc.layer, tile->header->bmin, m_params.cellSize, m_params.cellHeight,
 							   ob->pos, ob->radius, ob->height, 0);
 		}
 	}
@@ -648,8 +648,8 @@ dtStatus dtTileCache::buildNavMeshTile(const dtCompressedTileRef ref, dtNavMesh*
 	params.tileX = tile->header->tx;
 	params.tileY = tile->header->ty;
 	params.tileLayer = tile->header->tlayer;
-	params.cs = m_params.cs;
-	params.ch = m_params.ch;
+	params.cs = m_params.cellSize;
+	params.ch = m_params.cellHeight;
 	params.buildBvTree = false;
 	dtVcopy(params.bmin, tile->header->bmin);
 	dtVcopy(params.bmax, tile->header->bmax);
@@ -684,7 +684,7 @@ dtStatus dtTileCache::buildNavMeshTile(const dtCompressedTileRef ref, dtNavMesh*
 
 void dtTileCache::calcTightTileBounds(const dtTileCacheLayerHeader* header, double* bmin, double* bmax) const
 {
-	const double cs = m_params.cs;
+	const double cs = m_params.cellSize;
 	bmin[0] = header->bmin[0] + header->minx*cs;
 	bmin[1] = header->bmin[1];
 	bmin[2] = header->bmin[2] + header->miny*cs;

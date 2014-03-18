@@ -51,7 +51,7 @@ struct dtTileCacheObstacle
 struct dtTileCacheParams
 {
 	double orig[3];
-	double cs, ch;
+	double cellSize, cellHeight;
 	int width, height;
 	double walkableHeight;
 	double walkableRadius;

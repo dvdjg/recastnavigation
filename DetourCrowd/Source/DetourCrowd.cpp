@@ -46,7 +46,7 @@ void dtFreeCrowd(dtCrowd* ptr)
 	dtFree(ptr);
 }
 
-void dtCrowdAgentParams::set(const dtCrowdAgentParams * source)
+void dtCrowdAgentParams::copyFrom(const dtCrowdAgentParams * source)
 {
     memcpy(this, source, sizeof(dtCrowdAgentParams));
 }

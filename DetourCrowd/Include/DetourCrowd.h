@@ -90,7 +90,7 @@ struct dtCrowdAgentParams
 	/// User defined data attached to the agent.
 	void* userData;
 
-    void set(const dtCrowdAgentParams * source);
+    void copyFrom(const dtCrowdAgentParams * source);
 };
 
 enum MoveRequestState

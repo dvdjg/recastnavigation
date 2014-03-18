@@ -190,10 +190,10 @@ struct rcConfig
 	int borderSize;
 
 	/// The xz-plane cell size to use for fields. [Limit: > 0] [Units: wu] 
-	double cs;
+    double cellSize;
 
 	/// The y-axis cell size to use for fields. [Limit: > 0] [Units: wu]
-	double ch;
+    double cellHeight;
 
 	/// The minimum bounds of the field's AABB. [(x, y, z)] [Units: wu]
 	double bmin[3]; 
