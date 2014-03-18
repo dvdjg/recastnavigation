@@ -294,7 +294,7 @@ bool dtCreateNavMeshData(dtNavMeshCreateParams* params, unsigned char** outData,
 			for (int i = 0; i < params->vertCount; ++i)
 			{
 				const unsigned short* iv = &params->verts[i*3];
-				const double h = params->bmin[1] + iv[1] * params->ch;
+				const double h = params->bmin[1] + iv[1] * params->cellHeight;
 				hmin = dtMin(hmin,h);
 				hmax = dtMax(hmax,h);
 			}
@@ -447,7 +447,7 @@ bool dtCreateNavMeshData(dtNavMeshCreateParams* params, unsigned char** outData,
 	header->detailMeshCount = params->polyCount;
 	header->detailVertCount = uniqueDetailVertCount;
 	header->detailTriCount = detailTriCount;
-	header->bvQuantFactor = 1.0 / params->cs;
+	header->bvQuantFactor = 1.0 / params->cellSize;
 	header->offMeshBase = params->polyCount;
 	header->walkableHeight = params->walkableHeight;
 	header->walkableRadius = params->walkableRadius;
@@ -464,9 +464,9 @@ bool dtCreateNavMeshData(dtNavMeshCreateParams* params, unsigned char** outData,
 	{
 		const unsigned short* iv = &params->verts[i*3];
 		double* v = &navVerts[i*3];
-		v[0] = params->bmin[0] + iv[0] * params->cs;
-		v[1] = params->bmin[1] + iv[1] * params->ch;
-		v[2] = params->bmin[2] + iv[2] * params->cs;
+		v[0] = params->bmin[0] + iv[0] * params->cellSize;
+		v[1] = params->bmin[1] + iv[1] * params->cellHeight;
+		v[2] = params->bmin[2] + iv[2] * params->cellSize;
 	}
 	// Off-mesh link vertices.
 	int n = 0;
@@ -599,7 +599,7 @@ bool dtCreateNavMeshData(dtNavMeshCreateParams* params, unsigned char** outData,
 	if (params->buildBvTree)
 	{
 		createBVTree(params->verts, params->vertCount, params->polys, params->polyCount,
-					 nvp, params->cs, params->ch, params->polyCount*2, navBvtree);
+					 nvp, params->cellSize, params->cellHeight, params->polyCount*2, navBvtree);
 	}
 	
 	// Store Off-Mesh connections.

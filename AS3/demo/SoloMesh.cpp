@@ -120,12 +120,12 @@ bool SoloMesh::handleBuild()
 	
 	// Init build configuration from GUI
 	memset(&m_cfg, 0, sizeof(m_cfg));
-	m_cfg.cs = m_cellSize;
-	m_cfg.ch = m_cellHeight;
+	m_cfg.cellSize = m_cellSize;
+	m_cfg.cellHeight = m_cellHeight;
 	m_cfg.walkableSlopeAngle = m_agentMaxSlope;
-	m_cfg.walkableHeight = (int)ceil(m_agentHeight / m_cfg.ch);
-	m_cfg.walkableClimb = (int)floor(m_agentMaxClimb / m_cfg.ch);
-	m_cfg.walkableRadius = (int)ceil(m_agentRadius / m_cfg.cs);
+	m_cfg.walkableHeight = (int)ceil(m_agentHeight / m_cfg.cellHeight);
+	m_cfg.walkableClimb = (int)floor(m_agentMaxClimb / m_cfg.cellHeight);
+	m_cfg.walkableRadius = (int)ceil(m_agentRadius / m_cfg.cellSize);
 	m_cfg.maxEdgeLen = (int)(m_edgeMaxLen / m_cellSize);
 	m_cfg.maxSimplificationError = m_edgeMaxError;
 	m_cfg.minRegionArea = (int)rcSqr(m_regionMinSize);		// Note: area = size*size
@@ -139,7 +139,7 @@ bool SoloMesh::handleBuild()
 	// area could be specified by an user defined box, etc.
 	rcVcopy(m_cfg.bmin, bmin);
 	rcVcopy(m_cfg.bmax, bmax);
-	rcCalcGridSize(m_cfg.bmin, m_cfg.bmax, m_cfg.cs, &m_cfg.width, &m_cfg.height);
+	rcCalcGridSize(m_cfg.bmin, m_cfg.bmax, m_cfg.cellSize, &m_cfg.width, &m_cfg.height);
 
 	// Reset build times gathering.
 	m_ctx->resetTimers();
@@ -162,7 +162,7 @@ bool SoloMesh::handleBuild()
 		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'solid'.");
 		return false;
 	}
-	if (!rcCreateHeightfield(m_ctx, *m_solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
+	if (!rcCreateHeightfield(m_ctx, *m_solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cellSize, m_cfg.cellHeight))
 	{
 		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create solid heightfield.");
 		return false;
@@ -389,8 +389,8 @@ bool SoloMesh::handleBuild()
 		params.walkableClimb = m_agentMaxClimb;
 		rcVcopy(params.bmin, m_pmesh->bmin);
 		rcVcopy(params.bmax, m_pmesh->bmax);
-		params.cs = m_cfg.cs;
-		params.ch = m_cfg.ch;
+		params.cellSize = m_cfg.cellSize;
+		params.cellHeight = m_cfg.cellHeight;
 		params.buildBvTree = true;
 		
 		if (!dtCreateNavMeshData(&params, &navData, &navDataSize))

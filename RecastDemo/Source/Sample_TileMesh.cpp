@@ -1181,8 +1181,8 @@ unsigned char* Sample_TileMesh::buildTileMesh(const int tx, const int ty, const 
 		params.tileLayer = 0;
 		rcVcopy(params.bmin, m_pmesh->bmin);
 		rcVcopy(params.bmax, m_pmesh->bmax);
-		params.cs = m_cfg.cellSize;
-		params.ch = m_cfg.cellHeight;
+		params.cellSize = m_cfg.cellSize;
+		params.cellHeight = m_cfg.cellHeight;
 		params.buildBvTree = true;
 		
 		if (!dtCreateNavMeshData(&params, &navData, &navDataSize))

@@ -178,10 +178,44 @@ void getTiles() {
 
 // djg
 %as3import("flash.utils.ByteArray");
+
 %apply unsigned int{unsigned char};
 %apply unsigned int{unsigned short};
 %apply unsigned int{size_t};
-//const int* tris, const double* normals, int ntris
+
+//%typemap(astype) dtCrowdAgentParams*, dtCrowdAgentParams& "Object /**< dtCrowdAgentParams */";
+//%typemap(astype) dtCrowdAgent*, dtCrowdAgent& "Object /**< dtCrowdAgent */";
+//%typemap(astype) dtTileCacheContourSet*, dtTileCacheContourSet& "Object /**< dtTileCacheContourSet */";
+//%typemap(astype) dtTileCachePolyMesh*, dtTileCachePolyMesh& "Object /**< dtTileCachePolyMesh */";
+//%typemap(astype) dtCrowdNeighbour*, dtCrowdNeighbour& "Object /**< dtCrowdNeighbour */";
+//%typemap(astype) dtCrowdAgentAnimation*, dtCrowdAgentAnimation& "Object /**< dtCrowdAgentAnimation */";
+//%typemap(astype) dtCrowdAgentDebugInfo*, dtCrowdAgentDebugInfo& "Object /**< dtCrowdAgentDebugInfo */";
+//%typemap(astype) dtObstacleCircle*, dtObstacleCircle& "Object /**< dtObstacleCircle */";
+//%typemap(astype) dtObstacleSegment*, dtObstacleSegment& "Object /**< dtObstacleSegment */";
+//%typemap(astype) dtObstacleAvoidanceParams*, dtObstacleAvoidanceParams& "Object /**< dtObstacleAvoidanceParams */";
+//
+//%typemap(in) dtCrowdAgentParams* {
+//	inline_as3("%0 = $input.swigCPtr;\n": "=r"($1));
+//};
+//
+//%apply dtCrowdAgentParams*{
+//	dtCrowdAgentParams&,
+//	dtCrowdAgent*, dtCrowdAgent&,
+//	dtCrowdAgentAnimation*, dtCrowdAgentAnimation&,
+//	dtCrowdAgentDebugInfo*, dtCrowdAgentDebugInfo&,
+//	dtTileCacheContourSet*, dtTileCacheContourSet&,
+//	dtTileCachePolyMesh*, dtTileCachePolyMesh&,
+//	dtCrowdNeighbour*, dtCrowdNeighbour&,
+//	dtObstacleCircle*, dtObstacleCircle&,
+//	dtObstacleSegment*, dtObstacleSegment&,
+//	dtObstacleAvoidanceParams*, dtObstacleAvoidanceParams&
+//	};
+
+//%typemap(out) const dtCrowdAgentParams* {
+//	inline_as3("var $result:dtCrowdAgentParams = new dtCrowdAgentParams;\n");
+//    inline_as3("$result.swigCPtr = %0;\n": : "r"(result));
+//};
+//
 
 // (\bdouble\s*\*\s*\w+\s*,\s*)const +(int +\w+)
 %typemap(astype) (const double** ppVerts, int *pVertCount) "Vector.<Number>";
@@ -746,7 +780,7 @@ void getTiles() {
 }
 
 
-%typemap(astype) double*, double[3], const int*, int[3], short* tx "Object";
+%typemap(astype) double*, double[3], const int*, int[3], short* tx "Object /**< {x,y,z} */";
 
 %typemap(in) double* out (double dVector[3]) {
     // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
@@ -981,7 +1015,7 @@ void getTiles() {
 	(int* vista)
 };
 
-%typemap(astype) const unsigned short*, unsigned short [3] "Object";
+%typemap(astype) const unsigned short*, unsigned short [3] "Object /**< short {x,y,z} */";
 
 // Used for:
 //  [in] const int*
@@ -1007,7 +1041,7 @@ void getTiles() {
 %apply (const unsigned short*) {
 	(unsigned short [3])
 };
-%typemap(astype) int& "Object";
+%typemap(astype) int& "Object /**< Reference int {value} */";
 
 %typemap(in) int& (int vector[1]) {
     // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
@@ -1035,7 +1069,7 @@ void getTiles() {
 	(int* ty)
 };
 
-%typemap(astype) double& "Object";
+%typemap(astype) double& "Object /**< Reference Number {value} */";
 
 %typemap(in) double& (double vector[1]) {
     // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
@@ -1171,5 +1205,3 @@ void getTiles() {
 %ignore rcMeshLoaderObj::getVerts();
 %ignore rcMeshLoaderObj::getNormals();
 %ignore rcMeshLoaderObj::getTris();
-
-

@@ -281,7 +281,7 @@ static int rasterizeTileLayers(rcContext* ctx, InputGeom* geom,
 	const rcChunkyTriMesh* chunkyMesh = geom->getChunkyMesh();
 	
 	// Tile bounds.
-	const double tcs = cfg.tileSize * cfg.cs;
+	const double tcs = cfg.tileSize * cfg.cellSize;
 	
 	rcConfig tcfg;
 	memcpy(&tcfg, &cfg, sizeof(tcfg));
@@ -292,10 +292,10 @@ static int rasterizeTileLayers(rcContext* ctx, InputGeom* geom,
 	tcfg.bmax[0] = cfg.bmin[0] + (tx+1)*tcs;
 	tcfg.bmax[1] = cfg.bmax[1];
 	tcfg.bmax[2] = cfg.bmin[2] + (ty+1)*tcs;
-	tcfg.bmin[0] -= tcfg.borderSize*tcfg.cs;
-	tcfg.bmin[2] -= tcfg.borderSize*tcfg.cs;
-	tcfg.bmax[0] += tcfg.borderSize*tcfg.cs;
-	tcfg.bmax[2] += tcfg.borderSize*tcfg.cs;
+	tcfg.bmin[0] -= tcfg.borderSize*tcfg.cellSize;
+	tcfg.bmin[2] -= tcfg.borderSize*tcfg.cellSize;
+	tcfg.bmax[0] += tcfg.borderSize*tcfg.cellSize;
+	tcfg.bmax[2] += tcfg.borderSize*tcfg.cellSize;
 	
 	// Allocate voxel heightfield where we rasterize our input data to.
 	rc.solid = rcAllocHeightfield();
@@ -304,7 +304,7 @@ static int rasterizeTileLayers(rcContext* ctx, InputGeom* geom,
 		ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'solid'.");
 		return 0;
 	}
-	if (!rcCreateHeightfield(ctx, *rc.solid, tcfg.width, tcfg.height, tcfg.bmin, tcfg.bmax, tcfg.cs, tcfg.ch))
+	if (!rcCreateHeightfield(ctx, *rc.solid, tcfg.width, tcfg.height, tcfg.bmin, tcfg.bmax, tcfg.cellSize, tcfg.cellHeight))
 	{
 		ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create solid heightfield.");
 		return 0;
@@ -467,7 +467,7 @@ void drawTiles(duDebugDraw* dd, dtTileCache* tc)
 		tc->calcTightTileBounds(tile->header, bmin, bmax);
 		
 		const unsigned int col = duIntToCol(i,255);
-		const double pad = tc->getParams()->cs * 0.1f;
+		const double pad = tc->getParams()->cellSize * 0.1f;
 		duDebugDrawBoxWire(dd, bmin[0]-pad,bmin[1]-pad,bmin[2]-pad,
 						   bmax[0]+pad,bmax[1]+pad,bmax[2]+pad, col, 2.0f);
 	}
@@ -517,7 +517,7 @@ void drawDetail(duDebugDraw* dd, dtTileCache* tc, const int tx, const int ty, in
 		talloc->reset();
 
 		TileCacheBuildContext bc(talloc);
-		const int walkableClimbVx = (int)(params->walkableClimb / params->ch);
+		const int walkableClimbVx = (int)(params->walkableClimb / params->cellHeight);
 		dtStatus status;
 		
 		// Decompress tile layer data. 
@@ -526,7 +526,7 @@ void drawDetail(duDebugDraw* dd, dtTileCache* tc, const int tx, const int ty, in
 			return;
 		if (type == DRAWDETAIL_AREAS)
 		{
-			duDebugDrawTileCacheLayerAreas(dd, *bc.layer, params->cs, params->ch);
+			duDebugDrawTileCacheLayerAreas(dd, *bc.layer, params->cellSize, params->cellHeight);
 			continue;
 		}
 
@@ -536,7 +536,7 @@ void drawDetail(duDebugDraw* dd, dtTileCache* tc, const int tx, const int ty, in
 			return;
 		if (type == DRAWDETAIL_REGIONS)
 		{
-			duDebugDrawTileCacheLayerRegions(dd, *bc.layer, params->cs, params->ch);
+			duDebugDrawTileCacheLayerRegions(dd, *bc.layer, params->cellSize, params->cellHeight);
 			continue;
 		}
 		
@@ -549,7 +549,7 @@ void drawDetail(duDebugDraw* dd, dtTileCache* tc, const int tx, const int ty, in
 			return;
 		if (type == DRAWDETAIL_CONTOURS)
 		{
-			duDebugDrawTileCacheContours(dd, *bc.lcset, tile->header->bmin, params->cs, params->ch);
+			duDebugDrawTileCacheContours(dd, *bc.lcset, tile->header->bmin, params->cellSize, params->cellHeight);
 			continue;
 		}
 		
@@ -562,7 +562,7 @@ void drawDetail(duDebugDraw* dd, dtTileCache* tc, const int tx, const int ty, in
 
 		if (type == DRAWDETAIL_MESH)
 		{
-			duDebugDrawTileCachePolyMesh(dd, *bc.lmesh, tile->header->bmin, params->cs, params->ch);
+			duDebugDrawTileCachePolyMesh(dd, *bc.lmesh, tile->header->bmin, params->cellSize, params->cellHeight);
 			continue;
 		}
 
@@ -831,12 +831,12 @@ bool Sample_TempObstacles::handleBuild()
 	// Generation params.
 	rcConfig cfg;
 	memset(&cfg, 0, sizeof(cfg));
-	cfg.cs = m_cellSize;
-	cfg.ch = m_cellHeight;
+	cfg.cellSize = m_cellSize;
+	cfg.cellHeight = m_cellHeight;
 	cfg.walkableSlopeAngle = m_agentMaxSlope;
-	cfg.walkableHeight = (int)ceil(m_agentHeight / cfg.ch);
-	cfg.walkableClimb = (int)floor(m_agentMaxClimb / cfg.ch);
-	cfg.walkableRadius = (int)ceil(m_agentRadius / cfg.cs);
+	cfg.walkableHeight = (int)ceil(m_agentHeight / cfg.cellHeight);
+	cfg.walkableClimb = (int)floor(m_agentMaxClimb / cfg.cellHeight);
+	cfg.walkableRadius = (int)ceil(m_agentRadius / cfg.cellSize);
 	cfg.maxEdgeLen = (int)(m_edgeMaxLen / m_cellSize);
 	cfg.maxSimplificationError = m_edgeMaxError;
 	cfg.minRegionArea = (int)rcSqr(m_regionMinSize);		// Note: area = size*size
@@ -859,8 +859,8 @@ bool Sample_TempObstacles::handleBuild()
 	dtTileCacheParams tcparams;
 	memset(&tcparams, 0, sizeof(tcparams));
 	rcVcopy(tcparams.orig, bmin);
-	tcparams.cs = m_cellSize;
-	tcparams.ch = m_cellHeight;
+	tcparams.cellSize = m_cellSize;
+	tcparams.cellHeight = m_cellHeight;
 	tcparams.width = (int)m_tileSize;
 	tcparams.height = (int)m_tileSize;
 	tcparams.walkableHeight = m_agentHeight;

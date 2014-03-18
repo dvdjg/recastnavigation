@@ -69,8 +69,8 @@ Recast_wrapper.txt: build/Recast_wrap.o fixed_exports.txt Makefile
 $(TARGET): build/Recast_wrap.o $(PROJECTS) Recast_wrapper.txt Makefile
 
 	# Link the final library
-	g++ -jvmopt=-Xmx1G $(BASE_CFLAGS) $(ALL_INCS) swigmain.cpp \
-	./build/Recast_wrap.o ./build/Recast.abc \
+	g++ -jvmopt=-Xmx1G $(BASE_CFLAGS) $(ALL_INCS) swigmain.cpp ./build/Recast.abc \
+	./build/Recast_wrap.o \
 	-Wl,--start-group -flto-api=Recast_wrapper.txt \
 	-Wl,--end-group \
 	-emit-swc=org.recastnavigation $(CFLAGS) $(EXTRA_OPTS) $(ALL_ARCHIVES) -swf-version=22 -o $(TARGET) 2>&1 | tee build/swc.log
