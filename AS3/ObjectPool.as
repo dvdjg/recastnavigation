@@ -1,6 +1,7 @@
 package org.dave.objects 
 {
 	import flash.utils.getQualifiedClassName;
+	import flash.utils.getDefinitionByName;
 	/**
 	 */
 	public class ObjectPool
@@ -8,10 +9,10 @@ package org.dave.objects
 		private static var _instances:Object = new Object;
 		private static var _reusedCount:uint = 0;
 		private static var _newsCount:uint = 0;
+		protected static var _poolObject:ObjectPool = getInstance(Object);
 
 		protected var _objects:Array;
 		protected var _objectClass:Class;
-		protected var _poolObject:ObjectPool = getInstance(Object);
 	
 		public function ObjectPool(objectClass:Class)
 		{
@@ -26,6 +27,11 @@ package org.dave.objects
 		public static function get objectPoolInstance():ObjectPool
 		{
 			return _poolObject;
+		}
+		
+		public static function getInstanceFromObject(obj:*):ObjectPool
+		{
+			return getInstanceFromName(getQualifiedClassName(obj));
 		}
 		
 		public static function getInstance(objectClass:Class):ObjectPool
@@ -99,7 +105,8 @@ package org.dave.objects
 		{
 			if(bDispose)
 				dispose(oldObject);
-			_objects.push(oldObject); // LIFO
+			if(_objects.length < 512)
+				_objects.push(oldObject); // LIFO
 		}
 		
 		public function releaseObjects():void

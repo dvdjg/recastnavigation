@@ -121,7 +121,7 @@ package
 					var pos:Object = crowd.getAgentPosition(nAgent);
 					var vel:Object = crowd.getAgentActualVelocity(nAgent);
 					var agent:Object = { i:nAgent, p:pos, v:vel, r:rad, 
-						targetRef:agentPtr.targetRef, targetPos:agentPtr.targetPos};
+						targetRef:agentPtr.targetRef, targetPos:agentPtr.targetPos, maxAcceleration:agentParamsPtr.maxAcceleration,  maxSpeed:agentParamsPtr.maxSpeed};
 					capturedStates.push(agent);
 				}
 			}
@@ -137,6 +137,8 @@ package
 			{
 				var agent:Object = capturedStates[nAgent];
 				_agentParams.radius = agent.r;
+				_agentParams.maxAcceleration = agent.maxAcceleration;
+				_agentParams.maxSpeed = agent.maxSpeed;
 				crowd.addAgent(agent.p, _agentParams, agent.i);
 				crowd.setAgentActualVelocity(agent.i, agent.v);
 				if (agent.targetRef) {

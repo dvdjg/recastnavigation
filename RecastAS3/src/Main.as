@@ -11,6 +11,7 @@ package
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
+	import flash.utils.getQualifiedClassName;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import org.dave.objects.ObjectPool;
@@ -282,9 +283,12 @@ package
 			
 			var nVerts:int = meshLoader.getVertCount();
 			
-			var verts:Vector.<Point> = ObjectPool.getInstance(Vector.<Point>()).getNew();
-			//var verts:Vector.<Point> = new Vector.<Point>();
+			//var verts:Vector.<Point>;
+			//verts = ObjectPool.getInstance(Vector.<Point>).getNew();
+			var verts:Vector.<Point> = new Vector.<Point>();
+			//var str:String = getQualifiedClassName(verts);
 			var p:Point;
+			//var str2:String = getQualifiedClassName(p);
 			
 			for (var i:int = 0; i < nVerts; i++)
 			{
@@ -302,7 +306,7 @@ package
 			var tiles:Array = getTiles(recastManager.sample.swigCPtr);
 			drawNavMesh(tiles);
 			
-			ObjectPool.reuse(verts);
+			//ObjectPool.reuse(verts);
 			ObjectPool.reuse(meshLoader);
 		}
 		
