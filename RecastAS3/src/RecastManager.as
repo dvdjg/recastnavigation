@@ -4,6 +4,7 @@ package
 	import flash.text.TextField;
 	import flash.utils.ByteArray;
 	import org.dave.interfaces.IInitDestroy;
+	import org.dave.objects.ObjectPool;
 	
 	import org.recastnavigation.AS3_rcContext;
 	import org.recastnavigation.CModule;
@@ -21,6 +22,7 @@ package
 	 */
 	public class RecastManager implements IInitDestroy
 	{	
+		public var poolObject:ObjectPool = ObjectPool.getInstance(Object);
 		public var scale:Vector3D = new Vector3D(1, 1, 1); //the scale of the nav mesh to the world
 		public var maxAgents:int = 60;
 		public var maxAgentRadius:Number= 4;
@@ -194,8 +196,8 @@ package
 			//_params.destroy();
 			
 			var pos:Object = getAgentPos(idx);
-			var pos2:Object = crowd.getAgentPosition(idx);
-			var nagents:int = crowd.getAgentCount();
+			//var pos2:Object = crowd.getAgentPosition(idx);
+			//var nagents:int = crowd.getAgentCount();
 			
 			var navquery:dtNavMeshQuery  = sample.getNavMeshQuery();
 
@@ -265,7 +267,13 @@ package
 			var count:int = crowd.getAgentCount();
 			var desired:Object = crowd.getAgentDesiredVelocity(idx);
 			var pos:Object = crowd.getAgentPosition(idx);
-			return { x: pos.x * scale.x, y: pos.y * scale.y, z: pos.z * scale.z };
+			var ret:Object = poolObject.getNew();
+			ret.x = pos.x * scale.x;
+			ret.y =  pos.y * scale.y;
+			ret.z = pos.z * scale.z;
+			poolObject.disposeObject(desired);
+			poolObject.disposeObject(pos);
+			return ret;
 		}
 		
 		public function get sample():Sample_TempObstacles

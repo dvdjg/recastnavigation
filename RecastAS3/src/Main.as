@@ -13,6 +13,7 @@ package
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
+	import org.dave.objects.ObjectPool;
 	import org.recastnavigation.CModule;
 	import org.recastnavigation.rcMeshLoaderObj;
 	import org.recastnavigation.util.getTiles;
@@ -263,6 +264,7 @@ package
 				//trace("agent at:",CModule.readFloat( agent.npos ), CModule.readFloat( agent.npos + 4 ), CModule.readFloat( agent.npos + 8));
 				agentObjectsByAgendIdx[idx].x = pos.x;
 				agentObjectsByAgendIdx[idx].y = pos.z;
+				recastManager.poolObject.disposeObject(pos);
 			}
 		}
 		

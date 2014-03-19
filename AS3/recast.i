@@ -177,7 +177,7 @@ void getTiles() {
 %}
 
 // djg
-%as3import("flash.utils.ByteArray");
+%as3import("flash.utils.ByteArray,org.dave.objects.ObjectPool");
 
 %apply unsigned int{unsigned char};
 %apply unsigned int{unsigned short};
@@ -188,7 +188,7 @@ void getTiles() {
 // , dtPolyRef *, dtTileRef *, dtPathQueueRef *, dtObstacleRef *, dtCompressedTileRef *
 //%typemap(astype) dtPolyRef, dtTileRef, dtPathQueueRef, dtObstacleRef, dtCompressedTileRef "uint /**< $1_ltype */";
 //%typemap(astype) SWIGTYPE *             "int /**< {$*1_ltype} */";
-// sed -rn 's@^(struct|class) +(\w+).*@\2 \*,@p' ../*/Include/*.h | sort -u > recastStructs.i
+// sed -rn 's@^\s*(struct|class)\s+(\w+).*@\2 \*,@p' ../*/Include/*.h | sort -u > recastStructs.i
 %typemap(astype) BuildContext *,
 ConvexVolume *,
 ConvexVolumeTool *,
@@ -974,7 +974,7 @@ ValueHistory *
 %typemap(out) const double*, double[3] {
 	inline_as3("var $result:Object;\nvar ptrRet:int = %0;\n": : "r"(result));
     inline_as3("if(ptrRet) {\n");
-	inline_as3("var ret:Object = new Object;\n");
+	inline_as3("var ret:Object = ObjectPool.getInstance(Object).getNew();\n");
     // Now pull that Vector into flascc memory
     inline_as3("ret.x = CModule.readDouble(ptrRet + 8*0);\n");
     inline_as3("ret.y = CModule.readDouble(ptrRet + 8*1);\n");
@@ -986,7 +986,7 @@ ValueHistory *
 %typemap(out) const int*, int[3] {
 	inline_as3("var $result:Object;\nvar ptrRet:int = %0;\n": : "r"(result));
 	inline_as3("if(ptrRet) {\n");
-	inline_as3("var ret:Object = new Object;\n");
+	inline_as3("var ret:Object = ObjectPool.getInstance(Object).getNew();\n");
     // Now pull that Vector into flascc memory
     inline_as3("ret.x = CModule.read32(ptrRet + 4*0);\n");
     inline_as3("ret.y = CModule.read32(ptrRet + 4*1);\n");
