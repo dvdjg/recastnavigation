@@ -71,7 +71,7 @@ package
 			_sample = Sample_TempObstacles.create();
 			geom = InputGeom.create();
 			
-			var loadResult:Boolean = geom.loadMesh(as3LogContext.swigCPtr, filename);
+			var loadResult:Boolean = geom.loadMesh(as3LogContext, filename);
 
 			//update mesh settings
 			sample.m_cellSize = m_cellSize;
@@ -91,8 +91,8 @@ package
 			sample.m_maxObstacles = m_maxObstacles;
 			
 			//build mesh
-			sample.setContext(as3LogContext.swigCPtr);
-			sample.handleMeshChanged(geom.swigCPtr);
+			sample.setContext(as3LogContext);
+			sample.handleMeshChanged(geom);
 			sample.handleSettings();
 			
 			var startTime:Number = new Date().valueOf();
@@ -101,8 +101,7 @@ package
 			
 			var oid:int = addObstacle(new Vector3D(22, 33, 44), 55, 11);
 			
-			crowd = new dtCrowd();
-			crowd.swigCPtr = sample.getCrowd();
+			crowd = sample.getCrowd();
 			crowd.init(maxAgents, maxAgentRadius, sample.getNavMesh() );
 		}
 		
@@ -115,9 +114,7 @@ package
 				if (crowd.getAgentActiveState(nAgent))
 				{
 					var agentPtr:dtCrowdAgent = crowd.getAgent(nAgent);
-					// _agentPtr.swigCPtr = agentPtr.swigCPtr;
 					var agentParamsPtr:dtCrowdAgentParams = agentPtr.params;
-					//_agentParamsPtr.swigCPtr = agentPtr.params;
 					var rad:Number = agentParamsPtr.radius;
 					var pos:Object = crowd.getAgentPosition(nAgent);
 					var vel:Object = crowd.getAgentActualVelocity(nAgent);
@@ -131,14 +128,14 @@ package
 		
 		public function restoreStates():void
 		{
-			_agentParams.copyFrom(_agentParams); // .swigCPtr
+			_agentParams.copyFrom(_agentParams);
 			crowd.removeAllAgents();
 			var totalAgents:int = capturedStates.length;
 			for (var nAgent:int = 0; nAgent < totalAgents; ++nAgent)
 			{
 				var agent:Object = capturedStates[nAgent];
 				_agentParams.radius = agent.r;
-				crowd.addAgent(agent.p, _agentParams, agent.i); // .swigCPtr
+				crowd.addAgent(agent.p, _agentParams, agent.i);
 				crowd.setAgentActualVelocity(agent.i, agent.v);
 				if (agent.targetRef) {
 					crowd.requestMoveTarget(agent.i, agent.targetRef, agent.targetPos);
@@ -193,15 +190,14 @@ package
 			//updateFlags |= Recast.DT_CROWD_SEPARATION;
 			_agentParams.updateFlags = updateFlags; //since updateFlags is stored as a char in recast, need to save the string as the char code value
 			
-			var idx:int = crowd.addAgent(navPosition, _agentParams, -1 ); // .swigCPtr
+			var idx:int = crowd.addAgent(navPosition, _agentParams, -1 );
 			//_params.destroy();
 			
 			var pos:Object = getAgentPos(idx);
 			var pos2:Object = crowd.getAgentPosition(idx);
 			var nagents:int = crowd.getAgentCount();
 			
-			var navquery:dtNavMeshQuery  = new dtNavMeshQuery();
-			navquery.swigCPtr =  sample.getNavMeshQuery();
+			var navquery:dtNavMeshQuery  = sample.getNavMeshQuery();
 
 			var targetRef:Object = {};
 			var targetPos:Object = {};
@@ -224,8 +220,7 @@ package
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
 			
-			var navquery:dtNavMeshQuery  = new dtNavMeshQuery();
-			navquery.swigCPtr =  sample.getNavMeshQuery();
+			var navquery:dtNavMeshQuery  = sample.getNavMeshQuery();
 			
 			var targetRef:Object = {};
 			var targetPos:Object = {};

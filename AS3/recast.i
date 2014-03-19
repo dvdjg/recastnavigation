@@ -182,11 +182,105 @@ void getTiles() {
 %apply unsigned int{unsigned char};
 %apply unsigned int{unsigned short};
 %apply unsigned int{size_t};
+//%apply unsigned int{dtPolyRef, dtTileRef, dtPathQueueRef, dtObstacleRef, dtCompressedTileRef};
 
+%typemap(astype) void * "int /**< $1_ltype */";
+// , dtPolyRef *, dtTileRef *, dtPathQueueRef *, dtObstacleRef *, dtCompressedTileRef *
+//%typemap(astype) dtPolyRef, dtTileRef, dtPathQueueRef, dtObstacleRef, dtCompressedTileRef "uint /**< $1_ltype */";
 //%typemap(astype) SWIGTYPE *             "int /**< {$*1_ltype} */";
-%typemap(astype) dtCrowdAgentParams *, dtCrowdAgent *, dtTileCacheContourSet*, dtTileCachePolyMesh*, dtCrowdNeighbour*, dtCrowdAgentAnimation*, dtCrowdAgentDebugInfo*, dtObstacleCircle*, dtObstacleSegment*, dtObstacleAvoidanceParams*             "int /**< {$*1_ltype} */";
-%typemap(astype) void *, dtPolyRef *, dtTileRef *, dtPathQueueRef *, dtObstacleRef *, dtCompressedTileRef *  "int /**< $1_ltype */";
-
+// sed -rn 's@^(struct|class) +(\w+).*@\2 \*,@p' ../*/Include/*.h | sort -u > recastStructs.i
+%typemap(astype) BuildContext *,
+ConvexVolume *,
+ConvexVolumeTool *,
+CrowdTool *,
+CrowdToolParams *,
+CrowdToolState *,
+DebugDrawGL *,
+dtBVNode *,
+dtCompressedTile *,
+dtCrowd *,
+dtCrowdAgent *,
+dtCrowdAgentAnimation *,
+dtCrowdAgentDebugInfo *,
+dtCrowdAgentParams *,
+dtCrowdNeighbour *,
+dtLink *,
+dtLocalBoundary *,
+dtMeshHeader *,
+dtMeshTile *,
+dtNavMesh *,
+dtNavMeshCreateParams *,
+dtNavMeshParams *,
+dtNavMeshQuery *,
+dtNode *,
+dtNodePool *,
+dtNodeQueue *,
+dtObstacleAvoidanceDebugData *,
+dtObstacleAvoidanceParams *,
+dtObstacleAvoidanceQuery *,
+dtObstacleCircle *,
+dtObstacleSegment *,
+dtOffMeshConnection *,
+dtPathCorridor *,
+dtPathQueue *,
+dtPoly *,
+dtPolyDetail *,
+dtProximityGrid *,
+dtQueryFilter *,
+dtTileCache *,
+dtTileCacheAlloc *,
+dtTileCacheCompressor *,
+dtTileCacheContour *,
+dtTileCacheContourSet *,
+dtTileCacheLayer *,
+dtTileCacheLayerHeader *,
+dtTileCacheMeshProcess *,
+dtTileCacheObstacle *,
+dtTileCacheParams *,
+dtTileCachePolyMesh *,
+duDebugDraw *,
+duDisplayList *,
+duFileIO *,
+FileIO *,
+FileList *,
+GraphParams *,
+imguiGfxCmd *,
+imguiGfxLine *,
+imguiGfxRect *,
+imguiGfxText *,
+InputGeom *,
+NavMeshPruneTool *,
+NavMeshTesterTool *,
+OffMeshConnectionTool *,
+rcChunkyTriMesh *,
+rcChunkyTriMeshNode *,
+rcCompactCell *,
+rcCompactHeightfield *,
+rcCompactSpan *,
+rcConfig *,
+rcContext *,
+rcContour *,
+rcContourSet *,
+rcHeightfield *,
+rcHeightfieldLayer *,
+rcHeightfieldLayerSet *,
+rcIntArray *,
+rcMeshLoaderObj *,
+rcPolyMesh *,
+rcPolyMeshDetail *,
+rcSpan *,
+rcSpanPool *,
+Sample *,
+Sample_Debug *,
+Sample_SoloMesh *,
+Sample_TempObstacles *,
+Sample_TileMesh *,
+SampleTool *,
+SampleToolState *,
+SlideShow *,
+TestCase *,
+ValueHistory *
+ "int /**< {$*1_ltype} */";
 
 //%typemap(astype) dtCrowdAgentParams*, dtCrowdAgentParams& "Object /**< dtCrowdAgentParams */";
 //%typemap(astype) dtCrowdAgent*, dtCrowdAgent& "Object /**< dtCrowdAgent */";
@@ -1070,6 +1164,9 @@ void getTiles() {
 
 %apply (int&) {
 	(dtPolyRef*),
+	(dtPathQueueRef*),
+	(dtObstacleRef*),
+	(dtCompressedTileRef*),
 	(int* tx),
 	(int* ty)
 };

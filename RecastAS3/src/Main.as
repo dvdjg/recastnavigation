@@ -270,8 +270,7 @@ package
 		{
 			debugSprite.graphics.clear();
 			//get the trianges and verties of the object file
-			var meshLoader:rcMeshLoaderObj = new rcMeshLoaderObj();
-			meshLoader.swigCPtr = recastManager.geomerty.getMesh();
+			var meshLoader:rcMeshLoaderObj = recastManager.geomerty.getMesh();
 			
 			var tris:Vector.<int> = new Vector.<int>;
 			meshLoader.getTrisVector(tris);
