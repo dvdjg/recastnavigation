@@ -52,7 +52,7 @@
   </includeLibraries>
   <!-- SWC Libraries -->
   <libraryPaths>
-    <element path="C:\Crossbridge\samples\14_RecastAndDetourLast\recastnavigation\AS3\build\Recast.swc" />
+    <element path="C:\Crossbridge\samples\14_RecastAndDetour\recastnavigation\AS3\build\Recast.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

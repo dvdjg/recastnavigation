@@ -128,16 +128,16 @@ public:
 
 	/// Starts the specified performance timer.
 	///  @param	label	The category of timer.
-	inline void startTimer(const rcTimerLabel label) { if (m_timerEnabled) doStartTimer(label); }
+    inline void startTimer(const rcTimerLabel label_) { if (m_timerEnabled) doStartTimer(label_); }
 
 	/// Stops the specified performance timer.
 	///  @param	label	The category of the timer.
-	inline void stopTimer(const rcTimerLabel label) { if (m_timerEnabled) doStopTimer(label); }
+    inline void stopTimer(const rcTimerLabel label_) { if (m_timerEnabled) doStopTimer(label_); }
 
 	/// Returns the total accumulated time of the specified performance timer.
 	///  @param	label	The category of the timer.
 	///  @return The accumulated time of the timer, or -1 if timers are disabled or the timer has never been started.
-	inline int getAccumulatedTime(const rcTimerLabel label) const { return m_timerEnabled ? doGetAccumulatedTime(label) : -1; }
+    inline int getAccumulatedTime(const rcTimerLabel label_) const { return m_timerEnabled ? doGetAccumulatedTime(label_) : -1; }
 
 protected:
 

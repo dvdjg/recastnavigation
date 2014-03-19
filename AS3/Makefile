@@ -50,10 +50,10 @@ build/Recast_wrap.o: recast.i $(PROJECTS) Makefile
 	swig -as3 -package org.recastnavigation -c++ $(ALL_INCS) -module Recast recast.i 2>&1 | tee build/swig.log
 	#cp Recast.as Recastt.as
 	# Avoid the use of pointers when objects can be used
-	sed -rn '1h;1!H;$${;g;s@\):int /\*\*< \{(\w+)\} \*/( +\{)[^\}]*return ([^\n]+)@\): \1\2\n\t\tvar _ret_:\1 = new \1;\n\t\t_ret_.swigCPtr = \3\n\t\treturn _ret_;@g;p;}' Recast.as > RecastTmp.as
-	sed -r 's@([(,]) ?(\w+):int /\*\*< \{(\w+)\} \*/(.+)@\1\2Ref:\3\4\n\t\tvar \2:int = \2Ref.swigCPtr;@g' RecastTmp.as > Recast.as
-	sed -r 's@([(,]) ?(\w+):int /\*\*< \{(\w+)\} \*/(.+)@\1\2Ref:\3\4\n\t\tvar \2:int = \2Ref.swigCPtr;@g' Recast.as > RecastTmp.as
-	sed -r 's@([(,]) ?(\w+):int /\*\*< \{(\w+)\} \*/(.+)@\1\2Ref:\3\4\n\t\tvar \2:int = \2Ref.swigCPtr;@g' RecastTmp.as > Recast.as
+	sed -rn '1h;1!H;$${;g;s@\):int /\*\*< \{(\w+)\} \*/( +\{)[^\}]*return ([^\n]+)@\): \1\2\n\t\tvar _retPtr_:int = \3\n\t\tif(!_retPtr_)\n\t\t\treturn null;\n\t\tvar _ret_:\1 = new \1;\n\t\t_ret_.swigCPtr = _retPtr_;\n\t\treturn _ret_;@g;p;}' Recast.as > RecastTmp.as
+	sed -r 's@([(,]) ?(\w+):int /\*\*< \{(\w+)\} \*/(.+)@\1\2Ref:\3\4\n\t\tvar \2:int = \2Ref ? \2Ref.swigCPtr : 0;@g' RecastTmp.as > Recast.as
+	sed -r 's@([(,]) ?(\w+):int /\*\*< \{(\w+)\} \*/(.+)@\1\2Ref:\3\4\n\t\tvar \2:int = \2Ref ? \2Ref.swigCPtr : 0;@g' Recast.as > RecastTmp.as
+	sed -r 's@([(,]) ?(\w+):int /\*\*< \{(\w+)\} \*/(.+)@\1\2Ref:\3\4\n\t\tvar \2:int = \2Ref ? \2Ref.swigCPtr : 0;@g' RecastTmp.as > Recast.as
 	mv Recast_wrap.cxx build
 	mv Recast.as build
 	

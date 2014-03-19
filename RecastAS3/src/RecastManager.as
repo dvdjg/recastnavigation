@@ -114,13 +114,15 @@ package
 			{
 				if (crowd.getAgentActiveState(nAgent))
 				{
-					_agentPtr.swigCPtr = crowd.getAgent(nAgent);
-					_agentParamsPtr.swigCPtr = _agentPtr.params;
-					var rad:Number = _agentParamsPtr.radius;
+					var agentPtr:dtCrowdAgent = crowd.getAgent(nAgent);
+					// _agentPtr.swigCPtr = agentPtr.swigCPtr;
+					var agentParamsPtr:dtCrowdAgentParams = agentPtr.params;
+					//_agentParamsPtr.swigCPtr = agentPtr.params;
+					var rad:Number = agentParamsPtr.radius;
 					var pos:Object = crowd.getAgentPosition(nAgent);
 					var vel:Object = crowd.getAgentActualVelocity(nAgent);
 					var agent:Object = { i:nAgent, p:pos, v:vel, r:rad, 
-						targetRef:_agentPtr.targetRef, targetPos:_agentPtr.targetPos};
+						targetRef:agentPtr.targetRef, targetPos:agentPtr.targetPos};
 					capturedStates.push(agent);
 				}
 			}
@@ -129,14 +131,14 @@ package
 		
 		public function restoreStates():void
 		{
-			_agentParams.copyFrom(_agentParams.swigCPtr);
+			_agentParams.copyFrom(_agentParams); // .swigCPtr
 			crowd.removeAllAgents();
 			var totalAgents:int = capturedStates.length;
 			for (var nAgent:int = 0; nAgent < totalAgents; ++nAgent)
 			{
 				var agent:Object = capturedStates[nAgent];
 				_agentParams.radius = agent.r;
-				crowd.addAgent(agent.p, _agentParams.swigCPtr, agent.i);
+				crowd.addAgent(agent.p, _agentParams, agent.i); // .swigCPtr
 				crowd.setAgentActualVelocity(agent.i, agent.v);
 				if (agent.targetRef) {
 					crowd.requestMoveTarget(agent.i, agent.targetRef, agent.targetPos);
@@ -155,7 +157,7 @@ package
 					restoreState = false;
 				}
 				//crowd.update(deltaTime, crowdDebugPtr);
-				crowd.updateComputeDesiredPosition(deltaTime, crowdDebugPtr);
+				crowd.updateComputeDesiredPosition(deltaTime, null); // crowdDebugPtr
 				//crowd.updateHandleCollisions();
 				crowd.updateReinsertToNavmesh(deltaTime);
 				
@@ -191,7 +193,7 @@ package
 			//updateFlags |= Recast.DT_CROWD_SEPARATION;
 			_agentParams.updateFlags = updateFlags; //since updateFlags is stored as a char in recast, need to save the string as the char code value
 			
-			var idx:int = crowd.addAgent(navPosition, _agentParams.swigCPtr, -1 );
+			var idx:int = crowd.addAgent(navPosition, _agentParams, -1 ); // .swigCPtr
 			//_params.destroy();
 			
 			var pos:Object = getAgentPos(idx);
