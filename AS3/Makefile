@@ -49,6 +49,7 @@ build/Recast_wrap.o: recast.i $(PROJECTS) Makefile
 	mkdir -p build
 	swig -as3 -package org.recastnavigation -c++ $(ALL_INCS) -module Recast recast.i 2>&1 | tee build/swig.log
 	#cp Recast.as Recastt.as
+	# Use the ObjectPool
 	sed -r 's@(import flash.utils.ByteArray;)@\1\nimport org.dave.objects.ObjectPool;\n\n@g' Recast.as > RecastTmp.as
 	sed -r 's@var ([^_]\w+):?\w* = new (\w+)\(\)@var \1:\2 = ObjectPool.getInstance(\2).getNew()@g' RecastTmp.as > Recast.as
 	

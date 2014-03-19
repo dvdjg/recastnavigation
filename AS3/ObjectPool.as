@@ -6,7 +6,7 @@ package org.dave.objects
 	public class ObjectPool
 	{
 		private static var _instances:Object = new Object;
-		//private static var _instance:ObjectPool;
+		private static var _reusedCount:uint = 0;
 
 		protected var _objects:Array;
 		protected var _objectClass:Class;
@@ -37,6 +37,7 @@ package org.dave.objects
 			for (var className:String in _instances) {
 				_instances[className].releaseObjects();
 			}
+			_reusedCount = 0;
 		}
 	
 		public static function get countAllObjects():int
@@ -48,14 +49,21 @@ package org.dave.objects
 			}
 			return ret;
 		}
-	
+		
+		public static function get reusedCount():uint
+		{
+			return _reusedCount;
+		}
+		
 		public function getNew():*
 		{
 			var object:* = null;
-			if (_objects.length > 0)
-				object = _objects.pop();
-			else
+			if (_objects.length > 0) {
+				object = _objects.pop(); // LIFO
+				++_reusedCount; // Count the number of times a new allocation has been avoided.
+			} else {
 				object = new _objectClass();
+			}
 			return object;
 		}
 	
@@ -63,7 +71,7 @@ package org.dave.objects
 		{
 			if(bDispose)
 				dispose(oldObject);
-			_objects.push(oldObject);
+			_objects.push(oldObject); // LIFO
 		}
 		
 		public function releaseObjects():void

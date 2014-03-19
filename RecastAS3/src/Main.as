@@ -181,7 +181,7 @@ package
 				var count:int = ObjectPool.countAllObjects;
 				recastManager.moveAgentNear(int(idx), scenePosition);
 				trace("onMouseRightClick: ", int(idx), "scenePosition={", scenePosition.x, scenePosition.z, "}");
-				trace("Objects in pool=" + count);
+				trace("Objects in pool=" + count+ " Reused=" + ObjectPool.reusedCount);
 			}
 		}
 		
