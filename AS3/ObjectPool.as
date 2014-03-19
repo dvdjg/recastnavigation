@@ -59,9 +59,11 @@ package org.dave.objects
 			return object;
 		}
 	
-		public function disposeObject(OldObject:Object):void
+		public function reuseObject(oldObject:Object, bDispose:Boolean = false):void
 		{
-			_objects.push(OldObject);
+			if(bDispose)
+				dispose(oldObject);
+			_objects.push(oldObject);
 		}
 		
 		public function releaseObjects():void
@@ -73,10 +75,10 @@ package org.dave.objects
 		{
 			return _objects.length;
 		}
-		/**
-		public static function DisposeOf(obj:*):void
+		
+		public static function dispose(obj:*):*
         {
-            if(obj == null) return;
+            if(obj == null) return obj;
             
             var i:int;
             var child:Object;
@@ -92,8 +94,7 @@ package org.dave.objects
                     obj[i] = null;
                 }
                 if(obj.fixed == false) obj.length = 0;
-                obj = null;
-                return;
+                return obj;
             }
             if(className == "flash.utils::Dictionary")
             {
@@ -147,9 +148,10 @@ package org.dave.objects
                 obj.filters = [];
             if(obj.hasOwnProperty("dispose"))
                 obj.dispose();
+			if(obj.hasOwnProperty("clear"))
+                obj.clear();
 
-            obj = null;
+            return obj;
         }		
-		*/
 	}
 }

@@ -271,8 +271,8 @@ package
 			ret.x = pos.x * scale.x;
 			ret.y =  pos.y * scale.y;
 			ret.z = pos.z * scale.z;
-			poolObject.disposeObject(desired);
-			poolObject.disposeObject(pos);
+			poolObject.reuseObject(desired);
+			poolObject.reuseObject(pos);
 			return ret;
 		}
 		

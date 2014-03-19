@@ -266,7 +266,7 @@ package
 				//trace("agent at:",CModule.readFloat( agent.npos ), CModule.readFloat( agent.npos + 4 ), CModule.readFloat( agent.npos + 8));
 				agentObjectsByAgendIdx[idx].x = pos.x;
 				agentObjectsByAgendIdx[idx].y = pos.z;
-				recastManager.poolObject.disposeObject(pos);
+				recastManager.poolObject.reuseObject(pos);
 			}
 		}
 		
