@@ -178,8 +178,10 @@ package
 			//todo - change this to a vector or use domain memory to speed this up.  for each in a dictionary is very slow when called every frame!
 			for (var idx:Object in agentObjectsByAgendIdx) //iteratore through each object key
 			{
+				var count:int = ObjectPool.countAllObjects;
 				recastManager.moveAgentNear(int(idx), scenePosition);
 				trace("onMouseRightClick: ", int(idx), "scenePosition={", scenePosition.x, scenePosition.z, "}");
+				trace("Objects in pool=" + count);
 			}
 		}
 		
