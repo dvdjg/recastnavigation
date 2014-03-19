@@ -7,9 +7,11 @@ package org.dave.objects
 	{
 		private static var _instances:Object = new Object;
 		private static var _reusedCount:uint = 0;
+		private static var _newsCount:uint = 0;
 
 		protected var _objects:Array;
 		protected var _objectClass:Class;
+		protected var _poolObject:ObjectPool = getInstance(Object);
 	
 		public function ObjectPool(objectClass:Class)
 		{
@@ -21,11 +23,24 @@ package org.dave.objects
 			_objects = new Array();
 		}
 
+		public static function get objectPoolInstance():ObjectPool
+		{
+			return _poolObject;
+		}
+		
 		public static function getInstance(objectClass:Class):ObjectPool
 		{
 			var qualifiedName:String = getQualifiedClassName(objectClass);
 			if(!_instances[qualifiedName]){
 				_instances[qualifiedName] = new ObjectPool(objectClass);
+			} 
+			return _instances[qualifiedName];
+		}
+
+		private static function getInstanceFromName(qualifiedName:String):ObjectPool
+		{
+			if(!_instances[qualifiedName]){
+				_instances[qualifiedName] = new ObjectPool(Class(getDefinitionByName(qualifiedName)));
 			} 
 			return _instances[qualifiedName];
 		}
@@ -38,6 +53,7 @@ package org.dave.objects
 				_instances[className].releaseObjects();
 			}
 			_reusedCount = 0;
+			_newsCount = 0;
 		}
 	
 		public static function get countAllObjects():int
@@ -55,6 +71,11 @@ package org.dave.objects
 			return _reusedCount;
 		}
 		
+		public static function get newsCount():uint
+		{
+			return _newsCount;
+		}
+		
 		public function getNew():*
 		{
 			var object:* = null;
@@ -63,11 +84,18 @@ package org.dave.objects
 				++_reusedCount; // Count the number of times a new allocation has been avoided.
 			} else {
 				object = new _objectClass();
+				++_newsCount;
 			}
 			return object;
 		}
 	
-		public function reuseObject(oldObject:Object, bDispose:Boolean = false):void
+		public static function reuse(oldObject:*, bDispose:Boolean = false):void
+		{
+			getInstanceFromName(getQualifiedClassName(oldObject)).reuseObject(oldObject, bDispose);
+			//getInstance(getClass(oldObject)).reuseObject(oldObject, bDispose);
+		}
+		
+		public function reuseObject(oldObject:*, bDispose:Boolean = false):void
 		{
 			if(bDispose)
 				dispose(oldObject);
@@ -98,7 +126,8 @@ package org.dave.objects
                 
                 for(i = 0; i < len; i++)
                 {
-                    cs.DisposeOf(obj[i]);
+                    //dispose(obj[i]);
+					reuse(obj[i], true);
                     obj[i] = null;
                 }
                 if(obj.fixed == false) obj.length = 0;
@@ -116,7 +145,8 @@ package org.dave.objects
                 var vLen:int = idVec.length;
                 for(var vi:int = 0; vi<vLen; vi++)
                 {
-                    cs.DisposeOf( obj[ idVec[vi] ]);
+                    //dispose( obj[ idVec[vi] ]);
+					reuse( obj[ idVec[vi] ], true);
                     delete obj[ idVec[vi] ];
                     idVec[vi] = null;
                 }
@@ -131,10 +161,11 @@ package org.dave.objects
                 {
                     child = obj.getChildAt(0);
                     if(child.hasOwnProperty("destroy")) 
-                        cs.DisposeOf(child);
+                        dispose(child);
                     if(child.hasOwnProperty("parent") && child.parent != null) 
                         child.parent.removeChild(child);
-                    
+					
+                    reuse(child);
                     child = null;
                 }
             }
@@ -160,6 +191,10 @@ package org.dave.objects
                 obj.clear();
 
             return obj;
-        }		
+        }
+		
+		public static function getClass(obj:Object):Class {
+			return Class(getDefinitionByName(getQualifiedClassName(obj)));
+		}
 	}
 }

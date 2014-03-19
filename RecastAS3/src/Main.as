@@ -181,7 +181,7 @@ package
 				var count:int = ObjectPool.countAllObjects;
 				recastManager.moveAgentNear(int(idx), scenePosition);
 				trace("onMouseRightClick: ", int(idx), "scenePosition={", scenePosition.x, scenePosition.z, "}");
-				trace("Objects in pool=" + count+ " Reused=" + ObjectPool.reusedCount);
+				trace("Objects in pool=" + count + " News=" + ObjectPool.newsCount + " Reused=" + ObjectPool.reusedCount);
 			}
 		}
 		
@@ -266,7 +266,7 @@ package
 				//trace("agent at:",CModule.readFloat( agent.npos ), CModule.readFloat( agent.npos + 4 ), CModule.readFloat( agent.npos + 8));
 				agentObjectsByAgendIdx[idx].x = pos.x;
 				agentObjectsByAgendIdx[idx].y = pos.z;
-				recastManager.poolObject.reuseObject(pos);
+				ObjectPool.objectPoolInstance.reuseObject(pos);
 			}
 		}
 		
@@ -282,19 +282,28 @@ package
 			
 			var nVerts:int = meshLoader.getVertCount();
 			
-			var verts:Vector.<Point> = new Vector.<Point>();
+			var verts:Vector.<Point> = ObjectPool.getInstance(Vector.<Point>()).getNew();
+			//var verts:Vector.<Point> = new Vector.<Point>();
 			var p:Point;
 			
 			for (var i:int = 0; i < nVerts; i++)
 			{
 				var vert:Object = meshLoader.getVertex(i);
-				p = new Point(vert.x, vert.z);
+				p = ObjectPool.getInstance(Point).getNew();
+				p.x = vert.x;
+				p.y = vert.z;
+				//p = new Point(vert.x, vert.z);
 				verts.push(p);
+				ObjectPool.reuse(vert);
 			}
+			
 			debugDrawMesh(tris, verts); //try obj mesh
 			//now draw the actual nav mesh
 			var tiles:Array = getTiles(recastManager.sample.swigCPtr);
 			drawNavMesh(tiles);
+			
+			ObjectPool.reuse(verts);
+			ObjectPool.reuse(meshLoader);
 		}
 		
 		//draw the obj mesh that the nav-mesh is generated from
