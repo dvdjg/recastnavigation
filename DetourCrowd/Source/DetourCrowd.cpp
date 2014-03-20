@@ -46,11 +46,6 @@ void dtFreeCrowd(dtCrowd* ptr)
 	dtFree(ptr);
 }
 
-void dtCrowdAgentParams::copyFrom(const dtCrowdAgentParams * source)
-{
-    memcpy(this, source, sizeof(dtCrowdAgentParams));
-}
-
 static const int MAX_ITERS_PER_UPDATE = 100;
 
 static const int MAX_PATHQUEUE_NODES = 4096;

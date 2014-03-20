@@ -67,7 +67,10 @@ enum CrowdAgentState
 /// @ingroup crowd
 struct dtCrowdAgentParams
 {
-	double radius;						///< Agent radius. [Limit: >= 0]
+    /** Helper copy operator */
+    void copyFrom(const dtCrowdAgentParams * source) { *this = *source; }
+
+    double radius;						///< Agent radius. [Limit: >= 0]
 	double height;						///< Agent height. [Limit: > 0]
 	double maxAcceleration;				///< Maximum allowed acceleration. [Limit: >= 0]
 	double maxSpeed;						///< Maximum allowed speed. [Limit: >= 0]
@@ -90,7 +93,6 @@ struct dtCrowdAgentParams
 	/// User defined data attached to the agent.
 	void* userData;
 
-    void copyFrom(const dtCrowdAgentParams * source);
 };
 
 enum MoveRequestState

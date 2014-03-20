@@ -197,7 +197,7 @@ package
 			height:Number = 2.0, 
 			maxAccel:Number = 8.5, 
 			maxSpeed:Number = 4.5, 
-			collisionQueryRange:Number = 10, 
+			collisionQueryRange:Number = 3, 
 			pathOptimizationRange:Number=30 ):int
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
@@ -207,7 +207,7 @@ package
 			_agentParams.maxSpeed = maxSpeed;
 			_agentParams.collisionQueryRange = collisionQueryRange;
 			_agentParams.pathOptimizationRange = pathOptimizationRange;
-			_agentParams.separationWeight = 4.0;
+			_agentParams.separationWeight = 8;
 			_agentParams.obstacleAvoidanceType = 3;
 			
 			var updateFlags:uint = 0;

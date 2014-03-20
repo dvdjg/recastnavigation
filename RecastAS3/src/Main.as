@@ -206,8 +206,8 @@ package
 		{
 			var scenePosition:Vector3D = new Vector3D(world.mouseX, WORLD_Z * SCALE, world.mouseY);
 			
-			var agentAcceleration:Number = MAX_AGENT_RADIUS - agentRadius; //make it the larger you are, the slower you are
-			var agentMaxSpeed:Number = (MAX_AGENT_RADIUS - agentRadius) / 2; //make it the larger you are, the slower you are
+			var agentAcceleration:Number = 10 + MAX_AGENT_RADIUS - agentRadius; //make it the larger you are, the slower you are
+			var agentMaxSpeed:Number = 10 + (MAX_AGENT_RADIUS - agentRadius) / 2; //make it the larger you are, the slower you are
 			var idx:int = recastManager.addAgentNear(scenePosition, agentRadius, 20, agentAcceleration, agentMaxSpeed);
 			
 			var s:Sprite = new Sprite();
