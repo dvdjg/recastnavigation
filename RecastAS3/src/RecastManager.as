@@ -57,8 +57,7 @@ package
 		
 		public function init():void
 		{
-			var agentParamsDef:dtCrowdAgentParams = dtCrowdAgentParams.create();
-			_agentParamsArray.push(agentParamsDef);
+
 		}
 
 		public function destroy():void
@@ -107,6 +106,10 @@ package
 			
 			var oid:int = addObstacle(new Vector3D(22, 33, 44), 55, 11);
 			initCrowd();
+			
+			var agentParamsDef:dtCrowdAgentParams = dtCrowdAgentParams.create();
+			_agentParamsArray.push(agentParamsDef);
+			crowd.setAgentDynamic(_mainAgentId, true);
 		}
 		
 		protected function initCrowd():void
@@ -182,7 +185,7 @@ package
 			{
 				var agent:Object = capturedStates[nAgent];
 				_agentParams.radius = agent.r;
-				crowd.addAgent(agent.p, _agentParams, agent.i);
+				crowd.addAgent(agent.p, _agentParams, agent.i, false);
 				crowd.setAgentActualVelocity(agent.i, agent.v);
 				if (agent.targetRef) {
 					crowd.requestMoveTarget(agent.i, agent.targetRef, agent.targetPos);
@@ -193,8 +196,8 @@ package
 			_agentParams.destroy();
 		}
 		
-		var mainPos:Object = { x:0, y:0, z:0 };
-		var pos:Object = { x:0, y:0, z:0 };
+		private var mainPos:Object = { x:0, y:0, z:0 };
+		private var pos:Object = { x:0, y:0, z:0 };
 		public function advanceTime(deltaTime:Number):void
 		{
 			if( crowd ) {
@@ -248,7 +251,7 @@ package
 			_agentParams.height  = height / scale.y;
 			_agentParams.maxAcceleration = maxAccel;
 			_agentParams.maxSpeed = maxSpeed;
-			_agentParams.collisionQueryRange = collisionQueryRange;
+			_agentParams.collisionQueryRange = collisionQueryRange + _agentParams.radius;
 			_agentParams.pathOptimizationRange = pathOptimizationRange;
 			_agentParams.separationWeight = 20;
 			_agentParams.obstacleAvoidanceType = 3; // High (66)
@@ -262,7 +265,7 @@ package
 			updateFlags |= Recast.DT_CROWD_SEPARATION;
 			_agentParams.updateFlags = updateFlags; //since updateFlags is stored as a char in recast, need to save the string as the char code value
 			
-			var idx:int = crowd.addAgent(navPosition, _agentParams, -1 );
+			var idx:int = crowd.addAgent(navPosition, _agentParams, -1, false );
 			
 			var navquery:dtNavMeshQuery  = sample.getNavMeshQuery();
 

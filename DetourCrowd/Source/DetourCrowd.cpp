@@ -509,6 +509,27 @@ const double* dtCrowd::getAgentActualVelocity(const int idx) const
     return m_agents[idx].vel;
 }
 
+CrowdAgentState dtCrowd::getAgentState(const int idx) const
+{
+    return (CrowdAgentState) m_agents[idx].state;
+}
+
+void dtCrowd::setAgentDynamic(const int idx, bool bDynamic)
+{
+    unsigned char &state = m_agents[idx].state;
+    if(bDynamic) {
+        if(state == DT_CROWDAGENT_STATE_INVALID)
+            state = DT_CROWDAGENT_STATE_INVALID_DYNAMIC;
+        else if(state == DT_CROWDAGENT_STATE_WALKING || state == DT_CROWDAGENT_STATE_OFFMESH)
+            state = DT_CROWDAGENT_STATE_WALKING_DYNAMIC;
+    } else {
+        if(state == DT_CROWDAGENT_STATE_INVALID_DYNAMIC)
+            state = DT_CROWDAGENT_STATE_INVALID;
+        else if(state == DT_CROWDAGENT_STATE_WALKING_DYNAMIC)
+            state = DT_CROWDAGENT_STATE_WALKING;
+    }
+}
+
 void dtCrowd::setAgentPosition(const int idx, const double* v)
 {
     dtVcopy(m_agents[idx].npos, v);
@@ -535,7 +556,7 @@ void dtCrowd::updateAgentParameters(const int idx, const dtCrowdAgentParams* par
 /// @par
 ///
 /// The agent's position will be constrained to the surface of the navigation mesh.
-int dtCrowd::addAgent(const double* pos, const dtCrowdAgentParams* params, int forceIndex)
+int dtCrowd::addAgent(const double* pos, const dtCrowdAgentParams* params, int forceIndex, bool bDynamic)
 {
 	// Find empty slot.
 	int idx = -1;
@@ -585,10 +606,9 @@ int dtCrowd::addAgent(const double* pos, const dtCrowdAgentParams* params, int f
 	ag->desiredSpeed = 0;
 
     if (ref) {
-        //printf("dtCrowd::addAgent findNearestPoly() Walking. (%lf, %lf, %lf)\n", nearest[0],  nearest[1],  nearest[2]); // djg
-        ag->state = DT_CROWDAGENT_STATE_WALKING;
+        ag->state = bDynamic ? DT_CROWDAGENT_STATE_WALKING_DYNAMIC : DT_CROWDAGENT_STATE_WALKING;
     } else {
-		ag->state = DT_CROWDAGENT_STATE_INVALID;
+        ag->state = bDynamic ? DT_CROWDAGENT_STATE_INVALID_DYNAMIC : DT_CROWDAGENT_STATE_INVALID;
     }
 
 	ag->targetState = DT_CROWDAGENT_TARGET_NONE;
@@ -1011,7 +1031,10 @@ void dtCrowd::checkPathValidity(dtCrowdAgent** agents, const int nagents, const 
 				// Could not find location in navmesh, set state to invalid.
 				ag->corridor.reset(0, agentPos);
 				ag->boundary.reset();
-				ag->state = DT_CROWDAGENT_STATE_INVALID;
+                if (ag->state == DT_CROWDAGENT_STATE_WALKING_DYNAMIC || ag->state == DT_CROWDAGENT_STATE_INVALID_DYNAMIC)
+                    ag->state = DT_CROWDAGENT_STATE_INVALID_DYNAMIC;
+                else
+                    ag->state = DT_CROWDAGENT_STATE_INVALID;
 				continue;
 			}
 
@@ -1083,7 +1106,7 @@ void dtCrowd::updateReinsertToNavmesh(const double dt)
     for (int i = 0; i < nagents; ++i)
     {
         dtCrowdAgent* ag = agents[i];
-        if (ag->state != DT_CROWDAGENT_STATE_WALKING)
+        if (ag->state != DT_CROWDAGENT_STATE_WALKING && ag->state != DT_CROWDAGENT_STATE_WALKING_DYNAMIC)
             continue;
 
         // Move along navmesh.
@@ -1117,7 +1140,10 @@ void dtCrowd::updateReinsertToNavmesh(const double dt)
             // Reset animation
             anim->active = 0;
             // Prepare agent for walking.
-            ag->state = DT_CROWDAGENT_STATE_WALKING;
+            if (ag->state == DT_CROWDAGENT_STATE_WALKING_DYNAMIC || ag->state == DT_CROWDAGENT_STATE_INVALID_DYNAMIC)
+                ag->state = DT_CROWDAGENT_STATE_WALKING_DYNAMIC;
+            else
+                ag->state = DT_CROWDAGENT_STATE_WALKING;
             continue;
         }
 
@@ -1394,8 +1420,8 @@ void dtCrowd::updateComputeDesiredPosition(const double dt, dtCrowdAgentDebugInf
             {
                 const dtCrowdAgent* nei = &m_agents[ag->neis[j].idx];
 
+                // The distance to the neighbour limit (not its center)
                 double separationDist = ag->params.collisionQueryRange
-                        + ag->params.radius
                         + nei->params.radius;
                 double separationDisSqt = dtSqr(separationDist);
                 double separationWeight = ag->params.separationWeight;

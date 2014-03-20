@@ -287,7 +287,7 @@ package
 			}
 		}
 		
-		var verts:Vector.<Point> = new Vector.<Point>();
+		private var verts:Vector.<Point> = new Vector.<Point>();
 		protected function debugRender():void
 		{
 			debugSprite.graphics.clear();

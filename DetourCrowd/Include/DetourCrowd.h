@@ -61,9 +61,11 @@ struct dtCrowdNeighbour
 /// @ingroup crowd
 enum CrowdAgentState
 {
-	DT_CROWDAGENT_STATE_INVALID,		///< The agent is not in a valid state.
-	DT_CROWDAGENT_STATE_WALKING,		///< The agent is traversing a normal navigation mesh polygon.
-	DT_CROWDAGENT_STATE_OFFMESH,		///< The agent is traversing an off-mesh connection.
+    DT_CROWDAGENT_STATE_INVALID = 0x01,         ///< The agent is not in a valid state.
+    DT_CROWDAGENT_STATE_WALKING = 0x02,         ///< The agent is traversing a normal navigation mesh polygon.
+    DT_CROWDAGENT_STATE_OFFMESH = 0x04,         ///< The agent is traversing an off-mesh connection.
+    DT_CROWDAGENT_STATE_WALKING_DYNAMIC = 0x08,	///< The agent is externally controlled.
+    DT_CROWDAGENT_STATE_INVALID_DYNAMIC = 0x10,	///< The agent is invalid and externally controlled.
 };
 
 /// Configuration parameters for a crowd agent.
@@ -280,7 +282,9 @@ public:
     const double* getAgentPosition(const int idx) const;
     const double* getAgentDesiredVelocity(const int idx) const;
     const double* getAgentActualVelocity(const int idx) const;
+    CrowdAgentState getAgentState(const int idx) const;
 
+    void setAgentDynamic(const int idx, bool bDynamic = true);
     void setAgentPosition(const int idx, const double* v);
     void setAgentDesiredVelocity(const int idx, const double* v);
     void setAgentActualVelocity(const int idx, const double* v);
@@ -293,7 +297,7 @@ public:
 	///  @param[in]		pos		The requested position of the agent. [(x, y, z)]
 	///  @param[in]		params	The configutation of the agent.
 	/// @return The index of the agent in the agent pool. Or -1 if the agent could not be added.
-    int addAgent(const double* pos, const dtCrowdAgentParams* params, int forceIndex = -1);
+    int addAgent(const double* pos, const dtCrowdAgentParams* params, int forceIndex = -1, bool bDynamic = false);
 
 	/// Updates the specified agent's configuration.
 	///  @param[in]		idx		The agent index. [Limits: 0 <= value < #getAgentCount()]
