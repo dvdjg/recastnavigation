@@ -201,6 +201,8 @@ package org.dave.objects
         }
 		
 		public static function getClass(obj:Object):Class {
+			// If the object is not a Proxy subclass or the basic type int, it could be used:
+			// var myClass:Class = Object(myObj).constructor;
 			return Class(getDefinitionByName(getQualifiedClassName(obj)));
 		}
 	}

@@ -45,7 +45,10 @@ package
 					m_detailSampleMaxError:Number = 1.0,
 					m_tileSize:int = 48,
 					m_maxObstacles:int = 1024;
-		
+		public var _mainAgentId:int = -1;
+		public var _mainAgentX:Number;
+		public var _mainAgentY:Number;
+
 		protected var _agentPtr:dtCrowdAgent = new dtCrowdAgent;
 		protected var _agentParamsPtr:dtCrowdAgentParams = new dtCrowdAgentParams;
 		protected var _agentParams:dtCrowdAgentParams = dtCrowdAgentParams.create();
@@ -121,7 +124,7 @@ package
 					var pos:Object = crowd.getAgentPosition(nAgent);
 					var vel:Object = crowd.getAgentActualVelocity(nAgent);
 					var agent:Object = { i:nAgent, p:pos, v:vel, r:rad, 
-						targetRef:agentPtr.targetRef, targetPos:agentPtr.targetPos, maxAcceleration:agentParamsPtr.maxAcceleration,  maxSpeed:agentParamsPtr.maxSpeed};
+						targetRef:agentPtr.targetRef, targetPos:agentPtr.targetPos};
 					capturedStates.push(agent);
 				}
 			}
@@ -137,8 +140,6 @@ package
 			{
 				var agent:Object = capturedStates[nAgent];
 				_agentParams.radius = agent.r;
-				_agentParams.maxAcceleration = agent.maxAcceleration;
-				_agentParams.maxSpeed = agent.maxSpeed;
 				crowd.addAgent(agent.p, _agentParams, agent.i);
 				crowd.setAgentActualVelocity(agent.i, agent.v);
 				if (agent.targetRef) {
@@ -160,6 +161,13 @@ package
 				//crowd.update(deltaTime, crowdDebugPtr);
 				crowd.updateComputeDesiredPosition(deltaTime, null); // crowdDebugPtr
 				//crowd.updateHandleCollisions();
+				var pos:Object = ObjectPool.objectPoolInstance.getNew();
+				pos.x = _mainAgentX  / scale.x;
+				pos.y = -22 / scale.y;
+				pos.z = _mainAgentY / scale.z;
+				crowd.setAgentPosition(_mainAgentId, pos);
+				ObjectPool.objectPoolInstance.reuseObject(pos);
+				
 				crowd.updateReinsertToNavmesh(deltaTime);
 				
 				if (captureState) {
@@ -227,20 +235,22 @@ package
 			var navquery:dtNavMeshQuery  = sample.getNavMeshQuery();
 			
 			var targetRef:Object = {};
-			var targetPos:Object = {};
+			var targetPos:Object = ObjectPool.objectPoolInstance.getNew();
 			var queryExtents:Object = crowd.getQueryExtents();
 			
 			var status:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.getFilter(), targetRef, targetPos);
 		
 			if ( targetRef.value != 0)
-				crowd.requestMoveTarget(idx,targetRef.value, targetPos);
-			
+				crowd.requestMoveTarget(idx, targetRef.value, targetPos);
+				
+			ObjectPool.objectPoolInstance.reuseObject(queryExtents);
+			ObjectPool.objectPoolInstance.reuseObject(targetPos);
 		}
 		
 		public function addObstacle(scenePosition:Vector3D, obstacleRadius:Number, obstacleHeight:Number):int
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
-			var obj:Object = sample.getBoundsMax();
+			//var obj:Object = sample.getBoundsMax();
 			var obstacleRef:int;
 			//obstacleRef = sample.addTempObstacleDumb(obstacleRadius / scale.x, obstacleHeight * scale.y);
 			obstacleRef = sample.addTempObstacle(navPosition, obstacleRadius / scale.x, obstacleHeight * scale.y);
@@ -251,8 +261,6 @@ package
 		{
 			sample.removeTempObstacleById(oid);
 		}
-		
-		
 		
 		public function get geomerty():InputGeom
 		{
@@ -271,7 +279,7 @@ package
 			var pos:Object = crowd.getAgentPosition(idx);
 			var ret:Object = poolObject.getNew();
 			ret.x = pos.x * scale.x;
-			ret.y =  pos.y * scale.y;
+			ret.y = pos.y * scale.y;
 			ret.z = pos.z * scale.z;
 			ObjectPool.objectPoolInstance.reuseObject(desired);
 			ObjectPool.objectPoolInstance.reuseObject(pos);

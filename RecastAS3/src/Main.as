@@ -11,7 +11,6 @@ package
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
-	import flash.utils.getQualifiedClassName;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import org.dave.objects.ObjectPool;
@@ -91,6 +90,7 @@ package
 			initDebugRenders();
 			initWorld();
 			initListeners();
+			recastManager._mainAgentId = createAgent(15);
 		}
 		
 		private function initRecast():void
@@ -141,6 +141,7 @@ package
 			stage.addEventListener(MouseEvent.CLICK, onMouseClick);
 			stage.addEventListener(MouseEvent.RIGHT_CLICK, onMouseRightClick);
 			stage.addEventListener(MouseEvent.MIDDLE_CLICK, onMiddleClick);
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyPressedDown);
 		}
 		
@@ -179,18 +180,32 @@ package
 			//todo - change this to a vector or use domain memory to speed this up.  for each in a dictionary is very slow when called every frame!
 			for (var idx:Object in agentObjectsByAgendIdx) //iteratore through each object key
 			{
+				var i:int = int(idx);
+				if (recastManager._mainAgentId == i)
+					continue;
 				var count:int = ObjectPool.countAllObjects;
-				recastManager.moveAgentNear(int(idx), scenePosition);
-				trace("onMouseRightClick: ", int(idx), "scenePosition={", scenePosition.x, scenePosition.z, "}");
+				recastManager.moveAgentNear(i, scenePosition);
+				trace("onMouseRightClick: ", i, "scenePosition={", scenePosition.x, scenePosition.z, "}");
 				trace("Objects in pool=" + count + " News=" + ObjectPool.newsCount + " Reused=" + ObjectPool.reusedCount);
 			}
 		}
 		
+		private function onMouseMove(e:MouseEvent):void
+		{
+			recastManager._mainAgentX = world.mouseX;
+			recastManager._mainAgentY = world.mouseY;
+		}
+		
 		private function onMouseClick(e:MouseEvent):void
+		{
+			var agentRadius:Number = Math.random() * MAX_AGENT_RADIUS
+			createAgent(agentRadius);
+		}	
+		
+		private function createAgent(agentRadius:Number):int
 		{
 			var scenePosition:Vector3D = new Vector3D(world.mouseX, WORLD_Z * SCALE, world.mouseY);
 			
-			var agentRadius:Number = Math.random() * MAX_AGENT_RADIUS
 			var agentAcceleration:Number = MAX_AGENT_RADIUS - agentRadius; //make it the larger you are, the slower you are
 			var agentMaxSpeed:Number = (MAX_AGENT_RADIUS - agentRadius) / 2; //make it the larger you are, the slower you are
 			var idx:int = recastManager.addAgentNear(scenePosition, agentRadius, 20, agentAcceleration, agentMaxSpeed);
@@ -204,9 +219,10 @@ package
 			s.y = scenePosition.z
 			
 			world.addChild(s);
-			trace("onMouseClick: ", int(idx), "scenePosition={", scenePosition.x, scenePosition.z, "}");
+			trace("createAgent: ", idx, "scenePosition={", scenePosition.x, scenePosition.z, "}");
 			
 			agentObjectsByAgendIdx[idx] = s;
+			return idx;
 		}
 		
 		private function onMiddleClick(e:MouseEvent):void
@@ -271,6 +287,7 @@ package
 			}
 		}
 		
+		var verts:Vector.<Point> = new Vector.<Point>();
 		protected function debugRender():void
 		{
 			debugSprite.graphics.clear();
@@ -283,12 +300,8 @@ package
 			
 			var nVerts:int = meshLoader.getVertCount();
 			
-			//var verts:Vector.<Point>;
-			//verts = ObjectPool.getInstance(Vector.<Point>).getNew();
-			var verts:Vector.<Point> = new Vector.<Point>();
-			//var str:String = getQualifiedClassName(verts);
+			//var verts:Vector.<Point> = ObjectPool.getInstance(Vector.<Point>()).getNew();
 			var p:Point;
-			//var str2:String = getQualifiedClassName(p);
 			
 			for (var i:int = 0; i < nVerts; i++)
 			{
@@ -308,6 +321,7 @@ package
 			
 			//ObjectPool.reuse(verts);
 			ObjectPool.reuse(meshLoader);
+			//ObjectPool.dispose(verts);
 		}
 		
 		//draw the obj mesh that the nav-mesh is generated from
