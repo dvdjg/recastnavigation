@@ -42,6 +42,10 @@ PROJECTS := DebugUtils Detour DetourCrowd DetourTileCache Recast RecastDemoLite
 
 all: $(TARGET)
 
+# From all headers
+# Changed: ^(struct\s+((dt|rc)\w+)\s*\{)
+# To: \1\n\t/// Helper copy operator\n\tvoid copyFrom\(const \2& source\) { *this = source; }\n
+
 build/Recast_wrap.o: recast.i $(PROJECTS) Makefile
 	
 	#swig from recast.i file
