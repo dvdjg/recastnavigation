@@ -31,6 +31,9 @@ static const unsigned short DT_TILECACHE_NULL_IDX = 0xffff;
 
 struct dtTileCacheLayerHeader
 {
+	/// Helper copy operator
+	void copyFrom(const dtTileCacheLayerHeader& source) { *this = source; }
+
 	int magic;								///< Data magic
 	int version;							///< Data version
 	int tx,ty,tlayer;
@@ -42,6 +45,9 @@ struct dtTileCacheLayerHeader
 
 struct dtTileCacheLayer
 {
+	/// Helper copy operator
+	void copyFrom(const dtTileCacheLayer& source) { *this = source; }
+
 	dtTileCacheLayerHeader* header;
 	unsigned char regCount;					///< Region count.
 	unsigned char* heights;
@@ -52,6 +58,9 @@ struct dtTileCacheLayer
 
 struct dtTileCacheContour
 {
+	/// Helper copy operator
+	void copyFrom(const dtTileCacheContour& source) { *this = source; }
+
 	int nverts;
 	unsigned char* verts;
 	unsigned char reg;
@@ -60,12 +69,18 @@ struct dtTileCacheContour
 
 struct dtTileCacheContourSet
 {
+	/// Helper copy operator
+	void copyFrom(const dtTileCacheContourSet& source) { *this = source; }
+
 	int nconts;
 	dtTileCacheContour* conts;
 };
 
 struct dtTileCachePolyMesh
 {
+	/// Helper copy operator
+	void copyFrom(const dtTileCachePolyMesh& source) { *this = source; }
+
 	int nvp;
 	int nverts;				///< Number of vertices.
 	int npolys;				///< Number of polygons.
@@ -78,6 +93,9 @@ struct dtTileCachePolyMesh
 
 struct dtTileCacheAlloc
 {
+	/// Helper copy operator
+	void copyFrom(const dtTileCacheAlloc& source) { *this = source; }
+
 	virtual void reset()
 	{
 	}
@@ -95,6 +113,9 @@ struct dtTileCacheAlloc
 
 struct dtTileCacheCompressor
 {
+	/// Helper copy operator
+	void copyFrom(const dtTileCacheCompressor& source) { *this = source; }
+
 	virtual int maxCompressedSize(const int bufferSize) = 0;
 	virtual dtStatus compress(const unsigned char* buffer, int bufferSize,
 							  unsigned char* compressed, int maxCompressedSize, int* compressedSize) = 0;

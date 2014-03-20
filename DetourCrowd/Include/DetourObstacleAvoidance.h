@@ -21,6 +21,9 @@
 
 struct dtObstacleCircle
 {
+	/// Helper copy operator
+	void copyFrom(const dtObstacleCircle& source) { *this = source; }
+
 	double p[3];				///< Position of the obstacle
 	double vel[3];			///< Velocity of the obstacle
 	double dvel[3];			///< Velocity of the obstacle
@@ -30,6 +33,9 @@ struct dtObstacleCircle
 
 struct dtObstacleSegment
 {
+	/// Helper copy operator
+	void copyFrom(const dtObstacleSegment& source) { *this = source; }
+
 	double p[3], q[3];		///< End points of the obstacle segment
 	bool touch;
 };
@@ -79,6 +85,9 @@ static const int DT_MAX_PATTERN_RINGS = 4;	///< Max number of adaptive rings.
 
 struct dtObstacleAvoidanceParams
 {
+	/// Helper copy operator
+	void copyFrom(const dtObstacleAvoidanceParams& source) { *this = source; }
+
 	double velBias;
 	double weightDesVel;
 	double weightCurVel;

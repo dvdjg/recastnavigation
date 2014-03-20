@@ -177,6 +177,9 @@ protected:
 /// @ingroup recast
 struct rcConfig
 {
+	/// Helper copy operator
+	void copyFrom(const rcConfig& source) { *this = source; }
+
 	/// The width of the field along the x-axis. [Limit: >= 0] [Units: vx]
 	int width;
 
@@ -255,6 +258,9 @@ static const int RC_SPANS_PER_POOL = 2048;
 /// @see rcHeightfield
 struct rcSpan
 {
+	/// Helper copy operator
+	void copyFrom(const rcSpan& source) { *this = source; }
+
 	unsigned int smin : 13;			///< The lower limit of the span. [Limit: < #smax]
 	unsigned int smax : 13;			///< The upper limit of the span. [Limit: <= #RC_SPAN_MAX_HEIGHT]
 	unsigned int area : 6;			///< The area id assigned to the span.
@@ -265,6 +271,9 @@ struct rcSpan
 /// @see rcHeightfield
 struct rcSpanPool
 {
+	/// Helper copy operator
+	void copyFrom(const rcSpanPool& source) { *this = source; }
+
 	rcSpanPool* next;					///< The next span pool.
 	rcSpan items[RC_SPANS_PER_POOL];	///< Array of spans in the pool.
 };
@@ -273,6 +282,9 @@ struct rcSpanPool
 /// @ingroup recast
 struct rcHeightfield
 {
+	/// Helper copy operator
+	void copyFrom(const rcHeightfield& source) { *this = source; }
+
 	int width;			///< The width of the heightfield. (Along the x-axis in cell units.)
 	int height;			///< The height of the heightfield. (Along the z-axis in cell units.)
 	double bmin[3];  	///< The minimum bounds in world space. [(x, y, z)]
@@ -287,6 +299,9 @@ struct rcHeightfield
 /// Provides information on the content of a cell column in a compact heightfield. 
 struct rcCompactCell
 {
+	/// Helper copy operator
+	void copyFrom(const rcCompactCell& source) { *this = source; }
+
 	unsigned int index : 24;	///< Index to the first span in the column.
 	unsigned int count : 8;		///< Number of spans in the column.
 };
@@ -294,6 +309,9 @@ struct rcCompactCell
 /// Represents a span of unobstructed space within a compact heightfield.
 struct rcCompactSpan
 {
+	/// Helper copy operator
+	void copyFrom(const rcCompactSpan& source) { *this = source; }
+
 	unsigned short y;			///< The lower extent of the span. (Measured from the heightfield's base.)
 	unsigned short reg;			///< The id of the region the span belongs to. (Or zero if not in a region.)
 	unsigned int con : 24;		///< Packed neighbor connection data.
@@ -304,6 +322,9 @@ struct rcCompactSpan
 /// @ingroup recast
 struct rcCompactHeightfield
 {
+	/// Helper copy operator
+	void copyFrom(const rcCompactHeightfield& source) { *this = source; }
+
 	int width;					///< The width of the heightfield. (Along the x-axis in cell units.)
 	int height;					///< The height of the heightfield. (Along the z-axis in cell units.)
 	int spanCount;				///< The number of spans in the heightfield.
@@ -326,6 +347,9 @@ struct rcCompactHeightfield
 /// @see rcHeightfieldLayerSet
 struct rcHeightfieldLayer
 {
+	/// Helper copy operator
+	void copyFrom(const rcHeightfieldLayer& source) { *this = source; }
+
 	double bmin[3];				///< The minimum bounds in world space. [(x, y, z)]
 	double bmax[3];				///< The maximum bounds in world space. [(x, y, z)]
 	double cs;					///< The size of each cell. (On the xz-plane.)
@@ -348,6 +372,9 @@ struct rcHeightfieldLayer
 /// @see rcAllocHeightfieldLayerSet, rcFreeHeightfieldLayerSet 
 struct rcHeightfieldLayerSet
 {
+	/// Helper copy operator
+	void copyFrom(const rcHeightfieldLayerSet& source) { *this = source; }
+
 	rcHeightfieldLayer* layers;			///< The layers in the set. [Size: #nlayers]
 	int nlayers;						///< The number of layers in the set.
 };
@@ -355,6 +382,9 @@ struct rcHeightfieldLayerSet
 /// Represents a simple, non-overlapping contour in field space.
 struct rcContour
 {
+	/// Helper copy operator
+	void copyFrom(const rcContour& source) { *this = source; }
+
 	int* verts;			///< Simplified contour vertex and connection data. [Size: 4 * #nverts]
 	int nverts;			///< The number of vertices in the simplified contour. 
 	int* rverts;		///< Raw contour vertex and connection data. [Size: 4 * #nrverts]
@@ -367,6 +397,9 @@ struct rcContour
 /// @ingroup recast
 struct rcContourSet
 {
+	/// Helper copy operator
+	void copyFrom(const rcContourSet& source) { *this = source; }
+
 	rcContour* conts;	///< An array of the contours in the set. [Size: #nconts]
 	int nconts;			///< The number of contours in the set.
 	double bmin[3];  	///< The minimum bounds in world space. [(x, y, z)]
@@ -382,6 +415,9 @@ struct rcContourSet
 /// @ingroup recast
 struct rcPolyMesh
 {
+	/// Helper copy operator
+	void copyFrom(const rcPolyMesh& source) { *this = source; }
+
 	unsigned short* verts;	///< The mesh vertices. [Form: (x, y, z) * #nverts]
 	unsigned short* polys;	///< Polygon and neighbor data. [Length: #maxpolys * 2 * #nvp]
 	unsigned short* regs;	///< The region id assigned to each polygon. [Length: #maxpolys]
@@ -403,6 +439,9 @@ struct rcPolyMesh
 /// @ingroup recast
 struct rcPolyMeshDetail
 {
+	/// Helper copy operator
+	void copyFrom(const rcPolyMeshDetail& source) { *this = source; }
+
 	unsigned int* meshes;	///< The sub-mesh data. [Size: 4*#nmeshes] 
 	double* verts;			///< The mesh vertices. [Size: 3*#nverts] 
 	unsigned char* tris;	///< The mesh triangles. [Size: 4*#ntris] 

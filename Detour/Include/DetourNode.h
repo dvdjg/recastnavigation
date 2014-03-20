@@ -32,6 +32,9 @@ static const dtNodeIndex DT_NULL_IDX = (dtNodeIndex)~0;
 
 struct dtNode
 {
+	/// Helper copy operator
+	void copyFrom(const dtNode& source) { *this = source; }
+
 	double pos[3];				///< Position of the node.
 	double cost;					///< Cost from previous node to current node.
 	double total;				///< Cost up to the node.

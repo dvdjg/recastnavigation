@@ -50,6 +50,9 @@ static const int DT_CROWD_MAX_OBSTAVOIDANCE_PARAMS = 8;
 /// @see dtCrowdAgent::neis, dtCrowd
 struct dtCrowdNeighbour
 {
+	/// Helper copy operator
+	void copyFrom(const dtCrowdNeighbour& source) { *this = source; }
+
 	int idx;		///< The index of the neighbor in the crowd.
 	double dist;		///< The distance between the current agent and the neighbor.
 };
@@ -67,7 +70,10 @@ enum CrowdAgentState
 /// @ingroup crowd
 struct dtCrowdAgentParams
 {
-    /** Helper copy operator */
+    /// Helper copy operator
+	void copyFrom(const dtCrowdAgentParams& source) { *this = source; }
+
+	/** Helper copy operator */
     void copyFrom(const dtCrowdAgentParams * source) { *this = *source; }
 
     double radius;						///< Agent radius. [Limit: >= 0]
@@ -110,6 +116,9 @@ enum MoveRequestState
 /// @ingroup crowd
 struct dtCrowdAgent
 {
+	/// Helper copy operator
+	void copyFrom(const dtCrowdAgent& source) { *this = source; }
+
 	/// 1 if the agent is active, or 0 if the agent is in an unused slot in the agent pool.
 	unsigned char active;
 
@@ -171,6 +180,9 @@ struct dtCrowdAgent
 
 struct dtCrowdAgentAnimation
 {
+	/// Helper copy operator
+	void copyFrom(const dtCrowdAgentAnimation& source) { *this = source; }
+
 	unsigned char active;
 	double initPos[3], startPos[3], endPos[3];
 	dtPolyRef polyRef;
@@ -191,6 +203,9 @@ enum UpdateFlags
 
 struct dtCrowdAgentDebugInfo
 {
+	/// Helper copy operator
+	void copyFrom(const dtCrowdAgentDebugInfo& source) { *this = source; }
+
 	int idx;
 	double optStart[3], optEnd[3];
 	dtObstacleAvoidanceDebugData* vod;

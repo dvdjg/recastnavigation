@@ -17,6 +17,9 @@ enum dtCompressedTileFlags
 
 struct dtCompressedTile
 {
+	/// Helper copy operator
+	void copyFrom(const dtCompressedTile& source) { *this = source; }
+
 	unsigned int salt;						///< Counter describing modifications to the tile.
 	struct dtTileCacheLayerHeader* header;
 	unsigned char* compressed;
@@ -38,6 +41,9 @@ enum ObstacleState
 static const int DT_MAX_TOUCHED_TILES = 8;
 struct dtTileCacheObstacle
 {
+	/// Helper copy operator
+	void copyFrom(const dtTileCacheObstacle& source) { *this = source; }
+
 	double pos[3], radius, height;
 	dtCompressedTileRef touched[DT_MAX_TOUCHED_TILES];
 	dtCompressedTileRef pending[DT_MAX_TOUCHED_TILES];
@@ -50,6 +56,9 @@ struct dtTileCacheObstacle
 
 struct dtTileCacheParams
 {
+	/// Helper copy operator
+	void copyFrom(const dtTileCacheParams& source) { *this = source; }
+
 	double orig[3];
 	double cellSize, cellHeight;
 	int width, height;
@@ -63,6 +72,9 @@ struct dtTileCacheParams
 
 struct dtTileCacheMeshProcess
 {
+	/// Helper copy operator
+	void copyFrom(const dtTileCacheMeshProcess& source) { *this = source; }
+
 	virtual void process(struct dtNavMeshCreateParams* params,
 						 unsigned char* polyAreas, unsigned short* polyFlags) = 0;
 };

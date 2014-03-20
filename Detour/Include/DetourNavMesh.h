@@ -131,6 +131,9 @@ enum dtPolyTypes
 /// @ingroup detour
 struct dtPoly
 {
+	/// Helper copy operator
+	void copyFrom(const dtPoly& source) { *this = source; }
+
 	/// Index to first link in linked list. (Or #DT_NULL_LINK if there is no link.)
 	unsigned int firstLink;
 
@@ -167,6 +170,9 @@ struct dtPoly
 /// Defines the location of detail sub-mesh data within a dtMeshTile.
 struct dtPolyDetail
 {
+	/// Helper copy operator
+	void copyFrom(const dtPolyDetail& source) { *this = source; }
+
 	unsigned int vertBase;			///< The offset of the vertices in the dtMeshTile::detailVerts array.
 	unsigned int triBase;			///< The offset of the triangles in the dtMeshTile::detailTris array.
 	unsigned char vertCount;		///< The number of vertices in the sub-mesh.
@@ -178,6 +184,9 @@ struct dtPolyDetail
 /// @see dtMeshTile
 struct dtLink
 {
+	/// Helper copy operator
+	void copyFrom(const dtLink& source) { *this = source; }
+
 	dtPolyRef ref;					///< Neighbour reference. (The neighbor that is linked to.)
 	unsigned int next;				///< Index of the next link.
 	unsigned char edge;				///< Index of the polygon edge that owns this link.
@@ -191,6 +200,9 @@ struct dtLink
 /// @see dtMeshTile
 struct dtBVNode
 {
+	/// Helper copy operator
+	void copyFrom(const dtBVNode& source) { *this = source; }
+
 	unsigned short bmin[3];			///< Minimum bounds of the node's AABB. [(x, y, z)]
 	unsigned short bmax[3];			///< Maximum bounds of the node's AABB. [(x, y, z)]
 	int i;							///< The node's index. (Negative for escape sequence.)
@@ -200,6 +212,9 @@ struct dtBVNode
 /// An off-mesh connection is a user defined traversable connection made up to two vertices.
 struct dtOffMeshConnection
 {
+	/// Helper copy operator
+	void copyFrom(const dtOffMeshConnection& source) { *this = source; }
+
 	/// The endpoints of the connection. [(ax, ay, az, bx, by, bz)]
 	double pos[6];
 
@@ -225,6 +240,9 @@ struct dtOffMeshConnection
 /// @ingroup detour
 struct dtMeshHeader
 {
+	/// Helper copy operator
+	void copyFrom(const dtMeshHeader& source) { *this = source; }
+
 	int magic;				///< Tile magic number. (Used to identify the data format.)
 	int version;			///< Tile data format version number.
 	int x;					///< The x-position of the tile within the dtNavMesh tile grid. (x, y, layer)
@@ -257,6 +275,9 @@ struct dtMeshHeader
 /// @ingroup detour
 struct dtMeshTile
 {
+	/// Helper copy operator
+	void copyFrom(const dtMeshTile& source) { *this = source; }
+
 	unsigned int salt;					///< Counter describing modifications to the tile.
 
 	unsigned int linksFreeList;			///< Index to the next free link.
@@ -290,6 +311,9 @@ struct dtMeshTile
 /// @ingroup detour
 struct dtNavMeshParams
 {
+	/// Helper copy operator
+	void copyFrom(const dtNavMeshParams& source) { *this = source; }
+
 	double orig[3];					///< The world space origin of the navigation mesh's tile space. [(x, y, z)]
 	double tileWidth;				///< The width of each tile. (Along the x-axis.)
 	double tileHeight;				///< The height of each tile. (Along the z-axis.)

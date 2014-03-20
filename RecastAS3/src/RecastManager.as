@@ -5,6 +5,7 @@ package
 	import flash.utils.ByteArray;
 	import org.dave.interfaces.IInitDestroy;
 	import org.dave.objects.ObjectPool;
+	import org.recastnavigation.dtObstacleAvoidanceParams;
 	
 	import org.recastnavigation.AS3_rcContext;
 	import org.recastnavigation.CModule;
@@ -105,9 +106,51 @@ package
 			trace("Build=" + buildSuccess, ". Build time", new Date().valueOf() - startTime, "ms");
 			
 			var oid:int = addObstacle(new Vector3D(22, 33, 44), 55, 11);
-			
+			initCrowd();
+		}
+		
+		protected function initCrowd():void
+		{
 			crowd = sample.getCrowd();
 			crowd.init(maxAgents, maxAgentRadius, sample.getNavMesh() );
+			
+			// Make polygons with 'disabled' flag invalid.
+			crowd.getEditableFilter().setExcludeFlags(Recast.SAMPLE_POLYFLAGS_DISABLED);
+			
+			// Setup local avoidance params to different qualities.
+			var params:dtObstacleAvoidanceParams = dtObstacleAvoidanceParams.create();
+			
+			// Use mostly default settings, copy from dtCrowd.
+			params.copyFrom(crowd.getObstacleAvoidanceParams(0));
+			
+			// Low (11)
+			params.velBias = 0.5;
+			params.adaptiveDivs = 5;
+			params.adaptiveRings = 2;
+			params.adaptiveDepth = 1;
+			crowd.setObstacleAvoidanceParams(0, params);
+			
+			// Medium (22)
+			params.velBias = 0.5;
+			params.adaptiveDivs = 5; 
+			params.adaptiveRings = 2;
+			params.adaptiveDepth = 2;
+			crowd.setObstacleAvoidanceParams(1, params);
+			
+			// Good (45)
+			params.velBias = 0.5;
+			params.adaptiveDivs = 7;
+			params.adaptiveRings = 2;
+			params.adaptiveDepth = 3;
+			crowd.setObstacleAvoidanceParams(2, params);
+			
+			// High (66)
+			params.velBias = 0.5;
+			params.adaptiveDivs = 7;
+			params.adaptiveRings = 3;
+			params.adaptiveDepth = 3;
+			
+			crowd.setObstacleAvoidanceParams(3, params);
 		}
 		
 		public function captureStates():void
@@ -197,7 +240,7 @@ package
 			height:Number = 2.0, 
 			maxAccel:Number = 8.5, 
 			maxSpeed:Number = 4.5, 
-			collisionQueryRange:Number = 3, 
+			collisionQueryRange:Number = 4, 
 			pathOptimizationRange:Number=30 ):int
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
@@ -207,8 +250,8 @@ package
 			_agentParams.maxSpeed = maxSpeed;
 			_agentParams.collisionQueryRange = collisionQueryRange;
 			_agentParams.pathOptimizationRange = pathOptimizationRange;
-			_agentParams.separationWeight = 8;
-			_agentParams.obstacleAvoidanceType = 3;
+			_agentParams.separationWeight = 20;
+			_agentParams.obstacleAvoidanceType = 3; // High (66)
 			
 			var updateFlags:uint = 0;
 			//todo - need to add class for enum 

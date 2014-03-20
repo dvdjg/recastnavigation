@@ -21,12 +21,18 @@
 
 struct rcChunkyTriMeshNode
 {
+	/// Helper copy operator
+	void copyFrom(const rcChunkyTriMeshNode& source) { *this = source; }
+
 	double bmin[2], bmax[2];
 	int i, n;
 };
 
 struct rcChunkyTriMesh
 {
+	/// Helper copy operator
+	void copyFrom(const rcChunkyTriMesh& source) { *this = source; }
+
 	inline rcChunkyTriMesh() : nodes(0), tris(0) {}
 	inline ~rcChunkyTriMesh() { delete [] nodes; delete [] tris; }
 

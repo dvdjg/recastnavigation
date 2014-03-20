@@ -26,6 +26,9 @@
 struct dtNavMeshCreateParams
 {
 
+	/// Helper copy operator
+	void copyFrom(const dtNavMeshCreateParams& source) { *this = source; }
+
 	/// @name Polygon Mesh Attributes
 	/// Used to create the base navigation graph.
 	/// See #rcPolyMesh for details related to these attributes.
