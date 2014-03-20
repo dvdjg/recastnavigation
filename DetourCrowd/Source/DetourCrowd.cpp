@@ -1391,34 +1391,40 @@ void dtCrowd::updateComputeDesiredPosition(const double dt, dtCrowdAgentDebugInf
         // Separation
         if (ag->params.updateFlags & DT_CROWD_SEPARATION)
         {
-            const double separationDist = ag->params.collisionQueryRange;
-            const double invSeparationDist = 1.0 / separationDist;
-            const double separationWeight = ag->params.separationWeight;
-
-            double w = 0;
+            double w = 0.0;
             double disp[3] = {0,0,0};
+            const double radSq = ag->params.radius * ag->params.radius;
 
             for (int j = 0; j < ag->nneis; ++j)
             {
                 const dtCrowdAgent* nei = &m_agents[ag->neis[j].idx];
 
+                double separationDist = ag->params.collisionQueryRange
+                        + ag->params.radius
+                        + nei->params.radius;
+                double separationDisSqt = dtSqr(separationDist);
+                double separationWeight = ag->params.separationWeight;
+
                 double diff[3];
                 dtVsub(diff, ag->npos, nei->npos);
                 diff[1] = 0;
 
-                const double distSqr = dtVlenSqr(diff);
-                if (distSqr < 0.00001)
+                // separationDisSqt > distSqr > 0
+                const double distSqr = diff[0]*diff[0] + diff[2]*diff[2];
+                if (distSqr < 0.0000001) // The same position
                     continue;
-                if (distSqr > dtSqr(separationDist))
+                double rel = separationDisSqt - distSqr;
+                if (rel < 0) // Out of query range
                     continue;
-                const double dist = dtMathSqrtf(distSqr);
-                const double weight = separationWeight * (1.0 - dtSqr(dist*invSeparationDist));
+                // At the agent radius the weight is its nominal value
+                const double weight = separationWeight * rel / (separationDisSqt - radSq);
 
-                dtVmad(disp, disp, diff, weight/dist);
+
+                dtVmad(disp, disp, diff, weight);
                 w += 1.0;
             }
 
-            if (w > 0.0001)
+            if (w != 0.0)
             {
                 // Adjust desired velocity.
                 dtVmad(dvel, dvel, disp, 1.0/w);

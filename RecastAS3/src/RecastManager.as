@@ -128,7 +128,6 @@ package
 					capturedStates.push(agent);
 				}
 			}
-			
 		}
 		
 		public function restoreStates():void
@@ -151,6 +150,8 @@ package
 			_agentParams.destroy();
 		}
 		
+		var mainPos:Object = { x:0, y:0, z:0 };
+		var pos:Object = { x:0, y:0, z:0 };
 		public function advanceTime(deltaTime:Number):void
 		{
 			if( crowd ) {
@@ -161,12 +162,21 @@ package
 				//crowd.update(deltaTime, crowdDebugPtr);
 				crowd.updateComputeDesiredPosition(deltaTime, null); // crowdDebugPtr
 				//crowd.updateHandleCollisions();
-				var pos:Object = ObjectPool.objectPoolInstance.getNew();
+				//var pos:Object = ObjectPool.objectPoolInstance.getNew();
 				pos.x = _mainAgentX  / scale.x;
 				pos.y = -22 / scale.y;
 				pos.z = _mainAgentY / scale.z;
+				
 				crowd.setAgentPosition(_mainAgentId, pos);
-				ObjectPool.objectPoolInstance.reuseObject(pos);
+				mainPos.x = pos.x - mainPos.x;
+				mainPos.y = pos.y - mainPos.y;
+				mainPos.z = pos.z - mainPos.z;
+				crowd.setAgentDesiredVelocity(_mainAgentId, mainPos);
+				crowd.setAgentActualVelocity(_mainAgentId, mainPos);
+				mainPos.x = pos.x;
+				mainPos.y = pos.y;
+				mainPos.z = pos.z;
+				//ObjectPool.objectPoolInstance.reuseObject(pos);
 				
 				crowd.updateReinsertToNavmesh(deltaTime);
 				
@@ -176,12 +186,19 @@ package
 				}
 			}
 			var res:int = sample.handleUpdate(deltaTime); //update the tileCache
-			var re:Boolean = Recast.dtStatusSucceed(res);
-			re = !re;
+			//var re:Boolean = Recast.dtStatusSucceed(res);
+			//re = !re;
 		}
 		
 		//todo - this should take 2 params, position, and dtCrowdAgentParams
-		public function addAgentNear(scenePosition:Vector3D, radius:Number = 1.0, height:Number = 2.0, maxAccel:Number=8.5, maxSpeed:Number=4.5, collisionQueryRange:Number=12, pathOptimizationRange:Number=30 ):int
+		public function addAgentNear(
+			scenePosition:Vector3D, 
+			radius:Number = 1.0, 
+			height:Number = 2.0, 
+			maxAccel:Number = 8.5, 
+			maxSpeed:Number = 4.5, 
+			collisionQueryRange:Number = 10, 
+			pathOptimizationRange:Number=30 ):int
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
 			_agentParams.radius  = radius / scale.x;
@@ -190,7 +207,7 @@ package
 			_agentParams.maxSpeed = maxSpeed;
 			_agentParams.collisionQueryRange = collisionQueryRange;
 			_agentParams.pathOptimizationRange = pathOptimizationRange;
-			_agentParams.separationWeight = 2.0;
+			_agentParams.separationWeight = 4.0;
 			_agentParams.obstacleAvoidanceType = 3;
 			
 			var updateFlags:uint = 0;
@@ -199,20 +216,15 @@ package
 			updateFlags |= Recast.DT_CROWD_OPTIMIZE_VIS;
 			updateFlags |= Recast.DT_CROWD_OPTIMIZE_TOPO;
 			updateFlags |= Recast.DT_CROWD_OBSTACLE_AVOIDANCE;
-			//updateFlags |= Recast.DT_CROWD_SEPARATION;
+			updateFlags |= Recast.DT_CROWD_SEPARATION;
 			_agentParams.updateFlags = updateFlags; //since updateFlags is stored as a char in recast, need to save the string as the char code value
 			
 			var idx:int = crowd.addAgent(navPosition, _agentParams, -1 );
-			//_params.destroy();
-			
-			var pos:Object = getAgentPos(idx);
-			//var pos2:Object = crowd.getAgentPosition(idx);
-			//var nagents:int = crowd.getAgentCount();
 			
 			var navquery:dtNavMeshQuery  = sample.getNavMeshQuery();
 
 			var targetRef:Object = {};
-			var targetPos:Object = {};
+			var targetPos:Object = ObjectPool.objectPoolInstance.getNew();
 			var queryExtents:Object = crowd.getQueryExtents();
 			
 			var statusPtr:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.getFilter(), targetRef, targetPos);
@@ -222,7 +234,9 @@ package
 			trace("addAgentNear: navPosition={", navPosition.x, navPosition.y, navPosition.z, "} targetPos={", targetPos.x, targetPos.y, targetPos.z,"}");
 			
 			if (targetRef.value != 0)
-				crowd.requestMoveTarget(idx, targetRef.value, targetPos);	
+				crowd.requestMoveTarget(idx, targetRef.value, targetPos);
+				
+			ObjectPool.objectPoolInstance.reuseObject(targetPos);
 			
 			return idx;
 		}
