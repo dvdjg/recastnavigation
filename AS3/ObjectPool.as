@@ -23,6 +23,11 @@ package org.dave.objects
 			_objectClass = objectClass;
 			_objects = new Array();
 		}
+		
+		public function getPoolArray():Array
+		{
+			return _objects;
+		}
 
 		public static function get objectPoolInstance():ObjectPool
 		{

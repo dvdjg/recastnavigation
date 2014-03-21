@@ -60,6 +60,11 @@ build/Recast_wrap.o: recast.i $(PROJECTS) Makefile
 	sed -r 's@([(,]) ?(\w+):int /\*\*< \{(\w+)\} \*/(.+)@\1\2Ref:\3\4\n\t\tvar \2:int = \2Ref ? \2Ref.swigCPtr : 0;@g' RecastTmp.as > Recast.as
 	sed -r 's@([(,]) ?(\w+):int /\*\*< \{(\w+)\} \*/(.+)@\1\2Ref:\3\4\n\t\tvar \2:int = \2Ref ? \2Ref.swigCPtr : 0;@g' Recast.as > RecastTmp.as
 	sed -r 's@([(,]) ?(\w+):int /\*\*< \{(\w+)\} \*/(.+)@\1\2Ref:\3\4\n\t\tvar \2:int = \2Ref ? \2Ref.swigCPtr : 0;@g' RecastTmp.as > Recast.as
+	
+	# Use get and set functions
+	sed -r 's@^(\s*public\s+function\s+get)([A-Z]\w*\s*\(\s*\)\s*:\s*)@\1 \l\2@g' Recast.as > RecastTmp.as
+	sed -r 's@^(\s*public\s+function\s+set)([A-Z]\w*\s*\([^),]+\)\s*:\s*void)@\1 \l\2@g' RecastTmp.as > Recast.as
+	
 	mv Recast_wrap.cxx build
 	mv Recast.as build
 	rm RecastTmp.as

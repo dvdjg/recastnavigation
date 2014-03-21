@@ -790,7 +790,7 @@ BuildContext&, ConvexVolume&, ConvexVolumeTool&, CrowdTool&, CrowdToolParams&, C
 }
 
 
-%typemap(astype) double*, double[3], const int*, int[3], short* tx "Object /**< {x,y,z} */";
+%typemap(astype) double*, double[3], const int*, int[3], short* tx "Object /**< {x;y;z} */";
 
 %typemap(in) double* out (double dVector[3]) {
     // Workaround to a SWIG bug. Pass the AS3 argument name to the %typemap(argout) '$1' $input
@@ -1025,7 +1025,7 @@ BuildContext&, ConvexVolume&, ConvexVolumeTool&, CrowdTool&, CrowdToolParams&, C
 	(int* vista)
 };
 
-%typemap(astype) const unsigned short*, unsigned short [3] "Object /**< short {x,y,z} */";
+%typemap(astype) const unsigned short*, unsigned short [3] "Object /**< short {x;y;z} */";
 
 // Used for:
 //  [in] const int*

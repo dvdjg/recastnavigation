@@ -174,7 +174,9 @@ package
 		
 		private function onMouseRightClick(e:MouseEvent):void
 		{
-			var scenePosition:Vector3D = new Vector3D(world.mouseX, WORLD_Z * SCALE, world.mouseY);
+			//var scenePosition:Vector3D = new Vector3D(world.mouseX, WORLD_Z * SCALE, world.mouseY);
+			var navPosition:Object = recastManager.sample.crowd.getAgentPosition(recastManager._mainAgentId);
+			var scenePosition:Vector3D = new Vector3D(navPosition.x * SCALE, navPosition.y * SCALE, navPosition.z * SCALE);
 			
 			//move all agents to the mouse position
 			//todo - change this to a vector or use domain memory to speed this up.  for each in a dictionary is very slow when called every frame!
@@ -183,11 +185,11 @@ package
 				var i:int = int(idx);
 				if (recastManager._mainAgentId == i)
 					continue;
-				var count:int = ObjectPool.countAllObjects;
 				recastManager.moveAgentNear(i, scenePosition);
-				trace("onMouseRightClick: ", i, "scenePosition={", scenePosition.x, scenePosition.z, "}");
-				trace("Objects in pool=" + count + " News=" + ObjectPool.newsCount + " Reused=" + ObjectPool.reusedCount);
 			}
+			trace("onMouseRightClick: scenePosition={", scenePosition.x, scenePosition.z, "}");
+			var count:int = ObjectPool.countAllObjects;
+			trace("Objects in pool=" + count + " News=" + ObjectPool.newsCount + " Reused=" + ObjectPool.reusedCount);
 		}
 		
 		private function onMouseMove(e:MouseEvent):void
@@ -292,13 +294,13 @@ package
 		{
 			debugSprite.graphics.clear();
 			//get the trianges and verties of the object file
-			var meshLoader:rcMeshLoaderObj = recastManager.geomerty.getMesh();
+			var meshLoader:rcMeshLoaderObj = recastManager.geomerty.mesh;
 			
 			var tris:Vector.<int> = new Vector.<int>;
 			meshLoader.getTrisVector(tris);
-			var ntris:int = meshLoader.getTriCount();
+			var ntris:int = meshLoader.triCount;
 			
-			var nVerts:int = meshLoader.getVertCount();
+			var nVerts:int = meshLoader.vertCount;
 			
 			//var verts:Vector.<Point> = ObjectPool.getInstance(Vector.<Point>()).getNew();
 			var p:Point;

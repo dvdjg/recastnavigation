@@ -57,7 +57,8 @@ package
 		
 		public function init():void
 		{
-
+			var agentParamsDef:dtCrowdAgentParams = dtCrowdAgentParams.create();
+			_agentParamsArray.push(agentParamsDef);
 		}
 
 		public function destroy():void
@@ -96,7 +97,7 @@ package
 			sample.m_maxObstacles = m_maxObstacles;
 			
 			//build mesh
-			sample.setContext(as3LogContext);
+			sample.context = as3LogContext;
 			sample.handleMeshChanged(geom);
 			sample.handleSettings();
 			
@@ -106,19 +107,16 @@ package
 			
 			var oid:int = addObstacle(new Vector3D(22, 33, 44), 55, 11);
 			initCrowd();
-			
-			var agentParamsDef:dtCrowdAgentParams = dtCrowdAgentParams.create();
-			_agentParamsArray.push(agentParamsDef);
-			crowd.setAgentDynamic(_mainAgentId, true);
 		}
 		
 		protected function initCrowd():void
 		{
-			crowd = sample.getCrowd();
-			crowd.init(maxAgents, maxAgentRadius, sample.getNavMesh() );
+			crowd = sample.crowd;
+			crowd.init(maxAgents, maxAgentRadius, sample.navMesh );
+			crowd.setAgentDynamic(_mainAgentId, true);
 			
 			// Make polygons with 'disabled' flag invalid.
-			crowd.getEditableFilter().setExcludeFlags(Recast.SAMPLE_POLYFLAGS_DISABLED);
+			crowd.editableFilter.excludeFlags = Recast.SAMPLE_POLYFLAGS_DISABLED;
 			
 			// Setup local avoidance params to different qualities.
 			var params:dtObstacleAvoidanceParams = dtObstacleAvoidanceParams.create();
@@ -159,7 +157,7 @@ package
 		public function captureStates():void
 		{
 			capturedStates.length = 0;
-			var totalAgents:int = crowd.getAgentCount();
+			var totalAgents:int = crowd.agentCount;
 			for (var nAgent:int = 0; nAgent < totalAgents; ++nAgent)
 			{
 				if (crowd.getAgentActiveState(nAgent))
@@ -238,12 +236,12 @@ package
 		
 		//todo - this should take 2 params, position, and dtCrowdAgentParams
 		public function addAgentNear(
-			scenePosition:Vector3D, 
+			scenePosition:Object, 
 			radius:Number = 1.0, 
 			height:Number = 2.0, 
 			maxAccel:Number = 8.5, 
 			maxSpeed:Number = 4.5, 
-			collisionQueryRange:Number = 4, 
+			collisionQueryRange:Number = 2, 
 			pathOptimizationRange:Number=30 ):int
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
@@ -251,7 +249,7 @@ package
 			_agentParams.height  = height / scale.y;
 			_agentParams.maxAcceleration = maxAccel;
 			_agentParams.maxSpeed = maxSpeed;
-			_agentParams.collisionQueryRange = collisionQueryRange + _agentParams.radius;
+			_agentParams.collisionQueryRange = collisionQueryRange;
 			_agentParams.pathOptimizationRange = pathOptimizationRange;
 			_agentParams.separationWeight = 20;
 			_agentParams.obstacleAvoidanceType = 3; // High (66)
@@ -267,13 +265,13 @@ package
 			
 			var idx:int = crowd.addAgent(navPosition, _agentParams, -1, false );
 			
-			var navquery:dtNavMeshQuery  = sample.getNavMeshQuery();
+			var navquery:dtNavMeshQuery  = sample.navMeshQuery;
 
 			var targetRef:Object = {};
 			var targetPos:Object = ObjectPool.objectPoolInstance.getNew();
-			var queryExtents:Object = crowd.getQueryExtents();
+			var queryExtents:Object = crowd.queryExtents;
 			
-			var statusPtr:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.getFilter(), targetRef, targetPos);
+			var statusPtr:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.filter, targetRef, targetPos);
 			if (Recast.dtStatusFailed(statusPtr)) {
 				trace("Error");
 			}
@@ -288,17 +286,17 @@ package
 		}
 		
 		
-		public function moveAgentNear(idx:int, scenePosition:Vector3D):void
+		public function moveAgentNear(idx:int, scenePosition:Object):void
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
 			
-			var navquery:dtNavMeshQuery  = sample.getNavMeshQuery();
+			var navquery:dtNavMeshQuery  = sample.navMeshQuery;
 			
 			var targetRef:Object = {};
 			var targetPos:Object = ObjectPool.objectPoolInstance.getNew();
-			var queryExtents:Object = crowd.getQueryExtents();
+			var queryExtents:Object = crowd.queryExtents;
 			
-			var status:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.getFilter(), targetRef, targetPos);
+			var status:int = navquery.findNearestPoly(navPosition, queryExtents, crowd.filter, targetRef, targetPos);
 		
 			if ( targetRef.value != 0)
 				crowd.requestMoveTarget(idx, targetRef.value, targetPos);
@@ -307,7 +305,7 @@ package
 			ObjectPool.objectPoolInstance.reuseObject(targetPos);
 		}
 		
-		public function addObstacle(scenePosition:Vector3D, obstacleRadius:Number, obstacleHeight:Number):int
+		public function addObstacle(scenePosition:Object, obstacleRadius:Number, obstacleHeight:Number):int
 		{
 			var navPosition:Vector3D = new Vector3D(scenePosition.x / scale.x, scenePosition.y / scale.y, scenePosition.z / scale.z );
 			//var obj:Object = sample.getBoundsMax();
@@ -334,7 +332,7 @@ package
 		 */
 		public function getAgentPos(idx:int):Object
 		{
-			var count:int = crowd.getAgentCount();
+			var count:int = crowd.agentCount;
 			var desired:Object = crowd.getAgentDesiredVelocity(idx);
 			var pos:Object = crowd.getAgentPosition(idx);
 			var ret:Object = poolObject.getNew();
