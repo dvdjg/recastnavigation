@@ -23,7 +23,7 @@ package
 	 */
 	public class RecastManager implements IInitDestroy
 	{	
-		public var poolObject:ObjectPool = ObjectPool.objectPoolInstance;
+		// public var poolObject:ObjectPool = ObjectPool.objectPoolInstance;
 		public var scale:Vector3D = new Vector3D(1, 1, 1); //the scale of the nav mesh to the world
 		public var maxAgents:int = 60;
 		public var maxAgentRadius:Number= 4;
@@ -335,7 +335,7 @@ package
 			var count:int = crowd.agentCount;
 			var desired:Object = crowd.getAgentDesiredVelocity(idx);
 			var pos:Object = crowd.getAgentPosition(idx);
-			var ret:Object = poolObject.getNew();
+			var ret:Object = ObjectPool.objectPoolInstance.getNew();
 			ret.x = pos.x * scale.x;
 			ret.y = pos.y * scale.y;
 			ret.z = pos.z * scale.z;
