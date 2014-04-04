@@ -124,6 +124,8 @@ package org.dave.objects
 			return _objects.length;
 		}
 		
+		/** @sa https://code.google.com/p/templelibrary/source/browse/trunk/modules/core/export/temple/core/destruction/Destructor.as?spec=svn262&r=262
+		 */
 		public static function dispose(obj:*):*
         {
             if(obj == null) return obj;
